@@ -56,7 +56,8 @@ router.post('/', async (req, res) => {
     roomNumber: req.body.roomNumber,
     capacity: req.body.capacity,
     remainingCapacity:req.body.remainingCapacity,
-    type:req.body.type
+    type:req.body.type,
+    price:req.body.price,
   });
 
   try {
