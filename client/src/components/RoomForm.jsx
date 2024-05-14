@@ -13,7 +13,7 @@ const RoomForm = ({ room, hostels, onSubmit }) => {
   const [existingRoomNumbers, setExistingRoomNumbers] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/rooms')
+    axios.get('https://beiyo-admin.vercel.app/api/rooms')
       .then(response => {
         const roomNumbers = response.data.map(room => room.roomNumber);
         setExistingRoomNumbers(roomNumbers);
@@ -48,9 +48,9 @@ const RoomForm = ({ room, hostels, onSubmit }) => {
       hostelId,
     };
     if (room) {
-      await axios.patch(`http://localhost:5000/api/rooms/${room._id}`, data);
+      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${room._id}`, data);
     } else {
-      await axios.post('http://localhost:5000/api/rooms', data);
+      await axios.post('https://beiyo-admin.vercel.app/api/rooms', data);
     }
     onSubmit();
   };

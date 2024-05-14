@@ -7,7 +7,7 @@ const InventoryList = () => {
   const [inventory, setInventory] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/inventory')
+    axios.get('https://beiyo-admin.vercel.app/api/inventory')
       .then(response => {
         setInventory(response.data);
       })

@@ -9,7 +9,7 @@ const HostelList = () => {
   const [editingHostel, setEditingHostel] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/hostels')
+    axios.get('https://beiyo-admin.vercel.app/api/hostels')
       .then(response => {
         setHostels(response.data);
       })
@@ -24,7 +24,7 @@ const HostelList = () => {
 
   const handleFormSubmit = () => {
     setEditingHostel(null);
-    axios.get('http://localhost:5000/api/hostels')
+    axios.get('https://beiyo-admin.vercel.app/api/hostels')
       .then(response => {
         setHostels(response.data);
       })

@@ -17,7 +17,7 @@ const RoomList = () => {
   const [editingRoom, setEditingRoom] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/rooms')
+    axios.get('https://beiyo-admin.vercel.app/api/rooms')
       .then(response => {
         setRooms(response.data);
         setFilteredRooms(response.data);
@@ -26,7 +26,7 @@ const RoomList = () => {
         console.error('Error fetching rooms:', error);
       });
 
-    axios.get('http://localhost:5000/api/hostels')
+    axios.get('https://beiyo-admin.vercel.app/api/hostels')
       .then(response => {
         setHostels(response.data);
       })
@@ -65,7 +65,7 @@ const RoomList = () => {
 
   const handleFormSubmit = () => {
     setEditingRoom(null);
-    axios.get('http://localhost:5000/api/rooms')
+    axios.get('https://beiyo-admin.vercel.app/api/rooms')
       .then(response => {
         setRooms(response.data);
       })
@@ -83,8 +83,8 @@ const RoomList = () => {
   };
   const handleRemainingBedsChange = async (roomId, remainingBeds) => {
     try {
-      await axios.patch(`http://localhost:5000/api/rooms/${roomId}/updateRemainingBeds`, { remainingBeds });
-      // Update local state after successful update
+      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}/updateRemainingBeds`, { remainingBeds });
+      // Update  state after successful update
       setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? { ...room, remainingCapacity: remainingBeds } : room));
     } catch (error) {
       console.error('Error updating remaining beds:', error);

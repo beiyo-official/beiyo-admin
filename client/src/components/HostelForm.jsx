@@ -14,15 +14,15 @@ const HostelForm = ({ hostel, onSubmit }) => {
       location,
     };
     if (hostel) {
-      await axios.patch(`http://localhost:5000/api/hostels/${hostel._id}`, data);
+      await axios.patch(`https://beiyo-admin.vercel.app/api/hostels/${hostel._id}`, data);
     } else {
-      await axios.post('http://localhost:5000/api/hostels', data);
+      await axios.post('https://beiyo-admin.vercel.app/api/hostels', data);
     }
     onSubmit();
   };
 
   const handleDelete = async () => {
-    await axios.delete(`http://localhost:5000/api/hostels/${hostel._id}`);
+    await axios.delete(`https://beiyo-admin.vercel.app/api/hostels/${hostel._id}`);
     onSubmit();
   };
 
