@@ -18,7 +18,9 @@ connectDB();
 
 
 // Routes
-
+app.get("/", (req,res)=>{
+  res.json("Welcome to the Beiyo admin backend");
+});
 
 app.use('/api/hostels', hostelRoutes);
 app.use('/api/rooms', roomRoutes);
