@@ -7,6 +7,8 @@ import RoomForm from './RoomForm';
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);
   const [hostels, setHostels] = useState([]);
+  const [priceFilter, setPriceFilter] = useState('all');
+  const [sortByPrice,setSortByPrice] = useState('all');
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [filterOptions, setFilterOptions] = useState({
     availability: 'all',
@@ -15,6 +17,59 @@ const RoomList = () => {
     hostel: 'all',
   });
   const [editingRoom, setEditingRoom] = useState(null);
+
+  useEffect(() => {
+    let filtered = rooms.filter(room => {
+      let match = true;
+      // Your existing filtering logic...
+  
+      // Check if the room price falls within the selected price range
+      if (priceFilter !== 'all') {
+        switch (priceFilter) {
+          case 'less-than-3000':
+            match = room.price < 3000;
+            break;
+          case 'less-than-4000':
+            match = room.price < 4000;
+            break;
+          case 'less-than-5000':
+            match = room.price < 5000;
+            break;
+          case 'greater-than-3000':
+            match = room.price > 3000;
+            break;
+          case 'greater-than-4000':
+            match = room.price > 4000;
+            break;
+          case 'greater-than-5000':
+            match = room.price > 5000;
+            break;
+          default:
+            // No price filter applied
+            break;
+        }
+      }
+  
+      return match;
+    });
+  
+    // Sort the filtered rooms based on the selected price filter
+    switch (sortByPrice) {
+      case 'low-to-high':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'high-to-low':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      default:
+        // No price sorting needed
+        break;
+    }
+  
+    setFilteredRooms(filtered);
+  }, [rooms, filterOptions, priceFilter,sortByPrice]);
+  
+
 
   useEffect(() => {
     axios.get('https://beiyo-admin.vercel.app/api/rooms')
@@ -111,6 +166,7 @@ const RoomList = () => {
             <option value="single">Single</option>
             <option value="double">Double</option>
             <option value="triple">Triple</option>
+            <option value="Flat">Flat</option>
           </select>
         </label>
         <label>
@@ -120,9 +176,30 @@ const RoomList = () => {
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
+            <option value="4">4</option>
             {/* Add more capacity options as needed */}
           </select>
         </label>
+        <label>
+     Price:
+  <select name="price" value={priceFilter} onChange={(e) => setPriceFilter(e.target.value)}>
+    <option value="all">All</option>
+    <option value="less-than-3000">Less than Rs3000</option>
+    <option value="less-than-4000">Less than Rs4000</option>
+    <option value="less-than-5000">Less than Rs5000</option>
+    <option value="greater-than-3000">Greater than Rs3000</option>
+    <option value="greater-than-4000">Greater than Rs4000</option>
+    <option value="greater-than-5000">Greater than Rs5000</option>
+  </select>
+</label>
+<label>
+      Sort by Price:
+      <select name="sortByPrice" value={sortByPrice} onChange={(e) => setSortByPrice(e.target.value)}>
+        <option value="none">None</option>
+        <option value="low-to-high">Low to High</option>
+        <option value="high-to-low">High to Low</option>
+      </select>
+    </label>
         <label>
           Hostel:
           <select name="hostel" value={filterOptions.hostel} onChange={handleFilterChange}>
@@ -135,8 +212,8 @@ const RoomList = () => {
       </div>
       <ul>
         {filteredRooms.map(room => (
-          <li key={room._id} style={{ backgroundColor: room.remainingCapacity === 0 ? 'red' : room.remainingCapacity === room.capacity ? 'green' : 'yellow' }}>
-             {hostels.find(hostel => hostel._id === room.hostelId).name} - {room.roomNumber} - Capacity: {room.capacity} - Remaining Beds: {room.remainingCapacity}
+          <li key={room._id} style={{ backgroundColor: room.remainingCapacity === 0 ? 'green' : room.remainingCapacity === room.capacity ? 'red' : 'grey' }}>
+             {hostels.find(hostel => hostel._id === room.hostelId).name} - {room.roomNumber} - Capacity: {room.capacity} - Remaining Beds: {room.remainingCapacity} - Price: {room.price}
              <select value={room.remainingCapacity} onChange={(e) => handleRemainingBedsChange(room._id, parseInt(e.target.value))}>
               {[...Array(room.capacity + 1).keys()].map(num => (
                 <option key={num} value={num}>{num}</option>

@@ -9,6 +9,7 @@ const RoomForm = ({ room, hostels, onSubmit }) => {
   const [capacity, setCapacity] = useState(room ? room.capacity : '');
   const [remainingBeds, setRemainingBeds] = useState(room ? room.remainingCapacity : '');
   const [hostelId, setHostelId] = useState(room ? room.hostelId : '');
+  const [price, setPrice] = useState(room ? room.price : '');
   const [error, setError] = useState('');
   const [existingRoomNumbers, setExistingRoomNumbers] = useState([]);
 
@@ -25,7 +26,7 @@ const RoomForm = ({ room, hostels, onSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!roomNumber || !type || !capacity || !remainingBeds || !hostelId) {
+    if (!roomNumber || !type || !capacity || !remainingBeds || !hostelId || !price) {
       setError('Please fill out all fields.');
       return;
     }
@@ -46,6 +47,8 @@ const RoomForm = ({ room, hostels, onSubmit }) => {
       capacity,
       remainingCapacity: remainingBeds,
       hostelId,
+      price,
+      hostel: hostels.find(hostel => hostel._id === hostelId).name
     };
     if (room) {
       await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${room._id}`, data);
@@ -65,12 +68,17 @@ const RoomForm = ({ room, hostels, onSubmit }) => {
           <input type="text" value={roomNumber} onChange={(e) => setRoomNumber(e.target.value)} />
         </label>
         <label>
+          Price:
+          <input type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
+        </label>
+        <label>
           Type:
           <select value={type} onChange={(e) => setType(e.target.value)}>
             <option value="">Select Type</option>
             <option value="single">Single</option>
             <option value="double">Double</option>
             <option value="triple">Triple</option>
+            <option value="triple">Flat</option>
           </select>
         </label>
         <label>
@@ -80,6 +88,7 @@ const RoomForm = ({ room, hostels, onSubmit }) => {
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
+            <option value="3">4</option>
             {/* Add more capacity options as needed */}
           </select>
         </label>
@@ -90,6 +99,7 @@ const RoomForm = ({ room, hostels, onSubmit }) => {
             <option value="0">0</option>
             <option value="1">1</option>
             <option value="2">2</option>
+            <option value="3">3</option>
             {/* Add more options as needed */}
           </select>
         </label>
