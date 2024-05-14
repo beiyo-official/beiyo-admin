@@ -53,6 +53,7 @@ router.get('/triple', async (req, res) => {
 router.post('/', async (req, res) => {
   const room = new Room({
     hostelId: req.body.hostelId,
+    hostel: req.body.hostel, 
     roomNumber: req.body.roomNumber,
     capacity: req.body.capacity,
     remainingCapacity:req.body.remainingCapacity,
