@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const Hostel = require('../models/Hostel');
-
+const Room = require('../models/Room');
 // Get all hostels
 router.get('/', async (req, res) => {
   try {
@@ -55,6 +55,27 @@ router.delete('/:id', getHostel, async (req, res) => {
   try {
     await res.hostel.remove();
     res.json({ message: 'Hostel deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Calculate total remaining beds for each hostel
+router.get('/calculateTotalRemainingBeds', async (req, res) => {
+  try {
+    const hostels = await Hostel.find();
+    
+    for (const hostel of hostels) {
+      const rooms = await Room.find({ hostelId: hostel._id });
+      let totalRemainingBeds = 0;
+      for (const room of rooms) {
+        totalRemainingBeds += room.remainingCapacity;
+      }
+      hostel.remainingBeds = totalRemainingBeds;
+      await hostel.save();
+    }
+
+    res.json({ message: 'Total remaining beds calculated successfully.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
