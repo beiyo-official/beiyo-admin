@@ -141,6 +141,7 @@ const RoomList = () => {
       await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}/updateRemainingBeds`, { remainingBeds });
       // Update  state after successful update
       setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? { ...room, remainingCapacity: remainingBeds } : room));
+      axios.get(`https://beiyo-admin.vercel.app/api/hostels/calculateTotalRemainingBeds`);
     } catch (error) {
       console.error('Error updating remaining beds:', error);
     }

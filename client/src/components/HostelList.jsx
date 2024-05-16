@@ -39,7 +39,7 @@ const HostelList = () => {
       <ul>
         {hostels.map(hostel => (
           <li key={hostel._id}>
-            {hostel.name} - {hostel.location} 
+            {hostel.name} - {hostel.location} - {hostel.totalRemainingBeds}
             <button onClick={() => handleEdit(hostel)}>Edit</button>
           </li>
         ))}
