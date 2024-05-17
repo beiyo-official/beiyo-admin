@@ -47,6 +47,18 @@ router.post('/', async (req, res) => {
   const hostel = new Hostel({
     name: req.body.name,
     location: req.body.location,
+    locationLink:req.body.locationLink,
+    price:req.body.price,
+    image:req.body.image,
+    image2:req.body.image2,
+    image3:req.body.image3,
+    single:req.body.single,
+    singlePrice:req.body.singlePrice,
+    doubleprice:req.body.doubleprice,
+    tripleprice:req.body.tripleprice,
+    nearby1:req.body.nearby1,
+    nearby2:req.body.nearby2,
+    nearby3:req.body.nearby3,
   });
 
   try {
@@ -64,6 +76,42 @@ router.patch('/:id', getHostel, async (req, res) => {
   }
   if (req.body.location != null) {
     res.hostel.location = req.body.location;
+  }
+  if (req.body.locationLink != null) {
+    res.hostel.locationLink = req.body.locationLink;
+  }
+  if (req.body.price != null) {
+    res.hostel.price = req.body.price;
+  }
+  if (req.body.image != null) {
+    res.hostel.image = req.body.image;
+  }
+  if (req.body.image2 != null) {
+    res.hostel.image2 = req.body.image2;
+  }
+  if (req.body.image3 != null) {
+    res.hostel.image3 = req.body.image3;
+  }
+  if (req.body.single != null) {
+    res.hostel.single = req.body.single;
+  }
+  if (req.body.singlePrice != null) {
+    res.hostel.singlePrice = req.body.singlePrice;
+  }
+  if (req.body.doubleprice != null) {
+    res.hostel.doubleprice = req.body.doubleprice;
+  }
+  if (req.body.tripleprice != null) {
+    res.hostel.tripleprice = req.body.tripleprice;
+  }
+  if (req.body.nearby1 != null) {
+    res.hostel.nearby1 = req.body.nearby1;
+  }
+  if (req.body.nearby2 != null) {
+    res.hostel.nearby2 = req.body.nearby2;
+  }
+  if (req.body.nearby3 != null) {
+    res.hostel.nearby3 = req.body.nearby3;
   }
   try {
     const updatedHostel = await res.hostel.save();
