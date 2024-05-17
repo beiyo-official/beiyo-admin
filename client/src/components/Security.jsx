@@ -6,7 +6,7 @@ const Security = () => {
     const navigate = useNavigate(); // useNavigate hook from react-router-dom for navigation
 
     const handleSubmit = () => {
-        if(password === 'beiyo123@'){
+        if(password === 'onlyvirgins'){
             navigate('/dashboard');
         } else {
             navigate('/nikalbsdk');
