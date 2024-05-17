@@ -22,7 +22,7 @@ image3:{
     type:   String,
 },
 single:{
-  type:String,
+  type:boolean,
 },
 singlePrice:{
   type:String,

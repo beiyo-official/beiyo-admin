@@ -11,7 +11,7 @@ const HostelForm = ({ hostel, onSubmit }) => {
   const [image, setimage] = useState(hostel ? hostel.image : '');
   const [image2, setimage2] = useState(hostel ? hostel.image2 : '');
   const [image3, setimage3] = useState(hostel ? hostel.image3 : '');
-  const [single, setsingle] = useState(hostel ? hostel.single : '');
+  const [single, setsingle] = useState(hostel ? hostel.single : false);
   const [singlePrice, setsinglePrice] = useState(hostel ? hostel.singlePrice : '');
   const [ doubleprice, setdoubleprice] = useState(hostel ? hostel.doubleprice : '');
   const [tripleprice, settripleprice] = useState(hostel ? hostel.tripleprice : '');
@@ -84,7 +84,11 @@ const HostelForm = ({ hostel, onSubmit }) => {
         </label>
         <label>
           single:
-          <input type="text" value={single} onChange={(e) => setsingle(e.target.value)} />
+          <select  name="" id="" onChange={(e) => setsingle(e.target.value)}>
+            <option type value={single}>true</option>
+            <option value={single}>false</option>
+          </select>
+          
         </label>
         <label>
           singlePrice:
