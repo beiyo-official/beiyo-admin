@@ -2,6 +2,7 @@
 const hostelRoutes = require('./routes/hostelRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
+const Bed = require('./routes/Bed')
 const { connectDB } = require('./db');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -24,6 +25,7 @@ app.get("/", (req,res)=>{
 
 app.use('/api/hostels', hostelRoutes);
 app.use('/api/rooms', roomRoutes);
+app.use('/api/beds',Bed)
 app.use('/api/inventory', inventoryRoutes);
 
 // Start the server

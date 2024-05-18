@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const Bed = require('../models/Bed');
+const Beds = require('../models/Beds');
 const Room = require('../models/Room');
 
 // Add a new bed to a room
 router.post('/rooms/:roomId/beds', async (req, res) => {
   const { roomId } = req.params;
-  const { isEmpty, charge, availableFrom, paymentStatus, duration, dueDate } = req.body;
+//   const { isEmpty, charge, availableFrom, paymentStatus, duration, dueDate } = req.body;
 
   try {
     const room = await Room.findById(roomId);
@@ -14,13 +14,13 @@ router.post('/rooms/:roomId/beds', async (req, res) => {
       return res.status(404).json({ error: 'Room not found' });
     }
 
-    if (room.beds.length >= room.capacity) {
-      return res.status(400).json({ error: 'Cannot add more beds than room capacity' });
-    }
+    // if (room.beds.length >= room.capacity) {
+    //   return res.status(400).json({ error: 'Cannot add more beds than room capacity' });
+    // }
 
     const beds = [];
-    for (let i = 1; i <= capacity; i++) {
-      const bed = new Bed({ roomId: room._id, bedNumber: `Bed ${i}` });
+    for (let i = 1; i <= room.capacity; i++) {
+      const bed = new Beds({ roomId: room._id, bedNumber: `Bed ${i}` });
       await bed.save();
       beds.push(bed._id);
     }
@@ -49,7 +49,7 @@ router.get('/rooms/:roomId/beds', async (req, res) => {
   const { roomId } = req.params;
 
   try {
-    const beds = await Bed.find({ roomId });
+    const beds = await Beds.find({ roomId });
     res.json(beds);
   } catch (error) {
     console.error('Error fetching beds:', error);
@@ -63,7 +63,7 @@ router.patch('/beds/:bedId', async (req, res) => {
   const updates = req.body;
 
   try {
-    const bed = await Bed.findByIdAndUpdate(bedId, updates, { new: true });
+    const bed = await Beds.findByIdAndUpdate(bedId, updates, { new: true });
     if (!bed) {
       return res.status(404).json({ error: 'Bed not found' });
     }
@@ -79,7 +79,7 @@ router.delete('/beds/:bedId', async (req, res) => {
   const { bedId } = req.params;
 
   try {
-    const bed = await Bed.findByIdAndDelete(bedId);
+    const bed = await Beds.findByIdAndDelete(bedId);
     if (!bed) {
       return res.status(404).json({ error: 'Bed not found' });
     }

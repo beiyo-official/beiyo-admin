@@ -4,15 +4,16 @@ const mongoose = require('mongoose');
 
 const bedSchema = new mongoose.Schema({
   roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
+  bedNumber:{type:String,},
   isEmpty: { type: Boolean, default: true },
-  charge: { type: Number, required: true },
-  availableFrom: { type: Date, required: true },
+  charge: { type: Number,  },
+  availableFrom: { type: Date,},
   paymentStatus: { type: String, enum: ['pending', 'paid', 'overdue'], default: 'pending' },
-  duration: { type: String, required: true }, // e.g., 'monthly', 'weekly'
-  dueDate: { type: Date, required: true },
+  duration: { type: String,  }, // e.g., 'monthly', 'weekly'
+  dueDate: { type: Date,},
   // Add other fields as needed
 });
 
-const Bed = mongoose.model('Bed', bedSchema);
+const Beds = mongoose.model('Beds', bedSchema);
 
-module.exports = Bed;
+module.exports = Beds;
