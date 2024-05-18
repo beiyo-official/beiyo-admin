@@ -214,7 +214,7 @@ const RoomList = () => {
       <ul>
         {filteredRooms.map(room => (
           <li key={room._id} style={{ backgroundColor: room.remainingCapacity === 0 ? 'green' : room.remainingCapacity === room.capacity ? 'red' : 'grey' }}>
-             {hostels.find(hostel => hostel._id === room.hostelId).name} - {room.roomNumber} - Capacity: {room.capacity} - Remaining Beds: {room.remainingCapacity} - Price: {room.price}
+             {hostels.find(hostel => hostel._id === room.hostelId).name} - <a href={`/rooms/${room._id}/beds`}> {room.roomNumber}</a> - Capacity: {room.capacity} - Remaining Beds: {room.remainingCapacity} - Price: {room.price}
              <select value={room.remainingCapacity} onChange={(e) => handleRemainingBedsChange(room._id, parseInt(e.target.value))}>
               {[...Array(room.capacity + 1).keys()].map(num => (
                 <option key={num} value={num}>{num}</option>

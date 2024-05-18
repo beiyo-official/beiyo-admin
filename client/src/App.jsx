@@ -9,6 +9,7 @@ import InventoryList from './components/InventoryList';
 import Dashboard from './components/DashBoard';
 import Bsdk from './components/Bsdk';
 import Security from './components/Security';
+import BedList from './components/BedList';
 // import Homepage from './pages/Homepage';
 // import About from './pages/About';
 // import Hostel from './pages/Hostel';
@@ -34,6 +35,7 @@ function App() {
     <div id='main'>
   <Router>
          <Routes>
+         <Route path="/rooms/:roomId/beds" exact element={ <BedList/>} />
          <Route path="/" exact element={<Security />} />
          <Route path="/dashboard" exact element={<Dashboard />} />
          <Route path="/hostels" exact element={<HostelList />} />

@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const bedSchema = new mongoose.Schema({
   roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
   bedNumber:{type:String,},
-  isEmpty: { type: Boolean, default: true },
+  isEmpty: { type: Boolean, },
   charge: { type: Number,  },
   availableFrom: { type: Date,},
   paymentStatus: { type: String, enum: ['pending', 'paid', 'overdue'], default: 'pending' },
