@@ -124,8 +124,19 @@ router.patch('/:id/updateRemainingBeds', getRoom, async (req, res) => {
   }
 });
 
-
-
+// getting single room
+router.get("/api/rooms/:id",async(req,res)=>{
+  try{
+   const room = await Room.findById(req.params.id);  
+   if(!room){
+     alert("no room are available");
+   }
+   res.json(hostel);
+  }catch(error){
+   console.error('Error fetching ', error);
+   res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 // Delete a room
 router.delete('/delete/:id', getRoom, async (req, res) => {
   try {
