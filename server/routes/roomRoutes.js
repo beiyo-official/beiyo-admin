@@ -64,16 +64,6 @@ router.post('/', async (req, res) => {
   try {
     const newRoom = await room.save();
     res.status(201).json(newRoom);
-    const beds = [];
-    for (let i = 1; i <= capacity; i++) {
-      const bed = new Bed({ roomId: room._id, bedNumber: `Bed ${i}` });
-      await bed.save();
-      beds.push(bed._id);
-    }
-
-    // Update room with created beds
-    room.beds = beds;
-    await room.save();
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

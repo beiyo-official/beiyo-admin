@@ -18,14 +18,26 @@ router.post('/rooms/:roomId/beds', async (req, res) => {
       return res.status(400).json({ error: 'Cannot add more beds than room capacity' });
     }
 
-    const bed = new Bed({ roomId, isEmpty, charge, availableFrom, paymentStatus, duration, dueDate });
-    await bed.save();
+    const beds = [];
+    for (let i = 1; i <= capacity; i++) {
+      const bed = new Bed({ roomId: room._id, bedNumber: `Bed ${i}` });
+      await bed.save();
+      beds.push(bed._id);
+    }
 
-    room.beds.push(bed._id);
-    room.remainingCapacity -= 1;
+    // Update room with created beds
+    room.beds = beds;
     await room.save();
 
-    res.status(201).json(bed);
+
+    // const bed = new Bed({ roomId, isEmpty, charge, availableFrom, paymentStatus, duration, dueDate });
+    // await bed.save();
+
+    // room.beds.push(bed._id);
+    // room.remainingCapacity -= 1;
+    // await room.save();
+
+    res.status(201).json(beds);
   } catch (error) {
     console.error('Error adding bed:', error);
     res.status(500).json({ error: 'Internal Server Error' });
