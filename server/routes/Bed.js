@@ -27,19 +27,27 @@ router.get('/:bedId',async(req,res)=>{
   }
 })
 // Update bed details
-router.patch('/:bedId', async (req, res) => {
-  const { bedId } = req.params;
-  const updates = req.body;
-
+router.patch('/:id', getBed, async (req, res) => {
+  if (req.body.bedNumber != null) {
+    res.bed.bedNumber = req.body.bedNumber;
+  }
+  if (req.body.charge != null) {
+    res.bed.charge = req.body.charge;
+  }
+  if (req.body.paymentStatus != null) {
+    res.bed.paymentStatus = req.body.paymentStatus;
+  }
+  if (req.body.dueDate != null) {
+    res.bed.dueDate = req.body.dueDate;
+  }
+  if (req.body.availableFrom != null) {
+    res.bed.availableFrom = req.body.availableFrom;
+  }
   try {
-    const bed = await Beds.findByIdAndUpdate(bedId, updates, { new: true });
-    if (!bed) {
-      return res.status(404).json({ error: 'Bed not found' });
-    }
-    res.json(bed);
-  } catch (error) {
-    console.error('Error updating bed:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    const updatedBed = await res.bed.save();
+    res.json(updatedBed);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
@@ -64,5 +72,18 @@ router.delete('/:bedId', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+async function getBed(req, res, next) {
+  let bed;
+  try {
+    bed = await Bed.findById(req.params.id);
+    if (bed == null) {
+      return res.status(404).json({ message: 'Bed not found' });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+  res.bed = bed;
+  next();
+}
 
 module.exports = router;
