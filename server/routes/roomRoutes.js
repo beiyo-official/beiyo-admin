@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const Room = require('../models/Room');
-const Bed = require('../models/Beds');
+const Beds = require('../models/Beds');
 // Get all rooms
 router.get('/', async (req, res) => {
   try {
@@ -64,6 +64,18 @@ router.post('/', async (req, res) => {
   try {
     const newRoom = await room.save();
     res.status(201).json(newRoom);
+    const beds = [];
+    for (let i = 1; i <= capacity; i++) {
+      const bed = new Beds({ roomId: room._id, bedNumber: `Bed ${i}` });
+      await bed.save();
+      beds.push(bed._id);
+    }
+
+    // Update room with created beds
+    room.beds = beds;
+    await room.save();
+
+    res.status(201).json(room);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

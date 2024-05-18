@@ -20,7 +20,7 @@ router.post('/rooms/:roomId/beds', async (req, res) => {
 
     const beds = [];
     for (let i = 1; i <= room.capacity; i++) {
-      const bed = new Beds({ roomId: room._id, bedNumber: `Bed ${i}` });
+      const bed = new Beds({ roomId: room._id, bedNumber: `Bed ${i}`,roomNumber: room.roomNumber });
       await bed.save();
       beds.push(bed._id);
     }

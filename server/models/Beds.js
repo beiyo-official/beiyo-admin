@@ -11,6 +11,7 @@ const bedSchema = new mongoose.Schema({
   paymentStatus: { type: String, enum: ['pending', 'paid', 'overdue'], default: 'pending' },
   duration: { type: String,  }, // e.g., 'monthly', 'weekly'
   dueDate: { type: Date,},
+  roomNumber:{type:String}
   // Add other fields as needed
 });
 
