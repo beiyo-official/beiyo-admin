@@ -37,11 +37,11 @@ function App() {
          <Routes>
          <Route path="/rooms/:roomId/beds" exact element={<BedList/>} />
          <Route path="/" exact element={<Security />} />
-         <Route path="/dashboard" exact element={<Dashboard />} />
-         <Route path="/hostels" exact element={<HostelList />} />
-          <Route path="/rooms" exact element={<RoomList />} />
-          <Route path='/inventory' exact element={ <InventoryList />}/>
-          <Route path='/nikalbsdk' exact element={ <Bsdk />}/>
+         <Route path="/dashboard" exact element={<Dashboard/>} />
+         <Route path="/hostels" exact element={<HostelList/>} />
+          <Route path="/rooms" exact element={<RoomList/>} />
+          <Route path='/inventory' exact element={ <InventoryList/>}/>
+          <Route path='/nikalbsdk' exact element={ <Bsdk/>}/>
          </Routes>
   </Router>
     </div>
