@@ -35,7 +35,7 @@ function App() {
     <div id='main'>
   <Router>
          <Routes>
-         <Route path="/rooms/:roomId/beds" exact element={ <BedList/>} />
+         <Route path="/rooms/:roomId/beds" exact element={<BedList/>} />
          <Route path="/" exact element={<Security />} />
          <Route path="/dashboard" exact element={<Dashboard />} />
          <Route path="/hostels" exact element={<HostelList />} />

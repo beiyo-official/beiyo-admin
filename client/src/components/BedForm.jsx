@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const BedForm = ({ bedId, onSubmit }) => {
-  // const [isEmpty, setIsEmpty] = useState(false);
   const [charge, setCharge] = useState('');
   const [availableFrom, setAvailableFrom] = useState('');
-  const [paymentStatus, setPaymentStatus] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState(''); // Default to empty string to avoid uncontrolled issues
   const [duration, setDuration] = useState('');
   const [dueDate, setDueDate] = useState('');
 
@@ -14,11 +13,12 @@ const BedForm = ({ bedId, onSubmit }) => {
       axios.get(`https://beiyo-admin.vercel.app/api/beds/${bedId}`)
         .then(response => {
           const bed = response.data;
-          setCharge(bed.charge || ''); // Handle potential undefined values
-          setAvailableFrom(bed.availableFrom || ''); // Handle potential undefined values
-          setPaymentStatus(bed.paymentStatus || ''); // Handle potential undefined values
-          setDuration(bed.duration || ''); // Handle potential undefined values
-          setDueDate(bed.dueDate || ''); // Handle potential undefined values
+          // Set state with fetched bed details, handling potential undefined values
+          setCharge(bed.charge || '');
+          setAvailableFrom(bed.availableFrom ? bed.availableFrom.split('T')[0] : ''); // Format date if available
+          setPaymentStatus(bed.paymentStatus || ''); // Default to empty string
+          setDuration(bed.duration || '');
+          setDueDate(bed.dueDate ? bed.dueDate.split('T')[0] : ''); // Format date if available
         })
         .catch(error => {
           console.error('Error fetching bed details:', error);
@@ -37,7 +37,7 @@ const BedForm = ({ bedId, onSubmit }) => {
     };
     try {
       await axios.patch(`https://beiyo-admin.vercel.app/api/beds/${bedId}`, data);
-      onSubmit();
+      onSubmit(); // Trigger parent component to update bed list
     } catch (error) {
       console.error('Error updating bed details:', error);
     }
@@ -49,27 +49,48 @@ const BedForm = ({ bedId, onSubmit }) => {
       <form onSubmit={handleSubmit}>
         <label>
           Charge:
-          <input type="number" value={charge} onChange={(e) => setCharge(e.target.value)} />
+          <input
+            type="number"
+            value={charge}
+            onChange={(e) => setCharge(e.target.value)}
+          />
         </label>
         <label>
           Available From:
-          <input type="date" value={availableFrom} onChange={(e) => setAvailableFrom(e.target.value)} />
+          <input
+            type="date"
+            value={availableFrom}
+            onChange={(e) => setAvailableFrom(e.target.value)}
+          />
         </label>
         <label>
           Payment Status:
-          <select name="" id="" value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value)}>
-            <option value='pending' >Pending</option>
-            <option value='paid' >Paid</option>
-            <option value='overdue' >Overdue</option>
+          <select
+            value={paymentStatus}
+            onChange={(e) => setPaymentStatus(e.target.value)}
+            required
+          >
+            <option value='' disabled>Select Status</option>
+            <option value='pending'>Pending</option>
+            <option value='paid'>Paid</option>
+            <option value='overdue'>Overdue</option>
           </select>
         </label>
         <label>
           Duration:
-          <input type="text" value={duration} onChange={(e) => setDuration(e.target.value)} />
+          <input
+            type="text"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+          />
         </label>
         <label>
           Due Date:
-          <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+          />
         </label>
         <button type="submit">Update</button>
       </form>
