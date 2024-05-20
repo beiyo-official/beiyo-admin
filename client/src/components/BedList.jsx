@@ -59,6 +59,7 @@ const BedList = () => {
           {beds.map(bed => (
             <li key={bed._id} style={{ backgroundColor: getColorisEmpty(bed.isEmpty) }}>
               <p>Bed Number: {bed.bedNumber}</p>
+              <p>Living Person: {bed.name}</p>
               <p>Charge: {bed.charge}</p>
               <p style={{ backgroundColor: getColor(bed.paymentStatus) }}>Status: {bed.paymentStatus}</p>
               <p>Due Date: {new Date(bed.dueDate).toLocaleDateString()}</p>

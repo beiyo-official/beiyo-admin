@@ -1,3 +1,4 @@
+import { UserButton, UserProfile } from '@clerk/clerk-react';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
@@ -15,6 +16,8 @@ const Security = () => {
 
     return (
         <div>
+             <UserButton /> 
+            
             <h1>Enter the PassKey</h1>
             <label>
                 PassKey:

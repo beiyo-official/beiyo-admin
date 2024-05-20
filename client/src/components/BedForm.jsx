@@ -7,6 +7,7 @@ const BedForm = ({ bedId, onSubmit }) => {
   const [paymentStatus, setPaymentStatus] = useState(''); // Default to empty string to avoid uncontrolled issues
   const [duration, setDuration] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [name,setName] = useState('');
 
   useEffect(() => {
     if (bedId) {
@@ -14,6 +15,7 @@ const BedForm = ({ bedId, onSubmit }) => {
         .then(response => {
           const bed = response.data;
           // Set state with fetched bed details, handling potential undefined values
+          setName(name||'');
           setCharge(bed.charge || '');
           setAvailableFrom(bed.availableFrom ? bed.availableFrom.split('T')[0] : ''); // Format date if available
           setPaymentStatus(bed.paymentStatus || ''); // Default to empty string
@@ -33,7 +35,8 @@ const BedForm = ({ bedId, onSubmit }) => {
       availableFrom,
       paymentStatus,
       duration,
-      dueDate
+      dueDate,
+      name
     };
     try {
       await axios.patch(`https://beiyo-admin.vercel.app/api/beds/${bedId}`, data);
@@ -47,6 +50,13 @@ const BedForm = ({ bedId, onSubmit }) => {
     <div>
       <h2>Update Bed Details</h2>
       <form onSubmit={handleSubmit}>
+        <label >
+          Living Person:
+          <input type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          />
+        </label>
         <label>
           Charge:
           <input
