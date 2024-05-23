@@ -91,6 +91,12 @@ router.patch('/:id', getRoom, async (req, res) => {
   if (req.body.capacity != null) {
     res.room.capacity = req.body.capacity;
   }
+  if(req.body.status != null){
+    res.room.status = req.body.status;
+  }
+  if(req.body.lastCleanedAt != null){
+    res.room.lastCleanedAt = req.body.lastCleanedAt;
+  }
   try {
     const updatedRoom = await res.room.save();
     res.json(updatedRoom);

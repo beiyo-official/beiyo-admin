@@ -14,6 +14,13 @@ const roomSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  lastCleanedAt:{
+     type: Date,
+    required: true
+  },
+  status:{
+    type: String,
+  },
   beds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bed' }]
   // Represents the remaining capacity of the room
   // Add more fields as needed
