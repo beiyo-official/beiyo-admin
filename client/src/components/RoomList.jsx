@@ -7,6 +7,7 @@ import RoomForm from './RoomForm';
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);
   const [hostels, setHostels] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [priceFilter, setPriceFilter] = useState('all');
   const [sortByPrice,setSortByPrice] = useState('all');
   const [filteredRooms, setFilteredRooms] = useState([]);
@@ -146,12 +147,27 @@ const RoomList = () => {
       console.error('Error updating remaining beds:', error);
     }
   }
- 
+  const handleSearch = () => {
+    
+    const filtered = rooms.filter(room =>
+      room.hostel.toLowerCase().startsWith(searchQuery.toLowerCase())
+    );
+    setFilteredRooms(filtered);
+  };
 
   return (
     <div>
       <h2>Rooms</h2>
       <div>
+      <div>
+        <input
+          type="text"
+          placeholder="Search by hostel name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button onClick={handleSearch}>Search</button>
+      </div>
         <label>
           Availability:
           <select name="availability" value={filterOptions.availability} onChange={handleFilterChange}>

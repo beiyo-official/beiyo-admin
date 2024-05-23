@@ -8,10 +8,13 @@ const BedList = () => {
   const [beds, setBeds] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBedId, setSelectedBedId] = useState(null);
+  const [room,setroom] = useState(null);
 
   useEffect(() => {
     fetchBeds();
   }, [roomId]);
+
+
 
   const fetchBeds = async () => {
     try {
