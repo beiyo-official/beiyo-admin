@@ -7,7 +7,7 @@ const Beds = require('../models/Beds');
 // Get all rooms
 router.get('/', async (req, res) => {
   try {
-    const rooms = await Room.find().sort({hostel:1},{roomNumber:1});
+    const rooms = await Room.find().sort({hostel:1}&&{roomNumber:1});
     res.json(rooms);
   } catch (err) {
     res.status(500).json({ message: err.message });
