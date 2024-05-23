@@ -17,6 +17,7 @@ const RoomList = () => {
     capacity: 'all',
     hostel: 'all',
   });
+
   const [editingRoom, setEditingRoom] = useState(null);
 
   useEffect(() => {
@@ -147,12 +148,25 @@ const RoomList = () => {
       console.error('Error updating remaining beds:', error);
     }
   }
+  const handleCleaning = async (roomId, status, lastCleanedAt) => {
+    try {
+      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}`, { status, lastCleanedAt });
+      setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? { ...room, status, lastCleanedAt } : room));
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+  }
   const handleSearch = () => {
     
     const filtered = rooms.filter(room =>
       room.hostel.toLowerCase().startsWith(searchQuery.toLowerCase())
     );
     setFilteredRooms(filtered);
+  };
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   return (
@@ -230,14 +244,20 @@ const RoomList = () => {
       <ul>
         {filteredRooms.map(room => (
           <li key={room._id} style={{ backgroundColor: room.remainingCapacity === 0 ? 'green' : room.remainingCapacity === room.capacity ? 'red' : 'grey' }}>
-             {hostels.find(hostel => hostel._id === room.hostelId).name} - <a href={`/rooms/${room._id}/beds`}> {room.roomNumber}</a> - Capacity: {room.capacity} - Remaining Beds: {room.remainingCapacity} - Price: {room.price}
+             {hostels.find(hostel => hostel._id === room.hostelId).name} - <a href={`/rooms/${room._id}/beds`}> {room.roomNumber}</a> - Capacity: {room.capacity} - Remaining Beds: {room.remainingCapacity} - Price: {room.price} - {room.status}
              <select value={room.remainingCapacity} onChange={(e) => handleRemainingBedsChange(room._id, parseInt(e.target.value))}>
               {[...Array(room.capacity + 1).keys()].map(num => (
                 <option key={num} value={num}>{num}</option>
               ))}
             </select>
             {/* <button onClick={() => handleDelete(room._id)}>Delete</button> */}
+            <select value={room.status} onChange={(e) => handleCleaning(room._id, e.target.value, new Date().toISOString())}>
+              <option value="clean">Clean</option>
+              <option value="dirty">Dirty</option>
+            </select>
+            Last Cleaned At: <span>{formatDate(room.lastCleanedAt)}</span>
           </li>
+        
         ))}
       </ul>
       {editingRoom && <RoomForm room={editingRoom} hostels={hostels} onSubmit={handleFormSubmit} />}
