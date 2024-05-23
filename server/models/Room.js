@@ -21,7 +21,11 @@ const roomSchema = new mongoose.Schema({
   status:{
     type: String,
   },
-  beds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bed' }]
+  beds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bed' }],
+  lastUpdatedBy:{
+    type: String,
+  }
+  
   // Represents the remaining capacity of the room
   // Add more fields as needed
 });
