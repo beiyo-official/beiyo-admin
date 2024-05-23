@@ -97,9 +97,9 @@ router.patch('/:id', getRoom, async (req, res) => {
   if(req.body.lastCleanedAt != null){
     res.room.lastCleanedAt = req.body.lastCleanedAt;
   }
-  if(req.body.lastUpdatedBy != null){
+  
     res.room.lastUpdatedBy = req.body.lastUpdatedBy;
-  }
+  
   try {
     const updatedRoom = await res.room.save();
     res.json(updatedRoom);
@@ -124,7 +124,7 @@ router.patch('/:id/updateCapacity', getRoom, async (req, res) => {
 });
 
 router.patch('/:id/updateRemainingBeds', getRoom, async (req, res) => {
-  const { remainingBeds,lastUpdatedBy } = req.body;
+  const { remainingBeds, lastUpdatedBy } = req.body;
   if (remainingBeds == null || isNaN(remainingBeds) || remainingBeds < 0 || remainingBeds > res.room.capacity) {
     return res.status(400).json({ message: 'Invalid remaining beds' });
   }
