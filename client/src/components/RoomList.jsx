@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import RoomForm from './RoomForm';
+import { useUser } from '@clerk/clerk-react';
 
 const RoomList = () => {
+  const { user } =  useUser();
   const [rooms, setRooms] = useState([]);
   const [hostels, setHostels] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -140,18 +142,32 @@ const RoomList = () => {
   };
   const handleRemainingBedsChange = async (roomId, remainingBeds) => {
     try {
-      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}/updateRemainingBeds`, { remainingBeds });
-      // Update  state after successful update
-      setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? { ...room, remainingCapacity: remainingBeds } : room));
-      axios.get(`https://beiyo-admin.vercel.app/api/hostels/calculateTotalRemainingBeds`);
+      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}/updateRemainingBeds`, {
+        remainingBeds,
+        lastUpdatedBy: user?.email,
+      });
+      setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? {
+        ...room,
+        remainingCapacity: remainingBeds,
+        lastUpdatedBy: user?.email
+      } : room));
     } catch (error) {
       console.error('Error updating remaining beds:', error);
     }
   }
   const handleCleaning = async (roomId, status, lastCleanedAt) => {
     try {
-      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}`, { status, lastCleanedAt });
-      setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? { ...room, status, lastCleanedAt } : room));
+      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}`, {
+        status,
+        lastCleanedAt,
+        lastUpdatedBy: user?.email,
+      });
+      setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? {
+        ...room,
+        status,
+        lastCleanedAt,
+        lastUpdatedBy: user?.email
+      } : room));
     } catch (error) {
       console.error('Error updating status:', error);
     }
@@ -172,6 +188,7 @@ const RoomList = () => {
   return (
     <div>
       <h2>Rooms</h2>
+      <p>LastUpdated By - {rooms.lastUpdatedBy}</p>
       <div>
       <div>
         <input
