@@ -189,7 +189,7 @@ const RoomList = () => {
     <div>
       <h2>Rooms</h2>
       <p>LastUpdated By - {rooms.lastUpdatedBy}</p>
-      <div>
+      <div style={{display:'flex', flexWrap:'wrap',gap:'1rem'}}>
       <div>
         <input
           type="text"
