@@ -11,11 +11,14 @@ const cors = require('cors');
 const { config } = require('dotenv');
 const app = express();
 const PORT = process.env.PORT || 5000;
+const cron = require('node-cron');
+const {updateRoomStatuses} = require('./path/to/cron/job');
 config();
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
 connectDB();
+updateRoomStatuses();
 
 
 // Routes
