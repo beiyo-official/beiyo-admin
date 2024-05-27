@@ -351,9 +351,10 @@ const RoomList = () => {
                 >
                   {room.status === 'clean' ? 'Mark as Dirty' : 'Mark as Clean'}
                 </Button>
+                <a style={{color:'white'}} href={`/rooms/${room._id}/beds`}>
                <Button    variant="contained"
                   color="secondary"
-                  sx={{ mt: 1 }} > <Link style={{color:'white'}} to={`/rooms/${room._id}/beds`}>See Beds</Link></Button>
+                  sx={{ mt: 1 }} > See Beds</Button></a>
               </Box>
             </Grid>
           ))}

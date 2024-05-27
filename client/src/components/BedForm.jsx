@@ -1,28 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  MenuItem,
+  Grid,
+  CssBaseline,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from '@mui/material';
 
-const BedForm = ({ bedId, onSubmit }) => {
+const BedForm = ({ bedId, onSubmit  }) => {
   const [charge, setCharge] = useState('');
   const [availableFrom, setAvailableFrom] = useState('');
-  const [paymentStatus, setPaymentStatus] = useState(''); // Default to empty string to avoid uncontrolled issues
+  const [paymentStatus, setPaymentStatus] = useState('');
   const [duration, setDuration] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [name,setName] = useState('');
+  const [name, setName] = useState('');
+  const [open,setOpen] = useState(true);
 
   useEffect(() => {
     if (bedId) {
-      axios.get(`https://beiyo-admin.vercel.app/api/beds/${bedId}`)
-        .then(response => {
+      axios
+        .get(`https://beiyo-admin.vercel.app/api/beds/${bedId}`)
+        .then((response) => {
           const bed = response.data;
-          // Set state with fetched bed details, handling potential undefined values
-          setName(name||'');
+          setName(bed.name || '');
           setCharge(bed.charge || '');
-          setAvailableFrom(bed.availableFrom ? bed.availableFrom.split('T')[0] : ''); // Format date if available
-          setPaymentStatus(bed.paymentStatus || ''); // Default to empty string
+          setAvailableFrom(bed.availableFrom ? bed.availableFrom.split('T')[0] : '');
+          setPaymentStatus(bed.paymentStatus || '');
           setDuration(bed.duration || '');
-          setDueDate(bed.dueDate ? bed.dueDate.split('T')[0] : ''); // Format date if available
+          setDueDate(bed.dueDate ? bed.dueDate.split('T')[0] : '');
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error fetching bed details:', error);
         });
     }
@@ -37,75 +51,104 @@ const BedForm = ({ bedId, onSubmit }) => {
       duration,
       dueDate,
       name,
-      // advancePayment
     };
     try {
       await axios.patch(`https://beiyo-admin.vercel.app/api/beds/${bedId}`, data);
-      onSubmit(); // Trigger parent component to update bed list
+      onSubmit();
     } catch (error) {
       console.error('Error updating bed details:', error);
     }
   };
 
+
   return (
-    <div>
-      <h2>Update Bed Details</h2>
-      <form onSubmit={handleSubmit}>
-        <label >
-          Living Person:
-          <input type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          />
-        </label>
-        <label>
-          Charge:
-          <input
-            type="number"
-            value={charge}
-            onChange={(e) => setCharge(e.target.value)}
-          />
-        </label>
-        <label>
-          Available From:
-          <input
-            type="date"
-            value={availableFrom}
-            onChange={(e) => setAvailableFrom(e.target.value)}
-          />
-        </label>
-        <label>
-          Payment Status:
-          <select
-            value={paymentStatus}
-            onChange={(e) => setPaymentStatus(e.target.value)}
-            required
-          >
-            <option value='' disabled>Select Status</option>
-            <option value='pending'>Pending</option>
-            <option value='paid'>Paid</option>
-            <option value='overdue'>Overdue</option>
-          </select>
-        </label>
-        <label>
-          Duration:
-          <input
-            type="text"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-          />
-        </label>
-        <label>
-          Due Date:
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-          />
-        </label>
-        <button type="submit">Update</button>
-      </form>
-    </div>
+    <Dialog open={open} >
+      <CssBaseline />
+      <DialogTitle>Update Bed Details</DialogTitle>
+      <DialogContent>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Living Person"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Deposit"
+                type="number"
+                value={charge}
+                onChange={(e) => setCharge(e.target.value)}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Available From"
+                type="date"
+                value={availableFrom}
+                onChange={(e) => setAvailableFrom(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                select
+                label="Payment Status"
+                value={paymentStatus}
+                onChange={(e) => setPaymentStatus(e.target.value)}
+                variant="outlined"
+              >
+                <MenuItem value="" disabled>
+                  Select Status
+                </MenuItem>
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="paid">Paid</MenuItem>
+                <MenuItem value="overdue">Overdue</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Duration"
+                value={duration}
+                onChange={(e) => setDuration(e.target.value)}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Due Date"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+          <DialogActions sx={{ mt: 2 }}>
+            <Button onClick={()=>{
+              setOpen(false);
+            }} color="primary">
+              Cancel
+            </Button>
+            <Button type="submit" color="primary" variant="contained">
+              Update
+            </Button>
+          </DialogActions>
+        </Box>
+      </DialogContent>
+    </Dialog>
   );
 };
 
