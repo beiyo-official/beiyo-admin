@@ -37,7 +37,7 @@ const BedForm = ({ bedId, onSubmit }) => {
       duration,
       dueDate,
       name,
-      advancePayment
+      // advancePayment
     };
     try {
       await axios.patch(`https://beiyo-admin.vercel.app/api/beds/${bedId}`, data);

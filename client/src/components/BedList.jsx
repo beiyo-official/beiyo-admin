@@ -78,3 +78,6 @@ const BedList = () => {
 };
 
 export default BedList;
+
+
+

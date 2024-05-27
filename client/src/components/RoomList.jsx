@@ -1,17 +1,18 @@
-// src/components/RoomList.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import RoomForm from './RoomForm';
+import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { useUser } from '@clerk/clerk-react';
+import UpdateBedsForm from './UpdateBedsForm';
+import { Link, Navigate } from 'react-router-dom';
 
 const RoomList = () => {
-  const { user } =  useUser();
+  const { user } = useUser();
   const [rooms, setRooms] = useState([]);
   const [hostels, setHostels] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [priceFilter, setPriceFilter] = useState('all');
-  const [sortByPrice,setSortByPrice] = useState('all');
+  const [sortByPrice, setSortByPrice] = useState('all');
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [filterOptions, setFilterOptions] = useState({
     availability: 'all',
@@ -19,15 +20,27 @@ const RoomList = () => {
     capacity: 'all',
     hostel: 'all',
   });
+  const [isUpdateBedsFormOpen, setIsUpdateBedsFormOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [openForm, setOpenForm] = useState(false);
 
-  const [editingRoom, setEditingRoom] = useState(null);
+  const handleUpdateBedsSubmit = () => {
+    // Handle beds update submission (e.g., refetch data)
+    setIsUpdateBedsFormOpen(false);
+    axios.get('https://beiyo-admin.vercel.app/api/rooms')
+    .then(response => {
+      setRooms(response.data);
+      setFilteredRooms(response.data);
+    })
+    .catch(error => {
+      console.error('Error fetching rooms:', error);
+    });
+  };
 
   useEffect(() => {
     let filtered = rooms.filter(room => {
       let match = true;
-      // Your existing filtering logic...
-  
-      // Check if the room price falls within the selected price range
+
       if (priceFilter !== 'all') {
         switch (priceFilter) {
           case 'less-than-3000':
@@ -49,15 +62,13 @@ const RoomList = () => {
             match = room.price > 5000;
             break;
           default:
-            // No price filter applied
             break;
         }
       }
-  
+
       return match;
     });
-  
-    // Sort the filtered rooms based on the selected price filter
+
     switch (sortByPrice) {
       case 'low-to-high':
         filtered.sort((a, b) => a.price - b.price);
@@ -66,14 +77,11 @@ const RoomList = () => {
         filtered.sort((a, b) => b.price - a.price);
         break;
       default:
-        // No price sorting needed
         break;
     }
-  
-    setFilteredRooms(filtered);
-  }, [rooms, filterOptions, priceFilter,sortByPrice]);
-  
 
+    setFilteredRooms(filtered);
+  }, [rooms, filterOptions, priceFilter, sortByPrice]);
 
   useEffect(() => {
     axios.get('https://beiyo-admin.vercel.app/api/rooms')
@@ -118,12 +126,8 @@ const RoomList = () => {
     setFilteredRooms(filtered);
   }, [rooms, filterOptions]);
 
-  const handleEdit = (room) => {
-    setEditingRoom(room);
-  };
-
   const handleFormSubmit = () => {
-    setEditingRoom(null);
+    setOpenForm(false);
     axios.get('https://beiyo-admin.vercel.app/api/rooms')
       .then(response => {
         setRooms(response.data);
@@ -140,146 +144,225 @@ const RoomList = () => {
       [name]: value,
     });
   };
-  const handleRemainingBedsChange = async (roomId, remainingBeds) => {
-    try {
-      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}/updateRemainingBeds`, {
-        remainingBeds,
-        lastUpdatedBy: user?.email,
-      });
-      setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? {
-        ...room,
-        remainingCapacity: remainingBeds,
-        lastUpdatedBy: user?.email
-      } : room));
-    } catch (error) {
-      console.error('Error updating remaining beds:', error);
-    }
-  }
+
+  
+
   const handleCleaning = async (roomId, status, lastCleanedAt) => {
     try {
-      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}`, {
-        status,
-        lastCleanedAt,
-        lastUpdatedBy: user?.email,
-      });
-      setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? {
-        ...room,
-        status,
-        lastCleanedAt,
-        lastUpdatedBy: user?.email
-      } : room));
+      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}`, { status, lastCleanedAt, lastUpdatedBy: user?.email });
+      setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? { ...room, status, lastCleanedAt, lastUpdatedBy: user?.email } : room));
     } catch (error) {
       console.error('Error updating status:', error);
     }
   }
+
   const handleSearch = () => {
-    
     const filtered = rooms.filter(room =>
       room.hostel.toLowerCase().startsWith(searchQuery.toLowerCase())
     );
     setFilteredRooms(filtered);
   };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
+  const handleRoomClick = (roomId) => {
+    Navigate(`/rooms/${roomId}/beds`);
+  };
 
   return (
-    <div>
-      <h2>Rooms</h2>
-      <p>LastUpdated By - {rooms.lastUpdatedBy}</p>
-      <div style={{display:'flex', flexWrap:'wrap',gap:'1rem'}}>
-      <div>
-        <input
-          type="text"
-          placeholder="Search by hostel name"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button onClick={handleSearch}>Search</button>
-      </div>
-        <label>
-          Availability:
-          <select name="availability" value={filterOptions.availability} onChange={handleFilterChange}>
-            <option value="all">All</option>
-            <option value="empty">Empty</option>
-            <option value="occupied">Occupied</option>
-          </select>
-        </label>
-        <label>
-          Type:
-          <select name="type" value={filterOptions.type} onChange={handleFilterChange}>
-            <option value="all">All</option>
-            <option value="single">Single</option>
-            <option value="double">Double</option>
-            <option value="triple">Triple</option>
-            <option value="Flat">Flat</option>
-          </select>
-        </label>
-        <label>
-          Capacity:
-          <select name="capacity" value={filterOptions.capacity} onChange={handleFilterChange}>
-            <option value="all">All</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            {/* Add more capacity options as needed */}
-          </select>
-        </label>
-        <label>
-     Price:
-  <select name="price" value={priceFilter} onChange={(e) => setPriceFilter(e.target.value)}>
-    <option value="all">All</option>
-    <option value="less-than-3000">Less than Rs3000</option>
-    <option value="less-than-4000">Less than Rs4000</option>
-    <option value="less-than-5000">Less than Rs5000</option>
-    <option value="greater-than-3000">Greater than Rs3000</option>
-    <option value="greater-than-4000">Greater than Rs4000</option>
-    <option value="greater-than-5000">Greater than Rs5000</option>
-  </select>
-</label>
-<label>
-      Sort by Price:
-      <select name="sortByPrice" value={sortByPrice} onChange={(e) => setSortByPrice(e.target.value)}>
-        <option value="none">None</option>
-        <option value="low-to-high">Low to High</option>
-        <option value="high-to-low">High to Low</option>
-      </select>
-    </label>
-        <label>
-          Hostel:
-          <select name="hostel" value={filterOptions.hostel} onChange={handleFilterChange}>
-            <option value="all">All</option>
-            {hostels.map(hostel => (
-              <option key={hostel._id} value={hostel._id}>{hostel.name}</option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <ul>
-        {filteredRooms.map(room => (
-          <li key={room._id} style={{ backgroundColor: room.remainingCapacity === 0 ? 'green' : room.remainingCapacity === room.capacity ? 'red' : 'grey' }}>
-             {hostels.find(hostel => hostel._id === room.hostelId).name} - <a href={`/rooms/${room._id}/beds`}> {room.roomNumber}</a> - Capacity: {room.capacity} - Remaining Beds: {room.remainingCapacity} - Price: {room.price} - {room.status}
-             <select value={room.remainingCapacity} onChange={(e) => handleRemainingBedsChange(room._id, parseInt(e.target.value))}>
-              {[...Array(room.capacity + 1).keys()].map(num => (
-                <option key={num} value={num}>{num}</option>
+    <Box mt={'2rem'}>
+      <Typography variant="h4" gutterBottom>
+        Rooms
+      </Typography>
+      <Button  variant="contained" color="primary" onClick={() => setOpenForm(true)}>
+        Add New Room
+      </Button>
+      <Grid mt={'1rem'} container spacing={2} mb={2}>
+        <Grid item xs={12} sm={6} md={3}>
+          <TextField
+            fullWidth
+            label="Search by hostel name"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            variant="outlined"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Availability</InputLabel>
+            <Select
+              name="availability"
+              value={filterOptions.availability}
+              onChange={handleFilterChange}
+              label="Availability"
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="empty">Empty</MenuItem>
+              <MenuItem value="full">Full</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Room Type</InputLabel>
+            <Select
+              name="type"
+              value={filterOptions.type}
+              onChange={handleFilterChange}
+              label="Room Type"
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="single">Single</MenuItem>
+              <MenuItem value="double">Double</MenuItem>
+              <MenuItem value="triple">Triple</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Capacity</InputLabel>
+            <Select
+              name="capacity"
+              value={filterOptions.capacity}
+              onChange={handleFilterChange}
+              label="Capacity"
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="1">1</MenuItem>
+              <MenuItem value="2">2</MenuItem>
+              <MenuItem value="3">3</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Hostel</InputLabel>
+            <Select
+              name="hostel"
+              value={filterOptions.hostel}
+              onChange={handleFilterChange}
+              label="Hostel"
+            >
+              <MenuItem value="all">All</MenuItem>
+              {hostels.map((hostel) => (
+                <MenuItem key={hostel._id} value={hostel._id}>
+                  {hostel.name}
+                </MenuItem>
               ))}
-            </select>
-            {/* <button onClick={() => handleDelete(room._id)}>Delete</button> */}
-            <select value={room.status} onChange={(e) => handleCleaning(room._id, e.target.value, new Date().toISOString())}>
-              <option value="clean">Clean</option>
-              <option value="dirty">Dirty</option>
-            </select>
-            Last Cleaned At: <span>{formatDate(room.lastCleanedAt)}</span>
-          </li>
-        
-        ))}
-      </ul>
-      {editingRoom && <RoomForm room={editingRoom} hostels={hostels} onSubmit={handleFormSubmit} />}
-      {!editingRoom && <RoomForm hostels={hostels} onSubmit={handleFormSubmit} />}
-    </div>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Price</InputLabel>
+            <Select
+              name="priceFilter"
+              value={priceFilter}
+              onChange={(e) => setPriceFilter(e.target.value)}
+              label="Price"
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="less-than-3000">Less than 3000</MenuItem>
+              <MenuItem value="less-than-4000">Less than 4000</MenuItem>
+              <MenuItem value="less-than-5000">Less than 5000</MenuItem>
+              <MenuItem value="greater-than-3000">Greater than 3000</MenuItem>
+              <MenuItem value="greater-than-4000">Greater than 4000</MenuItem>
+              <MenuItem value="greater-than-5000">Greater than 5000</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Sort by Price</InputLabel>
+            <Select
+              name="sortByPrice"
+              value={sortByPrice}
+              onChange={(e) => setSortByPrice(e.target.value)}
+              label="Sort by Price"
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="low-to-high">Low to High</MenuItem>
+              <MenuItem value="high-to-low">High to Low</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={handleSearch}
+            sx={{ height: '100%' }}
+          >
+            Search
+          </Button>
+        </Grid>
+      </Grid>
+      <Box>
+        <Grid container spacing={2}>
+          {filteredRooms.map((room) => (
+            <Grid  item key={room._id} xs={12} sm={6} md={4}>
+             
+              <Box 
+                sx={{
+                  border: '1px solid #ccc',
+                  borderRadius: 2,
+                  p: 2,
+                  backgroundColor: '#fff',
+                  display:'flex',
+                  flexDirection:'column'
+                }}
+              >
+                <Typography variant="h6">{room.roomNumber}</Typography>
+                <Typography variant="h6">{room.hostel}</Typography>
+                <Typography>Room Type: {room.type}</Typography>
+                <Typography>Capacity: {room.capacity}</Typography>
+                <Typography>Remaining Capacity: {room.remainingCapacity}</Typography>
+                <Typography>Price: {room.price}</Typography>
+                <Typography>Last Cleaned: {formatDate(room.lastCleanedAt)}</Typography>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    setSelectedRoom(room);
+                    setIsUpdateBedsFormOpen(true);
+                  }}
+                  sx={{ mt: 1 }}
+                >
+                  Update Beds
+                </Button>
+                <Dialog open={isUpdateBedsFormOpen} onClose={() => setIsUpdateBedsFormOpen(false)}>
+                {isUpdateBedsFormOpen && (
+        <UpdateBedsForm
+          room={selectedRoom}
+          onSubmit={handleUpdateBedsSubmit}
+          onClose={() => setIsUpdateBedsFormOpen(false)}
+        />
+      )}
+                </Dialog>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleCleaning(room._id, room.status === 'clean' ? 'dirty' : 'clean', new Date().toISOString())}
+                  sx={{ mt: 1 }}
+                >
+                  {room.status === 'clean' ? 'Mark as Dirty' : 'Mark as Clean'}
+                </Button>
+               <Button    variant="contained"
+                  color="secondary"
+                  sx={{ mt: 1 }} > <Link style={{color:'white'}} to={`/rooms/${room._id}/beds`}>See Beds</Link></Button>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+      <Dialog open={openForm} onClose={() => setOpenForm(false)}>
+        <RoomForm  hostels={hostels} onClose={() => setOpenForm(false)} onSubmit={handleFormSubmit} />
+      </Dialog>
+    </Box>
   );
 };
 

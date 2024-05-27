@@ -12,6 +12,19 @@ import SignInPage from './components/auths/Sign-in';
 import SignUpPage from './components/auths/Sign-up';
 import { ClerkProvider, RedirectToSignIn, SignedIn, SignedOut, useUser } from '@clerk/clerk-react';
 import Home from './components/Home';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Stack from '@mui/material/Stack';
+
+const theme = createTheme({
+  components: {
+    MuiStack: {
+      defaultProps: {
+        useFlexGap: true,
+      },
+    },
+  },
+});
+
 
 function App() {
   const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -24,6 +37,7 @@ function App() {
   return (
     <div id='main'>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <ThemeProvider theme={theme}>
         <Router>
           <Routes>
             <Route path="/sign-in" element={<SignInRedirect />} />
@@ -98,6 +112,7 @@ function App() {
             />
           </Routes>
         </Router>
+        </ThemeProvider>
       </ClerkProvider>
     </div>
   );
