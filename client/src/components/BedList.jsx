@@ -96,7 +96,7 @@ const BedList = () => {
               >
                 <Typography variant="h6">Bed Number: {bed.bedNumber}</Typography>
                 <Typography>Living Person: {bed.name}</Typography>
-                <Typography>Charge: {bed.charge}</Typography>
+                <Typography>Deposit: {bed.charge}</Typography>
                 <Typography sx={{ color: getColor(bed.paymentStatus) }}>
                   Status: {bed.paymentStatus}
                 </Typography>
