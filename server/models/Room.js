@@ -18,9 +18,6 @@ const roomSchema = new mongoose.Schema({
      type: Date,
     required: true
   },
-  status:{
-    type: String,
-  },
   beds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Bed' }],
   lastUpdatedBy:{
     type: String,

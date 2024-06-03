@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Drawer, List, ListItem, ListItemText, Toolbar } from '@mui/material';
 import { UserButton, UserProfile } from '@clerk/clerk-react';
+import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
   const [toggleDrawer,setToggleDrawer]=useState(false);
@@ -19,15 +20,13 @@ const Sidebar = () => {
     >
       <Toolbar />
       <List>
-        <ListItem>
-          <UserButton/>
-        </ListItem>
-        <ListItem button>
-          
+        <ListItem button component={Link} to="/rooms">
           <ListItemText primary="Rooms" />
-
         </ListItem>
-        {/* Add more navigation items here */}
+        <ListItem button component={Link} to="/hostels">
+          <ListItemText primary="Hostels" />
+        </ListItem>
+        {/* Add more list items here as needed */}
       </List>
     </Drawer>
     </>

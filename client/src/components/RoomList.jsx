@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import RoomForm from './RoomForm';
-import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CssBaseline } from '@mui/material';
 import { useUser } from '@clerk/clerk-react';
 import UpdateBedsForm from './UpdateBedsForm';
 import { Link, Navigate } from 'react-router-dom';
@@ -147,15 +147,6 @@ const RoomList = () => {
 
   
 
-  const handleCleaning = async (roomId, status, lastCleanedAt) => {
-    try {
-      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${roomId}`, { status, lastCleanedAt, lastUpdatedBy: user?.email });
-      setRooms(prevRooms => prevRooms.map(room => room._id === roomId ? { ...room, status, lastCleanedAt, lastUpdatedBy: user?.email } : room));
-    } catch (error) {
-      console.error('Error updating status:', error);
-    }
-  }
-
   const handleSearch = () => {
     const filtered = rooms.filter(room =>
       room.hostel.toLowerCase().startsWith(searchQuery.toLowerCase())
@@ -173,7 +164,8 @@ const RoomList = () => {
   };
 
   return (
-    <Box mt={'2rem'}>
+    <Box sx={{mt:'7vh'}}>
+      <CssBaseline/>
       <Typography variant="h4" gutterBottom>
         Rooms
       </Typography>
@@ -343,14 +335,6 @@ const RoomList = () => {
         />
       )}
                 </Dialog>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() => handleCleaning(room._id, room.status === 'clean' ? 'dirty' : 'clean', new Date().toISOString())}
-                  sx={{ mt: 1 }}
-                >
-                  {room.status === 'clean' ? 'Mark as Dirty' : 'Mark as Clean'}
-                </Button>
                 <a style={{color:'white'}} href={`/rooms/${room._id}/beds`}>
                <Button    variant="contained"
                   color="secondary"

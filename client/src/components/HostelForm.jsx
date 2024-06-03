@@ -2,22 +2,40 @@
 
 import React, { useState } from 'react';
 import axios from 'axios';
+import {
+  TextField,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Box,
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  CssBaseline,
+  Grid
+} from '@mui/material';
 
-const HostelForm = ({ hostel, onSubmit }) => {
+const HostelForm = ({ hostel, onSubmit, onClose }) => {
   const [name, setName] = useState(hostel ? hostel.name : '');
   const [location, setLocation] = useState(hostel ? hostel.location : '');
-  const [locationLink, setlocationLink] = useState(hostel ? hostel.locationLink : '');
+  const [locationLink, setLocationLink] = useState(hostel ? hostel.locationLink : '');
   const [price, setPrice] = useState(hostel ? hostel.price : '');
-  const [image, setimage] = useState(hostel ? hostel.image : '');
-  const [image2, setimage2] = useState(hostel ? hostel.image2 : '');
-  const [image3, setimage3] = useState(hostel ? hostel.image3 : '');
-  const [single, setsingle] = useState(hostel ? hostel.single : false);
-  const [singlePrice, setsinglePrice] = useState(hostel ? hostel.singlePrice : '');
-  const [ doubleprice, setdoubleprice] = useState(hostel ? hostel.doubleprice : '');
-  const [tripleprice, settripleprice] = useState(hostel ? hostel.tripleprice : '');
-  const [nearby1, setnearby1] = useState(hostel ? hostel.nearby1 : '');
-  const [nearby2, setnearby2] = useState(hostel ? hostel.nearby2 : '');
-  const [nearby3, setnearby3] = useState(hostel ? hostel.nearby3 : '');
+  const [image, setImage] = useState(hostel ? hostel.image : '');
+  const [image2, setImage2] = useState(hostel ? hostel.image2 : '');
+  const [image3, setImage3] = useState(hostel ? hostel.image3 : '');
+  const [single, setSingle] = useState(hostel ? hostel.single : false);
+  const [singlePrice, setSinglePrice] = useState(hostel ? hostel.singlePrice : '');
+  const [doublePrice, setDoublePrice] = useState(hostel ? hostel.doublePrice : '');
+  const [triplePrice, setTriplePrice] = useState(hostel ? hostel.triplePrice : '');
+  const [nearby1, setNearby1] = useState(hostel ? hostel.nearby1 : '');
+  const [nearby2, setNearby2] = useState(hostel ? hostel.nearby2 : '');
+  const [nearby3, setNearby3] = useState(hostel ? hostel.nearby3 : '');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,93 +49,127 @@ const HostelForm = ({ hostel, onSubmit }) => {
       image3,
       single,
       singlePrice,
-      doubleprice,
-      tripleprice,
+      doublePrice,
+      triplePrice,
       nearby1,
       nearby2,
       nearby3,
     };
-    if (hostel) {
-      await axios.patch(`https://beiyo-admin.vercel.app/api/hostels/${hostel._id}`, data);
-    } else {
-      await axios.post('https://beiyo-admin.vercel.app/api/hostels', data);
+    try {
+      if (hostel) {
+        await axios.patch(`https://beiyo-admin.vercel.app/api/hostels/${hostel._id}`, data);
+      } else {
+        await axios.post('https://beiyo-admin.vercel.app/api/hostels', data);
+      }
+      onSubmit();
+      onClose();
+    } catch (error) {
+      console.error('Error saving hostel:', error);
     }
-    onSubmit();
-  };
-
-  const handleDelete = async () => {
-    await axios.delete(`https://beiyo-admin.vercel.app/api/hostels/${hostel._id}`);
-    onSubmit();
   };
 
   return (
-    <div>
-      <h2>{hostel ? 'Update Hostel' : 'Add Hostel'}</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Name:
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-        </label>
-        <label>
-          Location:
-          <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
-        </label>
-        <label>
-          Locationlink:
-          <input type="text" value={locationLink} onChange={(e) => setlocationLink(e.target.value)} />
-        </label>
-        <label>
-        price:
-          <input type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
-        </label>
-        <label>
-          image:
-          <input type="text" value={image} onChange={(e) => setimage(e.target.value)} />
-        </label>
-        <label>
-        image2:
-          <input type="text" value={image2} onChange={(e) => setimage2(e.target.value)} />
-        </label>
-        <label>
-          image3:
-          <input type="text" value={image3} onChange={(e) => setimage3(e.target.value)} />
-        </label>
-        <label>
-          single:
-          <select  name="" id="" onChange={(e) => setsingle(e.target.value)}>
-            <option type value={single}>true</option>
-            <option value={single}>false</option>
-          </select>
-          
-        </label>
-        <label>
-          singlePrice:
-          <input type="text" value={singlePrice} onChange={(e) => setsinglePrice(e.target.value)} />
-        </label>
-        <label>
-          doubleprice:
-          <input type="text" value={doubleprice} onChange={(e) => setdoubleprice(e.target.value)} />
-        </label>
-        <label>
-          tripleprice:
-          <input type="text" value={tripleprice} onChange={(e) => settripleprice(e.target.value)} />
-        </label>
-        <label>
-          nearby1:
-          <input type="text" value={nearby1} onChange={(e) => setnearby1(e.target.value)} />
-        </label>
-        <label>
-          nearby2:
-          <input type="text" value={nearby2} onChange={(e) => setnearby2(e.target.value)} />
-        </label>
-        <label>
-          nearby3:
-          <input type="text" value={nearby3} onChange={(e) => setnearby3(e.target.value)} />
-        </label>
-        <button type="submit">{hostel ? 'Update' : 'Add'}</button>
-        {/* {hostel && <button onClick={handleDelete}>Delete</button>} */}
-      </form>
-    </div>
+    <Dialog open={true} onClose={onClose}>
+      <CssBaseline />
+      <DialogTitle>{hostel ? 'Update Hostel' : 'Add Hostel'}</DialogTitle>
+      <DialogContent>
+        <Box
+          component="form"
+          sx={{  display:'flex', flexDirection:'column',mt: 2 , gap:'2rem', width:'30rem'}}
+         spacing={4}
+         xs={2}
+          onSubmit={handleSubmit}
+        >
+          <TextField 
+            label="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <TextField
+            label="Location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            required
+          />
+          <TextField
+            label="Location Link"
+            value={locationLink}
+            onChange={(e) => setLocationLink(e.target.value)}
+            required
+          />
+          <TextField
+            label="Price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
+          />
+          <TextField
+            label="Image URL"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+            required
+          />
+          <TextField
+            label="Image 2 URL"
+            value={image2}
+            onChange={(e) => setImage2(e.target.value)}
+          />
+          <TextField
+            label="Image 3 URL"
+            value={image3}
+            onChange={(e) => setImage3(e.target.value)}
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={single}
+                onChange={(e) => setSingle(e.target.checked)}
+              />
+            }
+            label="Single"
+          />
+          <TextField
+            label="Single Price"
+            value={singlePrice}
+            onChange={(e) => setSinglePrice(e.target.value)}
+          />
+          <TextField
+            label="Double Price"
+            value={doublePrice}
+            onChange={(e) => setDoublePrice(e.target.value)}
+          />
+          <TextField
+            label="Triple Price"
+            value={triplePrice}
+            onChange={(e) => setTriplePrice(e.target.value)}
+          />
+          <TextField
+            label="Nearby Place 1"
+            value={nearby1}
+            onChange={(e) => setNearby1(e.target.value)}
+          />
+          <TextField
+            label="Nearby Place 2"
+            value={nearby2}
+            onChange={(e) => setNearby2(e.target.value)}
+          />
+          <TextField
+            label="Nearby Place 3"
+            value={nearby3}
+            onChange={(e) => setNearby3(e.target.value)}
+          />
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary">
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary">
+          {hostel ? 'Update' : 'Add'}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

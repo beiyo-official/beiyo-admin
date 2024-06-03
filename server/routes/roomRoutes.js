@@ -95,9 +95,7 @@ router.patch('/:id', getRoom, async (req, res) => {
   if(req.body.status != null){
     res.room.status = req.body.status;
   }
-  if(req.body.lastCleanedAt != null){
-    res.room.lastCleanedAt = req.body.lastCleanedAt;
-  }
+
   
     res.room.lastUpdatedBy = req.body.lastUpdatedBy;
   

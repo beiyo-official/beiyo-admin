@@ -14,6 +14,9 @@ import { ClerkProvider, RedirectToSignIn, SignedIn, SignedOut, useUser } from '@
 import Home from './components/Home';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Stack from '@mui/material/Stack';
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import CleaningChart from './components/CleaningChart';
 
 const theme = createTheme({
   components: {
@@ -38,7 +41,8 @@ function App() {
     <div id='main'>
       <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <ThemeProvider theme={theme}>
-        <Router>
+        <Router style={{ display: 'flex' , flexDirection:'column' }}>
+       <Header/>
           <Routes>
             <Route path="/sign-in" element={<SignInRedirect />} />
             <Route path="/sign-up" element={<SignUpRedirect />} />
@@ -52,7 +56,7 @@ function App() {
                 </SignedIn>
               } 
             />
-
+             <Route path="/hostels/:hostelId/cleaning-chart" element={ <SignedIn><CleaningChart/></SignedIn>} />
             <Route 
               path="/dashboard" 
               element={
@@ -80,14 +84,14 @@ function App() {
               } 
             />
 
-            <Route 
+            {/* <Route 
               path='/inventory' 
               element={
                 <SignedIn>
                   <InventoryList />
                 </SignedIn>
               } 
-            />
+            /> */}
 
             <Route 
               path='/nikalbsdk' 
