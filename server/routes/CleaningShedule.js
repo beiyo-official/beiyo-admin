@@ -2,10 +2,16 @@ const express = require('express');
 const router = express.Router();
 const CleaningSchedule = require('../models/CleaningChart');
 
-// Get cleaning schedule for a specific hostel
+// Get cleaning schedule for a specific hostel and month
 router.get('/hostels/:hostelId/cleaning-schedule', async (req, res) => {
+  const { hostelId } = req.params;
+  const { month } = req.query;
+
   try {
-    const schedule = await CleaningSchedule.find({ hostelId: req.params.hostelId });
+    const schedule = await CleaningSchedule.find({
+      hostelId,
+      date: { $regex: `^${month}` } // Fetching entries that start with the month
+    });
     res.json(schedule);
   } catch (error) {
     res.status(500).send(error);
@@ -14,18 +20,20 @@ router.get('/hostels/:hostelId/cleaning-schedule', async (req, res) => {
 
 // Create or update a cleaning schedule entry
 router.post('/hostels/:hostelId/cleaning-schedule', async (req, res) => {
+  const { hostelId } = req.params;
+  const { date, roomNumber, cleaned } = req.body;
+
   try {
-    const { date, roomNumber, cleaned } = req.body;
-    let scheduleEntry = await CleaningSchedule.findOne({ hostelId: req.params.hostelId, date, roomNumber });
-    
+    let scheduleEntry = await CleaningSchedule.findOne({ hostelId, date, roomNumber });
+
     if (scheduleEntry) {
       // Update existing entry
       scheduleEntry.cleaned = cleaned;
     } else {
       // Create new entry
-      scheduleEntry = new CleaningSchedule({ hostelId: req.params.hostelId, date, roomNumber, cleaned });
+      scheduleEntry = new CleaningSchedule({ hostelId, date, roomNumber, cleaned });
     }
-    
+
     await scheduleEntry.save();
     res.status(201).send(scheduleEntry);
   } catch (error) {
