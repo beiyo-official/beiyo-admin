@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const CleaningSchedule = require('../models/CleaningSchedule');
+const CleaningSchedule = require('../models/CleaningChart');
 
 // Get cleaning schedule for a specific hostel
 router.get('/hostels/:hostelId/cleaning-schedule', async (req, res) => {

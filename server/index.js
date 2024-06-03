@@ -2,7 +2,8 @@
 const hostelRoutes = require('./routes/hostelRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
-const Bed = require('./routes/Bed')
+const Bed = require('./routes/Bed');
+const CleaningSchedule = require('./routes/CleaningShedule')
 const { connectDB } = require('./db');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -12,13 +13,13 @@ const { config } = require('dotenv');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const cron = require('node-cron');
-const {updateRoomStatuses} = require('./path/to/cron/job');
+
 config();
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
 connectDB();
-updateRoomStatuses();
+// updateRoomStatuses();
 
 
 // Routes
@@ -30,6 +31,8 @@ app.use('/api/hostels', hostelRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/beds',Bed)
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/cleaningSchedule', CleaningSchedule)
+
 
 // Start the server
 app.listen(PORT, () => {
