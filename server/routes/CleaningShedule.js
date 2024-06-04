@@ -10,7 +10,7 @@ router.get('/hostels/:hostelId/cleaning-schedule', async (req, res) => {
   try {
     const schedule = await CleaningSchedule.find({
       hostelId,
-      date: { $regex: `^${month}` } // Fetching entries that start with the month
+      // date: { $regex: `^${month}` } // Fetching entries that start with the month
     });
     res.json(schedule);
   } catch (error) {
