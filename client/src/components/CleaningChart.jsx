@@ -19,7 +19,7 @@ const CleaningChart = () => {
         const response = await axios.get(`https://beiyo-admin.vercel.app/api/rooms`);
         const allRooms = response.data;
         const specificHostelRooms = allRooms.filter(room => room.hostelId === hostelId);
-        console.log(specificHostelRooms);
+        // console.log(specificHostelRooms);
         setRooms(specificHostelRooms);
       } catch (error) {
         console.error('Error fetching room numbers:', error);
@@ -46,9 +46,9 @@ const CleaningChart = () => {
     const fetchSchedule = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`https://beiyo-admin.vercel.app/api/cleaningSchedule/hostels/${hostelId}/cleaning-schedule`, { params: { month } });
-        console.log('API response:', response.data);
+        const response = await axios.get(`https://beiyo-admin.vercel.app/api/cleaningSchedule/hostels/${hostelId}/cleaning-schedule`);
         setSchedule(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error('Error fetching cleaning schedule:', error);
       } finally {
