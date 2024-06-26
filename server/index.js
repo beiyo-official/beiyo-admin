@@ -3,7 +3,8 @@ const hostelRoutes = require('./routes/hostelRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const Bed = require('./routes/Bed');
-const CleaningSchedule = require('./routes/CleaningShedule')
+const CleaningSchedule = require('./routes/CleaningShedule');
+const payment = require('./routes/payment')
 const { connectDB } = require('./db');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -31,7 +32,8 @@ app.use('/api/hostels', hostelRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/beds',Bed)
 app.use('/api/inventory', inventoryRoutes);
-app.use('/api/cleaningSchedule', CleaningSchedule)
+app.use('/api/cleaningSchedule', CleaningSchedule);
+app.use('/api/pay',payment)
 
 
 // Start the server
