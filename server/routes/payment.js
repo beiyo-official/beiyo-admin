@@ -17,7 +17,7 @@ router.post('/initiate', async (req, res) => {
       "merchantId": MERCHANT_ID,
       "merchantTransactionId": merchantTransactionId,
       "merchantUserId":'MUID123',
-      "amount": amount, // Amount in smallest currency unit
+      "amount": amount*100, // Amount in smallest currency unit
       "redirectUrl": `https://localhost:5000/pay/status/${merchantTransactionId}`,
       "redirectMode": "REDIRECT",
       "mobileNumber": "9617223930",
