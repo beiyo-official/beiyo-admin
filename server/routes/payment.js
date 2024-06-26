@@ -18,7 +18,7 @@ router.post('/initiate', async (req, res) => {
       "merchantTransactionId": merchantTransactionId,
       "merchantUserId":'MUID123',
       "amount": amount*100, // Amount in smallest currency unit
-      "redirectUrl": `https://localhost:5000/pay/status/${merchantTransactionId}`,
+      "redirectUrl": `https://beiyo-admin.vercel.app/api/pay/status/${merchantTransactionId}`,
       "redirectMode": "REDIRECT",
       "mobileNumber": "9617223930",
       "paymentInstrument": {
