@@ -5,7 +5,7 @@ const router = express.Router();
 const crypto = require('crypto');
 
 router.get('/',(req,res)=>{
-  res.render('Payment');
+  res.send('Payment');
 })
 router.post('/initiate', async (req, res) => {
   try {
