@@ -4,7 +4,9 @@ const uniqid = require("uniqid");
 const router = express.Router();
 const crypto = require('crypto');
 
-
+router.get('/',(req,res)=>{
+  res.render('Payment');
+})
 router.post('/initiate', async (req, res) => {
   try {
     const MERCHANT_ID = process.env.MERCHANTID;
@@ -13,12 +15,14 @@ router.post('/initiate', async (req, res) => {
     const merchantTransactionId = uniqid();
     const amount = req.body.amount
     // Payload object
+    console.log(amount);
     const paymain = {
       "merchantId": MERCHANT_ID,
       "merchantTransactionId": merchantTransactionId,
       "merchantUserId":'MUID123',
       "amount": amount*100, // Amount in smallest currency unit
-      "redirectUrl": `https://beiyo-admin.vercel.app/api/pay/status/${merchantTransactionId}`,
+      // "redirectUrl": `https://beiyo-admin.vercel.app/api/pay/status/${merchantTransactionId}`,
+      "redirectUrl": `https://www.beiyo.in/`,
       "redirectMode": "REDIRECT",
       "mobileNumber": "9617223930",
       "paymentInstrument": {
