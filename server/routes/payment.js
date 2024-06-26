@@ -68,7 +68,7 @@ router.post('/initiate', async (req, res) => {
   } catch (error) {
     console.log(error)
     console.error("Error:", error.response ? error.response.data : error.message);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send(error);
   }
 });
 
