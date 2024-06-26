@@ -7,6 +7,9 @@ const crypto = require('crypto');
 router.get('/',(req,res)=>{
   res.send('Payment');
 })
+router.post('/callback',(req,res)=>{
+
+})
 router.post('/initiate', async (req, res) => {
   try {
     const MERCHANT_ID = process.env.MERCHANTID;
@@ -23,6 +26,7 @@ router.post('/initiate', async (req, res) => {
       "amount": amount*100, // Amount in smallest currency unit
       // "redirectUrl": `https://beiyo-admin.vercel.app/api/pay/status/${merchantTransactionId}`,
       "redirectUrl": `https://www.beiyo.in/`,
+      "callbackUrl":`https://beiyo-admin.vercel.app/api/pay/callback`,
       "redirectMode": "REDIRECT",
       "mobileNumber": "9617223930",
       "paymentInstrument": {
@@ -84,7 +88,7 @@ try {
 
     const options = {
       method: 'GET',
-      url: 'https://api.phonepe.com/apis/hermes/pg/v1/pay',
+      url: statusUrl,
       headers: {
         accept: 'application/json',
         'Content-Type': 'application/json',
