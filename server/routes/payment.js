@@ -13,14 +13,16 @@ router.post('/callback',(req,res)=>{
 router.post('/initiate', async (req, res) => {
   try {
     const MERCHANT_ID = process.env.MERCHANTID;
-    const API_KEY = process.env.SECRET_KEY;
-    const KEY_INDEX = process.env.KEY_INDEX;
+    // const API_KEY = process.env.SECRET_KEY;
+    const API_KEY = "5ea37ae7-08e6-47a4-a46f-f16cef15dfe0"
+    // const KEY_INDEX = process.env.KEY_INDEX;
+    const KEY_INDEX = 1;
     const merchantTransactionId = uniqid();
     const amount = req.body.amount
     // Payload object
     console.log(amount);
     const paymain = {
-      "merchantId": MERCHANT_ID,
+      "merchantId": "M22XFHYWE6ZUT",
       "merchantTransactionId": merchantTransactionId,
       "merchantUserId":'MUID123',
       "amount": amount*100, // Amount in smallest currency unit
