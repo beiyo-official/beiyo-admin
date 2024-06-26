@@ -8,7 +8,7 @@ router.get('/',(req,res)=>{
   res.send('Payment');
 })
 router.post('/callback',(req,res)=>{
-
+  res.send('callBack');
 })
 router.post('/initiate', async (req, res) => {
   try {
