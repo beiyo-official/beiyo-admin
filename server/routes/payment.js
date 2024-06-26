@@ -11,12 +11,13 @@ router.post('/initiate', async (req, res) => {
     const API_KEY = process.env.SECRET_KEY;
     const KEY_INDEX = process.env.KEY_INDEX;
     const merchantTransactionId = uniqid();
+    const amount = req.body.amount
     // Payload object
     const paymain = {
       "merchantId": MERCHANT_ID,
       "merchantTransactionId": merchantTransactionId,
       "merchantUserId":'MUID123',
-      "amount": 100, // Amount in smallest currency unit
+      "amount": amount, // Amount in smallest currency unit
       "redirectUrl": `https://localhost:5000/pay/status/${merchantTransactionId}`,
       "redirectMode": "REDIRECT",
       "mobileNumber": "9617223930",
