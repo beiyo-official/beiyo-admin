@@ -73,7 +73,7 @@ router.get("/status/:merchantTransactionId", async (req, res) => {
     const API_KEY = process.env.SECRET_KEY;
     const KEY_INDEX = process.env.KEY_INDEX;
     const { merchantTransactionId } = req.params;
-    const { studentData } = req.body;
+    const { studentData } = req.query;
 
     const statusUrl = `https://api.phonepe.com/apis/hermes/pg/v1/status/${MERCHANT_ID}/${merchantTransactionId}`;
     const string = `/pg/v1/status/${MERCHANT_ID}/${merchantTransactionId}` + API_KEY;
