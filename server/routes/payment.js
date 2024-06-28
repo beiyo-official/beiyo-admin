@@ -6,7 +6,7 @@ const router = express.Router();
 const Resident = require('../models/newMemberResident'); // Assuming Student is the user model
 
 // Endpoint to initiate payment
-router.post(' ', async (req, res) => {
+router.post('/intiate', async (req, res) => {
   try {
     const { amount, studentData } = req.body; // Receive student data along with amount
     const MERCHANT_ID = process.env.MERCHANTID;
