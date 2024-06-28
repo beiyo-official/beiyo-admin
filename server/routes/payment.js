@@ -93,11 +93,7 @@ router.get("/status/:merchantTransactionId", async (req, res) => {
 
     const response = await axios.request(options);
     console.log(response.data);
-    if (response.data.success && response.data.data.status === 'SUCCESS') {
-      // Payment successful, save user data
-      const newResident = new Resident(JSON.parse(studentData));
-      await newResident.save();
-    }
+
 
     res.json(response.data);
 
