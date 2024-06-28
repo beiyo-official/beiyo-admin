@@ -6,7 +6,7 @@ const router = express.Router();
 
  router.post('/',async(req,res)=>{
     try {
-        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber, amount, merchantTransactionId } = req.body;
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber} = req.body;
         const newResident = new Resident({
             name, email, mobileNumber, address, parentsName,
             parentsMobileNo, hostel, roomNumber
