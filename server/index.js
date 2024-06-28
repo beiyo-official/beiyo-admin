@@ -34,6 +34,7 @@ app.use('/api/beds',Bed)
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/cleaningSchedule', CleaningSchedule);
 app.use('/api/pay',payment)
+app.use('/api/newResident',)
 
 
 // Start the server

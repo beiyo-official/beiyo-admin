@@ -9,10 +9,16 @@ const Resident = require('./models/Resident'); // Your Resident model
 const router = express.Router();
 
  router.post('/api/newStudent',async(req,res)=>{
-    const {studentData} = req.body
+    try {
+        const {studentData} = req.body
     const newResident = new Resident(JSON.parse(studentData));
     await newResident.save();
+    } catch (error) {
+        console.log(error);
+    }
+    
  })
     // Payment successful, save user data
-   
+    module.exports = router;
+
   
