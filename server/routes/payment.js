@@ -1,33 +1,27 @@
 const express = require("express");
 const axios = require("axios");
 const uniqid = require("uniqid");
-const router = express.Router();
 const crypto = require('crypto');
+const router = express.Router();
+const Resident = require('../models/newMemberResident'); // Assuming Student is the user model
 
-router.get('/',(req,res)=>{
-  res.send('Payment');
-})
-router.post('/callback',(req,res)=>{
-  res.send('callBack');
-})
-router.post('/initiate', async (req, res) => {
+// Endpoint to initiate payment
+router.post(' ', async (req, res) => {
   try {
+    const { amount, studentData } = req.body; // Receive student data along with amount
     const MERCHANT_ID = process.env.MERCHANTID;
     const API_KEY = process.env.SECRET_KEY;
     const KEY_INDEX = process.env.KEY_INDEX;
-    // const KEY_INDEX = 1;
     const merchantTransactionId = uniqid();
-    const amount = req.body.amount
+
     // Payload object
-    console.log(amount);
     const paymain = {
       "merchantId": MERCHANT_ID,
       "merchantTransactionId": merchantTransactionId,
-      "merchantUserId":'MUID123',
-      "amount": amount*100, // Amount in smallest currency unit
-      // "redirectUrl": `https://beiyo-admin.vercel.app/api/pay/status/${merchantTransactionId}`,
-      "redirectUrl": `https://www.beiyo.in/`,
-      "callbackUrl":`https://beiyo-admin.vercel.app/api/pay/callback`,
+      "merchantUserId": 'MUID123',
+      "amount": amount * 100,
+      "redirectUrl": `https://www.beiyo.in/paymentstatus`, // Use actual URL
+      "callbackUrl": `https://beiyo-admin.vercel.app/api/pay/callback`,
       "redirectMode": "REDIRECT",
       "mobileNumber": "9617223930",
       "paymentInstrument": {
@@ -35,18 +29,11 @@ router.post('/initiate', async (req, res) => {
       }
     };
 
-    // Convert payload to base64
     const base64Payload = Buffer.from(JSON.stringify(paymain)).toString('base64');
-    console.log("Base64 Payload:", base64Payload);
-
-    // Create signature
     const string = base64Payload + '/pg/v1/pay' + API_KEY;
     const sha256 = crypto.createHash('sha256').update(string).digest('hex');
     const checksum = sha256 + '###' + KEY_INDEX;
-    console.log(checksum);
 
-
-    // Setup Axios options
     const options = {
       method: 'POST',
       url: 'https://api.phonepe.com/apis/hermes/pg/v1/pay',
@@ -60,30 +47,26 @@ router.post('/initiate', async (req, res) => {
       },
     };
 
-    // Make Axios request
     const response = await axios.request(options);
-    console.log("Response:", response.data);
-    res.json(response.data); // Send response back to the client
-
+    res.json({ ...response.data, merchantTransactionId, studentData }); // Send transaction ID and student data
 
   } catch (error) {
-    console.log(error)
     console.error("Error:", error.response ? error.response.data : error.message);
     res.status(500).json(error);
   }
 });
 
-router.get("/status/:merchantTransactionId", async function (req, res) {
-try {
-  const MERCHANT_ID = process.env.MERCHANTID;
-  const { merchantTransactionId } = req.params;
-  // check the status of the payment using merchantTransactionId
-  if (merchantTransactionId) {
-    let statusUrl =`https://api.phonepe.com/apis/hermes/pg/v1/status/${MERCHANT_ID}/${merchantTransactionId}` 
-      
+// Endpoint to check payment status
+router.get("/status/:merchantTransactionId", async (req, res) => {
+  try {
+    const MERCHANT_ID = process.env.MERCHANTID;
+    const API_KEY = process.env.SECRET_KEY;
+    const KEY_INDEX = process.env.KEY_INDEX;
+    const { merchantTransactionId } = req.params;
+    const { studentData } = req.body;
 
-    // generate X-VERIFY
-    let string =`/pg/v1/status/${MERCHANT_ID}/` + merchantTransactionId + API_KEY;
+    const statusUrl = `https://api.phonepe.com/apis/hermes/pg/v1/status/${MERCHANT_ID}/${merchantTransactionId}`;
+    const string = `/pg/v1/status/${MERCHANT_ID}/${merchantTransactionId}` + API_KEY;
     const sha256 = crypto.createHash('sha256').update(string).digest('hex');
     const checksum = sha256 + '###' + KEY_INDEX;
 
@@ -98,18 +81,20 @@ try {
       },
     };
 
-    // Make Axios request
     const response = await axios.request(options);
-    console.log("Response:", response.data);
-    res.json(response.data); // Send response back to the client
-  } else {
-    res.send("Sorry!! Error");
-  }
-} catch (error) {
-  console.log(error)
+    console.log(response.data);
+    if (response.data.success && response.data.data.status === 'SUCCESS') {
+      // Payment successful, save user data
+      const newResident = new Resident(JSON.parse(studentData));
+      await newResident.save();
+    }
+
+    res.json(response.data);
+
+  } catch (error) {
     console.error("Error:", error.response ? error.response.data : error.message);
     res.status(500).send("Internal Server Error");
-}
+  }
 });
 
 module.exports = router;
