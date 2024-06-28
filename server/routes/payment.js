@@ -6,7 +6,7 @@ const router = express.Router();
 const Resident = require('../models/newMemberResident'); // Assuming Student is the user model
 
 // Endpoint to initiate payment
-router.post('/intiate', async (req, res) => {
+router.post('/initiate', async (req, res) => {
   try {
     const MERCHANT_ID = process.env.MERCHANTID;
     const API_KEY = process.env.SECRET_KEY;
