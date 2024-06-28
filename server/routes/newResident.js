@@ -1,22 +1,22 @@
 // Backend (Node.js/Express)
 const express = require('express');
-const mongoose = require('mongoose');
-const nodemailer = require('nodemailer');
-const multer = require('multer');
-const multerS3 = require('multer-s3');
-const aws = require('aws-sdk');
+
 const Resident = require('../models/newMemberResident'); // Your Resident model
 const router = express.Router();
 
  router.post('/',async(req,res)=>{
     try {
-        const studentData = req.body
-        const Resident = new Resident(studentData);
-        const newResident = await Resident.save();
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber, amount, merchantTransactionId } = req.body;
+        const newResident = new Resident({
+            name, email, mobileNumber, address, parentsName,
+            parentsMobileNo, hostel, roomNumber
+          });
+          await newResident.save();
     res.status(201).json(newResident);
     
     } catch (error) {
-        res.json(error);
+        console.error('Error creating resident or processing payment:', error);
+        res.status(500).send('Internal Server Error');
     }  
  });
     // Payment successful, save user data

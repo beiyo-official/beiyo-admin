@@ -2,15 +2,14 @@
 const mongoose = require('mongoose');
 
 const residentSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  mobileNumber: Number,
-  uniqueId: { type: String, unique: true },
-  address:String,
-  parentsName: String,
-  parentsMobileNo: Number,
-  hostel:String,
-  roomNumber: String,
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  mobileNumber: { type: Number, required: true },
+  address: { type: String, required: true },
+  parentsName: { type: String, required: true },
+  parentsMobileNo: { type: Number, required: true },
+  hostel: { type: String, required: true },
+  roomNumber: { type: String, required: true },
   // photo: String,
   // aadharCard: String,
   // signedDocuments:String,
