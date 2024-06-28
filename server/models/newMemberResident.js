@@ -11,12 +11,12 @@ const residentSchema = new mongoose.Schema({
   parentsMobileNo: Number,
   hostel:String,
   roomNumber: String,
-  photo: String,
-  aadharCard: String,
-  signedDocuments:String,
-  intitutionDetails:String,
-  payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
-  contract: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract' }
+  // photo: String,
+  // aadharCard: String,
+  // signedDocuments:String,
+  // intitutionDetails:String,
+  // payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
+  // contract: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract' }
   
   
 

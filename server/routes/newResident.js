@@ -10,10 +10,11 @@ const router = express.Router();
 
  router.post('/',async(req,res)=>{
     try {
-        const {studentData} = req.body
-    const newResident = new Resident(JSON.parse(studentData));
-    await newResident.save();
-    console.log(newResident);
+        const studentData = req.body
+        const Resident = new Resident(studentData);
+        const newResident = await Resident.save();
+    res.status(201).json(newResident);
+    
     } catch (error) {
         res.json(error);
     }  
