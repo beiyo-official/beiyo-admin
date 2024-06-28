@@ -10,14 +10,14 @@ const router = express.Router();
 
  router.post('/',async(req,res)=>{
     try {
-        const {studentData} = req.query
+        const {studentData} = req.body
     const newResident = new Resident(JSON.parse(studentData));
     await newResident.save();
+    console.log(newResident);
     } catch (error) {
         res.json(error);
-    }
-    
- })
+    }  
+ });
     // Payment successful, save user data
     module.exports = router;
 
