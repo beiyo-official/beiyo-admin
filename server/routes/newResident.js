@@ -8,9 +8,9 @@ const aws = require('aws-sdk');
 const Resident = require('../models/newMemberResident'); // Your Resident model
 const router = express.Router();
 
- router.post('/api/newStudent',async(req,res)=>{
+ router.post('/',async(req,res)=>{
     try {
-        const {studentData} = req.query
+        const {studentData} = req.body
     const newResident = new Resident(JSON.parse(studentData));
     await newResident.save();
     } catch (error) {
