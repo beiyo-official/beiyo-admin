@@ -4,6 +4,7 @@ const roomRoutes = require('./routes/roomRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const Bed = require('./routes/Bed');
 const CleaningSchedule = require('./routes/CleaningShedule');
+const newResident = require('./routes/newResident');
 const payment = require('./routes/payment')
 const { connectDB } = require('./db');
 const express = require('express');
@@ -34,7 +35,7 @@ app.use('/api/beds',Bed)
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/cleaningSchedule', CleaningSchedule);
 app.use('/api/pay',payment)
-app.use('/api/newResident',)
+app.use('/api/newResident',newResident)
 
 
 // Start the server
