@@ -5,7 +5,7 @@ const nodemailer = require('nodemailer');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
-const Resident = require('./models/Resident'); // Your Resident model
+const Resident = require('../models/newMemberResident'); // Your Resident model
 const router = express.Router();
 
  router.post('/api/newStudent',async(req,res)=>{
