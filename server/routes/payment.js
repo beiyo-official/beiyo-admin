@@ -8,20 +8,19 @@ const Resident = require('../models/newMemberResident'); // Assuming Student is 
 // Endpoint to initiate payment
 router.post('/intiate', async (req, res) => {
   try {
-    const { amount, studentData } = req.body; // Receive student data along with amount
     const MERCHANT_ID = process.env.MERCHANTID;
     const API_KEY = process.env.SECRET_KEY;
     const KEY_INDEX = process.env.KEY_INDEX;
+    // const KEY_INDEX = 1;
     const merchantTransactionId = uniqid();
-
-    // Payload object
+    const amount = req.body.amount
     const paymain = {
       "merchantId": MERCHANT_ID,
       "merchantTransactionId": merchantTransactionId,
-      "merchantUserId": 'MUID123',
-      "amount": amount * 100,
-      "redirectUrl": `https://www.beiyo.in/paymentstatus`, // Use actual URL
-      "callbackUrl": `https://beiyo-admin.vercel.app/api/pay/callback`,
+      "merchantUserId":'MUID123',
+      "amount": amount*100, // Amount in smallest currency unit
+      "redirectUrl": 'https://www.beiyo.in/paymentstatus',
+      "callbackUrl":'https://beiyo-admin.vercel.app/api/pay/callback',
       "redirectMode": "REDIRECT",
       "mobileNumber": "9617223930",
       "paymentInstrument": {
@@ -29,11 +28,18 @@ router.post('/intiate', async (req, res) => {
       }
     };
 
+    // Convert payload to base64
     const base64Payload = Buffer.from(JSON.stringify(paymain)).toString('base64');
+    console.log("Base64 Payload:", base64Payload);
+
+    // Create signature
     const string = base64Payload + '/pg/v1/pay' + API_KEY;
     const sha256 = crypto.createHash('sha256').update(string).digest('hex');
     const checksum = sha256 + '###' + KEY_INDEX;
+    console.log(checksum);
 
+
+    // Setup Axios options
     const options = {
       method: 'POST',
       url: 'https://api.phonepe.com/apis/hermes/pg/v1/pay',
@@ -47,10 +53,14 @@ router.post('/intiate', async (req, res) => {
       },
     };
 
+    // Make Axios request
     const response = await axios.request(options);
-    res.json({ ...response.data, merchantTransactionId, studentData }); // Send transaction ID and student data
+    console.log("Response:", response.data);
+    res.json(response.data); // Send response back to the client
+
 
   } catch (error) {
+    console.log(error)
     console.error("Error:", error.response ? error.response.data : error.message);
     res.status(500).json(error);
   }
