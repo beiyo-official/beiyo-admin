@@ -14,7 +14,7 @@ const router = express.Router();
     const newResident = new Resident(JSON.parse(studentData));
     await newResident.save();
     } catch (error) {
-        console.log(error);
+        res.json(error);
     }
     
  })
