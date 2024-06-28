@@ -13,7 +13,7 @@ const router = express.Router();
           });
           await newResident.save();
     res.status(201).json(newResident);
-    
+   
     } catch (error) {
         console.error('Error creating resident or processing payment:', error);
         res.status(500).send('Internal Server Error');
