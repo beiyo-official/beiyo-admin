@@ -15,7 +15,6 @@ const dayjs = require('dayjs');
             dateJoined: formattedDate
           });
           await newResident.save();
-          res.status(201).json({ message: 'New Resident Added' });
     res.status(201).json(newResident);
     } catch (error) {
         console.error('Error creating resident or processing payment:', error);
