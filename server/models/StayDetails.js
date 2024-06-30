@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const stayDetailsSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: Schema.Types.ObjectId, ref: 'Resident', required: true },
   hostel: { type: String, required: true },
   roomNumber: { type: String, required: true },
-  dateJoined: { type: Date, required: true },
-  contractStartDate: { type: Date, required: true }, // Start date of the contract
-  contractEndDate: { type: Date, required: true },  
+  dateJoined: { type: Date},
+  // contractStartDate: { type: Date, required: true }, // Start date of the contract
+  // contractEndDate: { type: Date, required: true },  
 }, {
   timestamps: true
 });

@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ticketSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  userId: { type: Schema.Types.ObjectId, ref: 'Resident', required: true },
   helpTopic: { type: String, required: true },
   description: { type: String, required: true },
   status: { type: String, enum: ['Open', 'In Progress', 'Closed'], default: 'Open' },

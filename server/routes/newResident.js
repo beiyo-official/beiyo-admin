@@ -18,7 +18,7 @@ const Resident = require('../models/newMemberResident'); // Your Resident model
           await newResident.save();
     res.status(201).json(newResident);
     const stayDetails = new StayDetails({
-        userId: Resident._id,
+        userId: newResident.id,
         hostel,
         roomNumber,
         dateJoined,

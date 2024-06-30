@@ -10,7 +10,7 @@ const residentSchema = new mongoose.Schema({
   parentsMobileNo: { type: Number, required: true },
   hostel: { type: String, required: true },
   roomNumber: { type: String, required: true },
-  dateJoined:{type:Date,required:true},
+  dateJoined:{type:Date},
   password: { type: String, required: true }
   // photo: String,
   // aadharCard: String,
