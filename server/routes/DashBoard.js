@@ -3,9 +3,9 @@ const express = require('express');
 const router = express.Router();
 const Payment = require('../models/Payment');
 const StayDetails = require('../models/StayDetails');
-const HelpTopic = require('../models/HelpTopic');
+// const HelpTopic = require('../models/HelpTopic');
 const Ticket = require('../models/Ticket');
-const authMiddleware = require('../middleware/auth');
+const authMiddleware = require('../middleware/middleware');
 
 // Get user payments
 router.get('/payments', authMiddleware, async (req, res) => {

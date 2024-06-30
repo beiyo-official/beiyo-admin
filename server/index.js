@@ -6,6 +6,8 @@ const Bed = require('./routes/Bed');
 const CleaningSchedule = require('./routes/CleaningShedule');
 const newResident = require('./routes/newResident');
 const payment = require('./routes/payment')
+const login = require('./routes/login')
+const Dashboard = require('./routes/DashBoard')
 const { connectDB } = require('./db');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -36,7 +38,8 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/cleaningSchedule', CleaningSchedule);
 app.use('/api/pay',payment)
 app.use('/api/newResident',newResident)
-
+app.use('/api/login',login)
+app.use('/api/dashboard',Dashboard)
 
 // Start the server
 app.listen(PORT, () => {
