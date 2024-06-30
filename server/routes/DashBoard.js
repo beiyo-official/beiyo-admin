@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const Payment = require('../models/Payment');
-const StayDetails = require('../models/StayDetails');
+// const StayDetails = require('../models/StayDetails');
 // const HelpTopic = require('../models/HelpTopic');
 const Ticket = require('../models/ticket');
 const authMiddleware = require('../middleware/middleware');
