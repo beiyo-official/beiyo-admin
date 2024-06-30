@@ -12,13 +12,13 @@ const Resident = require('../models/newMemberResident'); // Your Resident model
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const newResident = new Resident({
             name, email, mobileNumber, address, parentsName,
-            parentsMobileNo, hostel, roomNumber,
+            parentsMobileNo, hostel, roomNumber,password,
             dateJoined: formattedDate
           });
           await newResident.save();
     res.status(201).json(newResident);
     const stayDetails = new StayDetails({
-        userId: user._id,
+        userId: Resident._id,
         hostel,
         roomNumber,
         dateJoined,
