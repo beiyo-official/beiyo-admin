@@ -3,12 +3,11 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const StayDetails = require('../models/StayDetails');
 const Resident = require('../models/newMemberResident'); // Your Resident model
-
+const dayjs = require('dayjs');
  router.post('/',async(req,res)=>{
     try {
-        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber , dateJoined,password} = req.body;
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber , dateJoined, password} = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const newResident = new Resident({
             name, email, mobileNumber, address, parentsName,
@@ -16,17 +15,8 @@ const Resident = require('../models/newMemberResident'); // Your Resident model
             dateJoined: formattedDate
           });
           await newResident.save();
+          res.status(201).json({ message: 'New Resident Added' });
     res.status(201).json(newResident);
-    const stayDetails = new StayDetails({
-        userId: newResident.id,
-        hostel,
-        roomNumber,
-        dateJoined,
-        // contractStartDate,
-        // contractEndDate,
-      });
-      await stayDetails.save();
-   
     } catch (error) {
         console.error('Error creating resident or processing payment:', error);
         res.status(500).send('Internal Server Error');
@@ -35,4 +25,3 @@ const Resident = require('../models/newMemberResident'); // Your Resident model
     // Payment successful, save user data
     module.exports = router;
 
-  
