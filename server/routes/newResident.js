@@ -1,18 +1,31 @@
 // Backend (Node.js/Express)
 const express = require('express');
-
-const Resident = require('../models/newMemberResident'); // Your Resident model
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
+const StayDetails = require('../models/StayDetails');
+const Resident = require('../models/newMemberResident'); // Your Resident model
 
  router.post('/',async(req,res)=>{
     try {
-        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber} = req.body;
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber , dateJoined,password} = req.body;
+        const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const newResident = new Resident({
             name, email, mobileNumber, address, parentsName,
-            parentsMobileNo, hostel, roomNumber
+            parentsMobileNo, hostel, roomNumber,
+            dateJoined: formattedDate
           });
           await newResident.save();
     res.status(201).json(newResident);
+    const stayDetails = new StayDetails({
+        userId: user._id,
+        hostel,
+        roomNumber,
+        dateJoined,
+        // contractStartDate,
+        // contractEndDate,
+      });
+      await stayDetails.save();
    
     } catch (error) {
         console.error('Error creating resident or processing payment:', error);

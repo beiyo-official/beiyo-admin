@@ -1,6 +1,6 @@
 // Resident model (resident.js)
 const mongoose = require('mongoose');
-
+const bcrypt = require('bcrypt');
 const residentSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
@@ -10,6 +10,8 @@ const residentSchema = new mongoose.Schema({
   parentsMobileNo: { type: Number, required: true },
   hostel: { type: String, required: true },
   roomNumber: { type: String, required: true },
+  dateJoined:{type:Date,required:true},
+  password: { type: String, required: true }
   // photo: String,
   // aadharCard: String,
   // signedDocuments:String,
@@ -21,5 +23,10 @@ const residentSchema = new mongoose.Schema({
 
   // other fields
 });
-
+residentSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
 module.exports = mongoose.model('Resident', residentSchema);
