@@ -21,6 +21,16 @@ const dayjs = require('dayjs');
         res.status(500).send('Internal Server Error');
     }  
  });
+
+ router.get('/', async (req, res) => {
+    try {
+      const newResidents = await Resident.find();
+      res.json(newResidents);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
     // Payment successful, save user data
     module.exports = router;
 
