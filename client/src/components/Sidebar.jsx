@@ -20,13 +20,13 @@ const Sidebar = () => {
     >
       <Toolbar />
       <List>
-        <ListItem button component={Link} to="/rooms">
+        <ListItem  component={Link} to="/rooms">
           <ListItemText primary="Rooms" />
         </ListItem>
-        <ListItem button component={Link} to="/hostels">
+        <ListItem  component={Link} to="/hostels">
           <ListItemText primary="Hostels" />
         </ListItem>
-        <ListItem button component={Link} to="/new-resident">
+        <ListItem  component={Link} to="/new-resident">
           <ListItemText primary="New Resident" />
         </ListItem>
         {/* Add more list items here as needed */}
