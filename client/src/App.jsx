@@ -17,6 +17,7 @@ import Stack from '@mui/material/Stack';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import CleaningChart from './components/CleaningChart';
+import NewResidentList from './components/newResidentlist';
 
 const theme = createTheme({
   components: {
@@ -74,7 +75,14 @@ function App() {
                 </SignedIn>
               } 
             />
-
+            <Route 
+              path="/new-resident" 
+              element={
+                <SignedIn>
+                  <NewResidentList />
+                </SignedIn>
+              } 
+            />
             <Route 
               path="/rooms" 
               element={
