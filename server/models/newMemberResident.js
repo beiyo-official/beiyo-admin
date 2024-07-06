@@ -11,7 +11,8 @@ const residentSchema = new mongoose.Schema({
   hostel: { type: String, required: true },
   roomNumber: { type: String, required: true },
   dateJoined:{type:Date},
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  cash:{type:Boolean,default:false}
   // photo: String,
   // aadharCard: String,
   // signedDocuments:String,
