@@ -22,7 +22,7 @@ const NewResidentList = () => {
       <h1>New Resident List</h1>
       <ul>
         {residents.map(resident => (
-          <li key={resident.id}>{resident.name}</li>
+          <li key={resident.id}>{resident.name} {resident.hostel} {resident.roomNumber}</li>
         ))}
       </ul>
     </div>
