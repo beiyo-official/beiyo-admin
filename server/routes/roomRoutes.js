@@ -138,7 +138,7 @@ router.patch('/:id/updateRemainingBeds', getRoom, async (req, res) => {
 });
 
 // getting single room
-router.get("/api/rooms/:id",async(req,res)=>{
+router.get("/:id",async(req,res)=>{
   try{
    const room = await Room.findById(req.params.id);  
    if(!room){
