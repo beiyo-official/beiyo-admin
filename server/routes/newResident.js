@@ -30,6 +30,10 @@ const dayjs = require('dayjs');
       res.status(500).json({ message: err.message });
     }
   });
+  router.get('/:id',async(req,res)=>{
+    const resident = await Resident.findById(req.params.id);
+    res.json(resident);
+  })
 
     // Payment successful, save user data
     module.exports = router;

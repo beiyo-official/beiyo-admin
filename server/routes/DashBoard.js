@@ -20,11 +20,12 @@ router.get('/payments', authMiddleware, async (req, res) => {
   }
 });
 
+
 // Get user stay details
 router.get('/stay-details', authMiddleware, async (req, res) => {
   try {
     const userId = req.user; // Extracted from auth middleware
-    const details = await Resident.findOne({ userId });
+    const details = await Resident.findById( userId );
     if (!details) {
       return res.status(404).json({ message: 'Stay details not found' });
     }
@@ -39,15 +40,20 @@ router.get('/stay-details', authMiddleware, async (req, res) => {
 router.post('/raise-ticket', authMiddleware, async (req, res) => {
   try {
     const userId = req.user; // Extracted from auth middleware
-    const details = await Resident.findOne({ userId });
-    const name = details.name;
+    const userDetails = await Resident.findById(userId);
+    if (!userDetails) {
+      return res.status(404).json({ message: 'User details not found' });
+    }
+    const name = userDetails.name;
+    const hostel = userDetails.hostel;
+    const room = userDetails.roomNumber;
     const { helpTopic, description } = req.body;
 
     if (!helpTopic || !description) {
       return res.status(400).json({ message: 'Help topic and description are required' });
     }
 
-    const ticket = new Ticket({name, userId, helpTopic, description });
+    const ticket = new Ticket({name, userId, hostel, room, helpTopic, description });
     await ticket.save();
     res.status(201).json(ticket);
   } catch (error) {
