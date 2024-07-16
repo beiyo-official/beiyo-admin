@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Button, TextField, Typography, Select, MenuItem, InputLabel, FormControl, CssBaseline, Grid } from '@mui/material';
 import dayjs from 'dayjs';
-import './payment.css'
+
 const StudentForm = () => {
   const [hostels, setHostels] = useState([]);
   const [rooms, setRooms] = useState([]);
