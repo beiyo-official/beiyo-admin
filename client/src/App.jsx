@@ -18,6 +18,7 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import CleaningChart from './components/CleaningChart';
 import NewResidentList from './components/newResidentlist';
+import StudentForm from './components/StudentForm';
 
 const theme = createTheme({
   components: {
@@ -72,6 +73,14 @@ function App() {
               element={
                 <SignedIn>
                   <HostelList />
+                </SignedIn>
+              } 
+            />
+            <Route 
+              path="/student-form" 
+              element={
+                <SignedIn>
+                  <StudentForm />
                 </SignedIn>
               } 
             />
