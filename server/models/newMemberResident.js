@@ -12,13 +12,13 @@ const residentSchema = new mongoose.Schema({
   roomNumber: { type: String, required: true },
   dateJoined:{type:Date},
   password: { type: String, required: true },
-  cash:{type:Boolean,default:false}
+  cash:{type:Boolean,default:false},
   // photo: String,
   // aadharCard: String,
   // signedDocuments:String,
   // intitutionDetails:String,
-  // payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
-  // contract: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract' }
+  payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
+  contract: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract' }
   
   
 
