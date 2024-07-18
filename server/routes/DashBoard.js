@@ -21,6 +21,16 @@ router.get('/payments/:userId', async (req, res) => {
   }
 });
 
+router.get('/payments/:id', async (req, res) => {
+  try {
+    const payments = await Payment.findById({id});
+    res.json(payments);
+  } catch (error) {
+    console.error('Error fetching payments:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 router.post('/paymentSave', async (req, res) => {
   try {
     const { userId, month, amount } = req.body;
