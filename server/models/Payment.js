@@ -5,9 +5,9 @@ const Schema = mongoose.Schema;
 const paymentSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'Resident', required: true },
   amount: { type: Number, required: true },
-  status: { type: String, enum: ['Pending', 'Completed', 'Failed'], required: true },
+  status: { type: String, enum: ['due', 'successful'], required: true },
   month: { type: String, required: true },
-  datePaid: { type: Date, default: Date.now },
+  date: { type: Date, default: Date.now },
 }, {
   timestamps: true
 });

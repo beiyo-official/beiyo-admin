@@ -7,18 +7,35 @@ const Resident = require('../models/newMemberResident');
 // const HelpTopic = require('../models/HelpTopic');
 const Ticket = require('../models/ticket');
 const authMiddleware = require('../middleware/middleware');
+const dayjs = require('dayjs');
 
-// Get user payments
-router.get('/payments', authMiddleware, async (req, res) => {
+
+// Fetch payments for a user
+router.get('/payments/:userId', async (req, res) => {
   try {
-    const userId = req.user; // Extracted from auth middleware
-    const payments = await Payment.find({ userId });
+    const payments = await Payment.find({ userId: req.params.userId }).sort({ month: -1 });
     res.json(payments);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to retrieve payments' });
+    console.error('Error fetching payments:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
+
+router.post('/paymentSave', async (req, res) => {
+  try {
+    const { userId, month, amount } = req.body;
+    const payment = await Payment.findOneAndUpdate(
+      { userId, month },
+      { status: 'successful', amount, date: new Date() },
+      { new: true }
+    );
+    res.status(201).json(payment);
+  } catch (error) {
+    console.error('Error making payment:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 
 // Get user stay details
@@ -63,3 +80,5 @@ router.post('/raise-ticket', authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+
+

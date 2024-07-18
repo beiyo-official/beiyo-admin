@@ -24,7 +24,7 @@ const residentSchema = new mongoose.Schema({
   // signedDocuments:String,
   // intitutionDetails:String,
   payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
-  contract: { type: mongoose.Schema.Types.ObjectId, ref: 'Contract' }
+  contract: { type: Date }
   
   
 
