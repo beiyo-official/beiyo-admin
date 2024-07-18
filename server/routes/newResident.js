@@ -39,8 +39,8 @@ const Payment = require('../models/Payment');
         return res.status(404).json({ message: 'Resident not found' });
       }
       
-      console.log(`Generating payments for resident: ${resident._id}, contract end date: ${resident.contract}`);
-      await generateMonthlyPayments(resident._id, resident.contract);
+      // console.log(`Generating payments for resident: ${resident._id}, contract end date: ${resident.contract}`);
+      // await generateMonthlyPayments(resident._id, resident.contract);
       res.json(resident);
     } catch (error) {
       console.error('Error fetching resident or generating payments:', error);
