@@ -8,12 +8,15 @@ const dayjs = require('dayjs');
 const Payment = require('../models/Payment');
  router.post('/',async(req,res)=>{
     try {
-        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber , dateJoined, password,cash} = req.body;
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber , dateJoined, password,cash,contract} = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
+        const contractformattedDate = contract ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
+        
         const newResident = new Resident({
             name, email, mobileNumber, address, parentsName,
             parentsMobileNo, hostel, roomNumber,password,cash,
-            dateJoined: formattedDate
+            dateJoined: formattedDate,
+            contract: contractformattedDate,
           });
           await newResident.save();
     res.status(201).json(newResident);
