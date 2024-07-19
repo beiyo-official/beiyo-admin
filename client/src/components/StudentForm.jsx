@@ -18,6 +18,7 @@ const StudentForm = () => {
     hostel: '',
     roomNumber: '',
     dateJoined: dayjs().format('YYYY-MM-DD'),
+    contract:dayjs().format('YYYY-MM-DD'),
      password: '',
     confirmPassword: ''
   });
@@ -226,6 +227,16 @@ const StudentForm = () => {
           name="dateJoined"
           type="date"
           value={formData.dateJoined}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+          InputLabelProps={{ shrink: true }}
+        />
+         <TextField
+          label="Contract end"
+          name="contract"
+          type="date"
+          value={formData.contract}
           onChange={handleChange}
           fullWidth
           margin="normal"
