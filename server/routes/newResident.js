@@ -10,7 +10,7 @@ const Payment = require('../models/Payment');
     try {
         const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber , dateJoined, password,cash,contract} = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
-        const contractformattedDate = contract ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
+        const contractformattedDate = contract ? dayjs(contract).format('YYYY-MM-DD') : null;
         
         const newResident = new Resident({
             name, email, mobileNumber, address, parentsName,
@@ -43,7 +43,7 @@ const Payment = require('../models/Payment');
       }
       
       // console.log(`Generating payments for resident: ${resident._id}, contract end date: ${resident.contract}`);
-      // await generateMonthlyPayments(resident._id, resident.contract);
+      await generateMonthlyPayments(resident._id, resident.contract);
       res.json(resident);
     } catch (error) {
       console.error('Error fetching resident or generating payments:', error);
