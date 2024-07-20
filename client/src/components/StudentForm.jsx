@@ -105,6 +105,20 @@ const StudentForm = () => {
     }
     if (validateForm()) {
         await axios.post('https://beiyo-admin.vercel.app/api/newResident', formData);
+      setFormData({
+        name: '',
+        email: '',
+        mobileNumber: '',
+        address: '',
+        parentsName: '',
+        parentsMobileNo: '',
+        hostel: '',
+        roomNumber: '',
+        dateJoined: dayjs().format('YYYY-MM-DD'),
+        contract:dayjs().format('YYYY-MM-DD'),
+         password: '',
+        confirmPassword: ''
+      })
     }
   };
 
