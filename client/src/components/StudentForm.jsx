@@ -7,6 +7,7 @@ const StudentForm = () => {
   const [hostels, setHostels] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [price,setPrice] = useState(null);
+  
   // const [hostel,setHostel]= useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -20,7 +21,8 @@ const StudentForm = () => {
     dateJoined: dayjs().format('YYYY-MM-DD'),
     contract:dayjs().format('YYYY-MM-DD'),
      password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    amount:price
   });
   const [errors, setErrors] = useState({});
 
@@ -117,7 +119,8 @@ const StudentForm = () => {
         dateJoined: dayjs().format('YYYY-MM-DD'),
         contract:dayjs().format('YYYY-MM-DD'),
          password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        amount:'',
       })
     }
   };
