@@ -8,6 +8,7 @@ const residentSchema = new mongoose.Schema({
   address: { type: String,
     //  required: true 
     },
+    amount:{type:String},
   parentsName: { type: String, 
     // required: true 
   },

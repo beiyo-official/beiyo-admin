@@ -8,7 +8,7 @@ const dayjs = require('dayjs');
 const Payment = require('../models/Payment');
  router.post('/',async(req,res)=>{
     try {
-        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber , dateJoined, password,cash,contract} = req.body;
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber , dateJoined, password,cash,contract,amount} = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractformattedDate = contract ? dayjs(contract).format('YYYY-MM-DD') : null;
         
@@ -17,6 +17,7 @@ const Payment = require('../models/Payment');
             parentsMobileNo, hostel, roomNumber,password,cash,
             dateJoined: formattedDate,
             contract: contractformattedDate,
+            amount:amount
           });
           await newResident.save();
     res.status(201).json(newResident);
@@ -69,11 +70,11 @@ const Payment = require('../models/Payment');
         const existingPayment = await Payment.findOne({ userId, month });
     
         if (!existingPayment) {
-          // rishabh jain mayank hasardani
+          // rishabh jain mayank hasardani ritk lodhi amount is wrong
           const payment = new Payment({
             userId,
             userName:resident.name,
-            amount: 3000, // Replace with the appropriate amount
+            amount: resident.amount, // Replace with the appropriate amount
             month,
             date: currentDate.toDate(),
             status: 'due'
