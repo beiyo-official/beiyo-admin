@@ -59,10 +59,11 @@ const Payment = require('../models/Payment');
 
     const generateMonthlyPayments = async (userId, contractEndDate) => {
      try {
-      const startDate = dayjs().startOf('month');
+      const resident = await Resident.findById(userId);
+      const startDate = dayjs(resident.dateJoined).startOf('month');
       const endDate = dayjs(contractEndDate).endOf('month');
       let currentDate = startDate;
-      const resident = await Resident.findById(userId);
+      
       while (currentDate.isBefore(endDate)) {
         const month = currentDate.format('YYYY-MM');
         const existingPayment = await Payment.findOne({ userId, month });
