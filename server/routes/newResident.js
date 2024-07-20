@@ -68,8 +68,10 @@ const Payment = require('../models/Payment');
         const existingPayment = await Payment.findOne({ userId, month });
     
         if (!existingPayment) {
+          // rishabh jain mayank hasardani
           const payment = new Payment({
             userId,
+            userName:resident.name,
             amount: 3000, // Replace with the appropriate amount
             month,
             date: currentDate.toDate(),
