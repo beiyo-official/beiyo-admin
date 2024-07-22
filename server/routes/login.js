@@ -62,13 +62,13 @@ const sendUniqueIdEmail = async (email,otp) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: '',
-      pass: '',
+      user: 'baxidaksh2004@gmail.com',
+      pass: '9425191351',
     },
   });
 
   const mailOptions = {
-    from: 'your-email@gmail.com',
+    from: 'baxidaksh2004@gmail.com',
     to: email,
     subject: 'Update your Password',
     text: `Your otp is ${otp}`,
