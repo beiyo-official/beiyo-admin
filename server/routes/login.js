@@ -3,6 +3,10 @@ const router = express.Router();
 const Resident = require('../models/newMemberResident');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const genrateOTP = require('../functions/generatingOTP');
+
+
 
 // Login Route
 router.post('/', async (req, res) => {
@@ -29,4 +33,48 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.patch('/updatePassword',async(req,res)=>{
+  const {newPassword}=req.body;
+  try {
+    const resident = await Resident.findOne({email});
+    resident.password = newPassword;
+    await resident.save();
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+
+router.get('/forgetPassword',async(req,res)=>{
+  const {email} = req.body;
+  const otp = genrateOTP();
+  try {
+    await sendUniqueIdEmail(email);
+    res.json(otp);
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 module.exports = router;
+
+const sendUniqueIdEmail = async (email,otp) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: '',
+      pass: '',
+    },
+  });
+
+  const mailOptions = {
+    from: 'your-email@gmail.com',
+    to: email,
+    subject: 'Update your Password',
+    text: `Your otp is ${otp}`,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+
