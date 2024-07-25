@@ -69,7 +69,7 @@ router.get('/stay-details', authMiddleware, async (req, res) => {
 });
 
 // Raise a support ticket
-router.post('/raise-ticket', authMiddleware, async (req, res) => {
+router.post('/raise-ticket', async (req, res) => {
   try {
     const userId = req.user; // Extracted from auth middleware
     const userDetails = await Resident.findById(userId);
@@ -93,9 +93,9 @@ router.post('/raise-ticket', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Failed to raise a support ticket' });
   }
 });
-router.get('/oldTickets', authMiddleware,async(req,res)=>{
+router.get('/oldTickets/:userid',async(req,res)=>{
   try {
-    const userId = req.user;
+    const userId = req.params.userid;
     const tickets = await Ticket.find({userId}).sort({createdAt:-1});
     res.json(tickets);
   } catch (error) {
