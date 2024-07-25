@@ -43,7 +43,7 @@ router.post('/paymentSave', async (req, res) => {
       { userId, month },
       { status: 'successful', amount, date: new Date() },
       { new: true }
-    );
+      );
     res.status(201).json(payment);
   } catch (error) {
     console.error('Error making payment:', error);
@@ -93,6 +93,15 @@ router.post('/raise-ticket', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Failed to raise a support ticket' });
   }
 });
+router.get('/oldTickets', authMiddleware,async(req,res)=>{
+  try {
+    const userId = req.user;
+    const tickets = await Ticket.find({userId}).sort({createdAt:-1});
+    res.json(tickets);
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 module.exports = router;
 
