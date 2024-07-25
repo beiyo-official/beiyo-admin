@@ -71,7 +71,8 @@ router.get('/stay-details', authMiddleware, async (req, res) => {
 // Raise a support ticket
 router.post('/raise-ticket', async (req, res) => {
   try {
-    const userId = req.userId; // Extracted from auth middleware
+
+    const { helpTopic, description, userId } = req.body;
     const userDetails = await Resident.findById(userId);
     if (!userDetails) {
       return res.status(404).json({ message: 'User details not found' });
@@ -79,7 +80,7 @@ router.post('/raise-ticket', async (req, res) => {
     const name = userDetails.name;
     const hostel = userDetails.hostel;
     const room = userDetails.roomNumber;
-    const { helpTopic, description } = req.body;
+   
 
     if (!helpTopic || !description) {
       return res.status(400).json({ message: 'Help topic and description are required' });
