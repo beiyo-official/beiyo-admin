@@ -71,7 +71,7 @@ router.get('/stay-details', authMiddleware, async (req, res) => {
 // Raise a support ticket
 router.post('/raise-ticket', async (req, res) => {
   try {
-    const userId = req.user; // Extracted from auth middleware
+    const userId = req.userId; // Extracted from auth middleware
     const userDetails = await Resident.findById(userId);
     if (!userDetails) {
       return res.status(404).json({ message: 'User details not found' });
