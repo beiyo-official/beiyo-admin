@@ -52,6 +52,26 @@ const Payment = require('../models/Payment');
     }
   });
   
+router.post('/amount',async(req,res)=>{
+  try {
+    const email = req.body.email;
+    const amount = req.body.amount;
+    const contract = req.body.contract
+    const resident = await Resident.findOne(email);
+   
+
+    if (!resident) {
+      return res.status(404).json({ message: 'Resident not found' });
+    }
+    resident.amount = amount;
+    resident.contract=contract;
+    await resident.save();
+
+  } catch (error) {
+    console.log(error);
+  }
+})
+
   module.exports = router;
   
 
