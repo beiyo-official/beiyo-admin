@@ -30,7 +30,7 @@ router.get('/calculateTotalRemainingBeds', async (req, res) => {
 // Get all hostels
 router.get('/', async (req, res) => {
   try {
-    const hostels = await Hostel.find().sort({totalRemainingBeds : -1});
+    const hostels = await Hostel.find().sort({totalRemainingBeds : -1}).sort({name:1});
     res.json(hostels);
   } catch (err) {
     res.status(500).json({ message: err.message });

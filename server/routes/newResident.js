@@ -57,7 +57,11 @@ router.post('/amount',async(req,res)=>{
     const email = req.body.email;
     const amount = req.body.amount;
     const contract = req.body.contract
-    const resident = await Resident.findOne(email);
+    const resident = await Resident.findOneAndUpdate( 
+       {  email },
+      {  amount,contract: new Date() },
+      { new: true }
+    );
    
 
     if (!resident) {
