@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { CssBaseline } from '@mui/material';
-
+import {format} from 'date-fns'
 const NewResidentList = () => {
   const [residents, setResidents] = useState([]);
   const[filteredResident,setFilteredResident]=useState([]);
@@ -50,7 +50,7 @@ const NewResidentList = () => {
       <h1>New Resident List</h1>
       <ul>
         {filteredResident.map(resident => (
-          <li key={resident.id}>{resident.name} {resident.hostel} {resident.roomNumber}</li>
+          <li key={resident.id}>{resident.name} {resident.hostel} {resident.roomNumber} {resident.email} {resident.amount} {resident.contract} </li>
         ))}
       </ul>
     </div>

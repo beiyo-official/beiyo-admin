@@ -19,6 +19,7 @@ import Header from './components/Header';
 import CleaningChart from './components/CleaningChart';
 import NewResidentList from './components/newResidentlist';
 import StudentForm from './components/StudentForm';
+import AmountForm from './components/amountUpdate';
 
 const theme = createTheme({
   components: {
@@ -76,6 +77,13 @@ function App() {
                 </SignedIn>
               } 
             />
+            <Route  
+              path='/amount-form'
+              element={
+                <SignedIn>
+                  <AmountForm />
+                </SignedIn>
+              }/>
             <Route 
               path="/student-form" 
               element={
