@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const genrateOTP = require('../functions/generatingOTP');
 
-
+const otps = {};
 
 // Login Route
 router.post('/', async (req, res) => {
@@ -33,48 +33,78 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.patch('/updatePassword',async(req,res)=>{
-  const {newPassword}=req.body;
+// Verify OTP and reset password
+router.post('/resetPassword', async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+  const userOtp = otps[email];
+
+  // Check if OTP is valid and not expired
+  if (!userOtp || userOtp.otp !== otp || userOtp.expiresAt < Date.now()) {
+    return res.status(400).json({ message: 'Invalid or expired OTP' });
+  }
+
   try {
-    const resident = await Resident.findOne({email});
-    resident.password = newPassword;
-    await resident.save();
+    const user = await Resident.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    
+    user.password = newPassword;
+    await user.save();
+
+    // Remove used OTP
+    delete otps[email];
+
+    res.json({ message: 'Password reset successful' });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: 'Error resetting password' });
   }
 });
 
 
-router.get('/forgetPassword',async(req,res)=>{
-  const {email} = req.body;
-  const otp = genrateOTP();
+
+router.post('/forgetPassword', async (req, res) => {
+  const { email } = req.body;
+  const otp = genrateOTP(); // Generate a 6-digit OTP
   try {
-    await sendUniqueIdEmail(email);
-    res.json(otp);
+    const user = await Resident.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Email not found' });
+    }
+
+    // Save OTP in memory with an expiration time (e.g., 10 minutes)
+    otps[email] = { otp, expiresAt: Date.now() + 10 * 60 * 1000 };
+
+    // Send OTP via email
+    await sendUniqueIdEmail(email, otp);
+    res.json({ message: 'OTP sent to your email' });
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    res.status(500).json({ message: 'Error sending OTP' });
   }
-})
+});
+
 
 module.exports = router;
 
-const sendUniqueIdEmail = async (email,otp) => {
+const sendUniqueIdEmail = async (email, otp) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'baxidaksh2004@gmail.com',
-      pass: '9425191351',
+      user: 'beiyofinancetech@gmail.com', // Your email
+      pass: 'beiyofinance1223', // Your email password or app password
     },
   });
 
   const mailOptions = {
-    from: 'baxidaksh2004@gmail.com',
+    from: 'beiyofinancetech@gmail.com',
     to: email,
-    subject: 'Update your Password',
-    text: `Your otp is ${otp}`,
+    subject: 'Your OTP for Password Reset',
+    text: `Your OTP for resetting your password is ${otp}`,
   };
 
   await transporter.sendMail(mailOptions);
 };
-
 
