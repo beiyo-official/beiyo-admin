@@ -48,8 +48,7 @@ router.post('/resetPassword', async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: 'User not found' });
     }
-
-    
+ 
     user.password = newPassword;
     await user.save();
 
@@ -94,7 +93,7 @@ const sendUniqueIdEmail = async (email, otp) => {
     service: 'gmail',
     auth: {
       user: 'beiyofinancetech@gmail.com', // Your email
-      pass: 'beiyofinance1223', // Your email password or app password
+      pass: 'hetsusifwjvdldto', // Your email password or app password
     },
   });
 
