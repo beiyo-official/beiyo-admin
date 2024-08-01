@@ -48,7 +48,7 @@ router.post('/resetPassword', async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: 'User not found' });
     }
- 
+    
     user.password = newPassword;
     await user.save();
 
