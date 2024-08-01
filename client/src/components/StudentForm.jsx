@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 const StudentForm = () => {
   const [hostels, setHostels] = useState([]);
   const [rooms, setRooms] = useState([]);
-  const [price,setPrice] = useState(null);
+  // const [price,setPrice] = useState(null);
   
   // const [hostel,setHostel]= useState(null);
   const [formData, setFormData] = useState({
@@ -22,7 +22,7 @@ const StudentForm = () => {
     contract:dayjs().format('YYYY-MM-DD'),
      password: '',
     confirmPassword: '',
-    amount:price
+    amount:''
   });
   const [errors, setErrors] = useState({});
 
@@ -239,6 +239,13 @@ const StudentForm = () => {
               </Select>
               {errors.roomNumber && <Typography color="error">{errors.roomNumber}</Typography>}
             </FormControl>
+            <TextField
+              fullWidth
+              label="Amount"
+              name="amount"
+              value={formData.amount}
+              onChange={handleChange}
+            />
             <TextField
           label="Date Joined"
           name="dateJoined"
