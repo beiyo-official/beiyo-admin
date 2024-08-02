@@ -48,11 +48,11 @@ const NewResidentList = () => {
         ))}
       </select>
       <h1>New Resident List</h1>
-      <ul>
+      <ol style={{}}>
         {filteredResident.map(resident => (
           <li key={resident.id}>{resident.name} {resident.hostel} {resident.roomNumber} {resident.email} {resident.amount} {resident.contract} </li>
         ))}
-      </ul>
+      </ol>
     </div>
   );
 }

@@ -244,7 +244,7 @@ const StudentForm = () => {
               label="Amount"
               name="amount"
               value={formData.amount}
-              onChange={handleChange}
+              onChange={handleChange} 
             />
             <TextField
           label="Date Joined"
