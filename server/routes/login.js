@@ -40,7 +40,7 @@ router.post('/resetPassword', async (req, res) => {
 
   // Check if OTP is valid and not expired
   if (!userOtp || userOtp.otp !== otp || userOtp.expiresAt < Date.now()) {
-    return res.status(400).json({ message: 'Invalid or expired OTP' });
+    return res.status(400).json({ message: 'Invalid or expired OTP'  });
   }
 
   try {
@@ -66,7 +66,9 @@ router.post('/resetPassword', async (req, res) => {
 
 router.post('/forgetPassword', async (req, res) => {
   const { email } = req.body;
-  const otp = genrateOTP(); // Generate a 6-digit OTP
+  const otp = genrateOTP();
+  // Generate a 6-digit OTP
+  console.log(otp);
   try {
     const user = await Resident.findOne({ email });
     if (!user) {

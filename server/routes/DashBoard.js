@@ -13,7 +13,7 @@ const dayjs = require('dayjs');
 // Fetch payments for a user
 router.get('/payments/:userId', async (req, res) => {
   try {
-    const payments = await Payment.find({ userId: req.params.userId }).sort({ month: -1 });
+    const payments = await Payment.find({ userId: req.params.userId }).sort({ month: 1 });
     res.json(payments);
   } catch (error) {
     console.error('Error fetching payments:', error);
