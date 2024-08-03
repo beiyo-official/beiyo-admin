@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
 
 // Verify OTP and reset password
 router.post('/resetPassword', async (req, res) => {
-  const { email, otp, newPassword } = req.body;
+  const { email, otp } = req.body;
   const userOtp = otps[email];
 
   // Check if OTP is valid and not expired
@@ -44,6 +44,16 @@ router.post('/resetPassword', async (req, res) => {
   }
 
   try {
+    res.json({ message: 'OTP is verified' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'OTP is invalid' });
+  }
+});
+
+router.post('/updatePassword',async(req,res)=>{
+  const {email,newPassword}=req.body
+  try {
     const user = await Resident.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'User not found' });
@@ -51,18 +61,12 @@ router.post('/resetPassword', async (req, res) => {
     
     user.password = newPassword;
     await user.save();
-
-    // Remove used OTP
-    delete otps[email];
-
     res.json({ message: 'Password reset successful' });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Error resetting password' });
   }
-});
-
-
+})
 
 router.post('/forgetPassword', async (req, res) => {
   const { email } = req.body;
