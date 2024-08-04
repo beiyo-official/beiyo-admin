@@ -21,6 +21,15 @@ router.get('/payments/:userId', async (req, res) => {
   }
 });
 
+router.get('/payments',async(req,res)=>{
+  try {
+    const payments= await Payment.find();
+    res.json(payments); 
+  } catch (error) {
+    console.log(error);
+  }
+})
+
 router.get('/payment/:id', async (req, res) => {
   try {
     const paymentId = req.params.id;
