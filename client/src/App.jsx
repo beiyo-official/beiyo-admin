@@ -20,6 +20,7 @@ import CleaningChart from './components/CleaningChart';
 import NewResidentList from './components/newResidentlist';
 import StudentForm from './components/StudentForm';
 import AmountForm from './components/amountUpdate';
+import Payment from './components/Payment';
 
 const theme = createTheme({
   components: {
@@ -89,6 +90,14 @@ function App() {
               element={
                 <SignedIn>
                   <StudentForm />
+                </SignedIn>
+              } 
+            />
+              <Route 
+              path="/payments" 
+              element={
+                <SignedIn>
+                  <Payment />
                 </SignedIn>
               } 
             />
