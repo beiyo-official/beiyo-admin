@@ -20,6 +20,10 @@ const Payment = require('../models/Payment');
             amount:amount
           });
           await newResident.save();
+          const resident = await Resident.findOne( 
+            {email}
+         );
+          await generateMonthlyPayments(resident._id, resident.contract);
     res.status(201).json(newResident);
     } catch (error) {
         console.error('Error creating resident or processing payment:', error);

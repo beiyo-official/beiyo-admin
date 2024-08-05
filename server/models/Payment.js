@@ -9,6 +9,7 @@ const paymentSchema = new Schema({
   status: { type: String, enum: ['due', 'successful'], required: true },
   month: { type: String, required: true },
   date: { type: Date, default: Date.now },
+  cash: { type: Boolean},
 }, {
   timestamps: true
 });

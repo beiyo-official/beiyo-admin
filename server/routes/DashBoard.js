@@ -48,17 +48,46 @@ router.get('/payment/:id', async (req, res) => {
 router.post('/paymentSave', async (req, res) => {
   try {
     const { userId, month, amount } = req.body;
-    const payment = await Payment.findOneAndUpdate(
-      { userId, month },
-      { status: 'successful', amount, date: new Date() },
-      { new: true }
-      );
-    res.status(201).json(payment);
+    // const payment = await Payment.findOneAndUpdate(
+    //   { userId, month },
+    //   { status: 'successful', amount, date: new Date() },
+    //   { new: true }
+    //   );
+    // res.status(201).json(payment);
+  const cash = false;
+   await paymentSave(userId,month,amount,cash);
+    res.json('successfully saved');
   } catch (error) {
     console.error('Error making payment:', error);
     res.status(500).send('Internal Server Error');
   }
 });
+const paymentSave = async (userId,month,amount,cash)=>{
+  const payment = await Payment.findOneAndUpdate(
+    { userId, month },
+    { status: 'successful', amount,cash:cash },
+    { new: true, },
+    );
+    return payment
+}
+
+router.post('/cashPayments',async(req,res)=>{
+  try {
+    const { email,month,amount } = req.body;
+    const cash = true;
+    const resident = await Resident.findOne({email});
+    if(!resident){
+      return res.status(404).json({message:'Resident not found'});
+    }
+    paymentSave(resident.id,month,amount,cash)
+    res.json('successfull through cash');
+  } catch (error) {
+    console.error('Error making payment:', error);
+    res.status(500).send('Internal Server Error');
+  }
+
+})
+
 
 
 
