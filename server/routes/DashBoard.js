@@ -74,12 +74,13 @@ const paymentSave = async (userId,month,amount,cash)=>{
 router.post('/cashPayments',async(req,res)=>{
   try {
     const { email,month,amount } = req.body;
+    const monthFormated = month.format('YYYY-MM');
     const cash = true;
     const resident = await Resident.findOne({email});
     if(!resident){
       return res.status(404).json({message:'Resident not found'});
     }
-    paymentSave(resident.id,month,amount,cash)
+    paymentSave(resident.id,monthFormated,amount,cash)
     res.json('successfull through cash');
   } catch (error) {
     console.error('Error making payment:', error);
