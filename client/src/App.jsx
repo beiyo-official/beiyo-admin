@@ -21,6 +21,7 @@ import NewResidentList from './components/newResidentlist';
 import StudentForm from './components/StudentForm';
 import AmountForm from './components/amountUpdate';
 import Payment from './components/Payment';
+import CashPayments from './components/CashPayments';
 
 const theme = createTheme({
   components: {
@@ -98,6 +99,14 @@ function App() {
               element={
                 <SignedIn>
                   <Payment />
+                </SignedIn>
+              } 
+            />
+                         <Route 
+              path="/cashPayment" 
+              element={
+                <SignedIn>
+                  <CashPayments />
                 </SignedIn>
               } 
             />

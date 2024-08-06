@@ -54,7 +54,7 @@ const Payment = () => {
       </Select>
       <ol>
         {filteredPayments.map(payment => (
-          <li key={payment.id}> {payment.userName} {payment.amount} {payment.status}</li>
+          <li key={payment.id}> {payment.userName} {payment.amount} {payment.status} {payment.cash&&(<>through cash</>)}</li>
         ))}
       </ol>
     </div>
