@@ -54,6 +54,7 @@ router.post('/paymentSave', async (req, res) => {
     //   { new: true }
     //   );
     // res.status(201).json(payment);
+    
   const cash = false;
    await paymentSave(userId,month,amount,cash);
     res.json('successfully saved');
@@ -74,14 +75,16 @@ const paymentSave = async (userId,month,amount,cash)=>{
 router.post('/cashPayments',async(req,res)=>{
   try {
     const { email,month,amount } = req.body;
-    const monthFormated = month.format('YYYY-MM');
+    const formatMonth = dayjs(month).startOf('month');
+    const monthFormated = formatMonth.format('YYYY-MM');
     const cash = true;
+
     const resident = await Resident.findOne({email});
     if(!resident){
       return res.status(404).json({message:'Resident not found'});
     }
     paymentSave(resident.id,monthFormated,amount,cash)
-    res.json('successfull through cash');
+    res.json({message:'successfull through cash'});
   } catch (error) {
     console.error('Error making payment:', error);
     res.status(500).send('Internal Server Error');
