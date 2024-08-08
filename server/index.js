@@ -20,6 +20,8 @@ const newResident = require('./routes/newResident');
 const payment = require('./routes/payment')
 const login = require('./routes/login')
 const Dashboard = require('./routes/DashBoard')
+const Staff = require('./routes/Staff')
+const Ticket = require('./routes/Tickets');
 const { connectDB } = require('./db');
 
 
@@ -49,6 +51,8 @@ app.use('/api/pay',payment)
 app.use('/api/newResident',newResident)
 app.use('/api/login',login)
 app.use('/api/dashboard',Dashboard)
+app.use('/api/staff', Staff );
+app.use('/api/ticket',Ticket)
 
 // Start the server
 app.listen(PORT, () => {
