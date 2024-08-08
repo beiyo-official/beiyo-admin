@@ -204,7 +204,7 @@ const NewResidentList = () => {
                         size="small"
                         onClick={() => handleTogglePayments(resident._id)}
                       >
-                        {openResidents[resident._id] ? <IoIosArrowDropup /> : <IoIosArrowDropdown />}
+                        {openResidents[resident._id] ? 'up': 'down'}
                       </IconButton>
                     </TableCell>
                     <TableCell>{resident.name}</TableCell>
