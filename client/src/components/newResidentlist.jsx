@@ -21,8 +21,7 @@ import {
 } from '@mui/material';
 // import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { IoIosArrowDropup } from "react-icons/io";
-import { IoIosArrowDropdown } from "react-icons/io";
+
 
 
 const NewResidentList = () => {
@@ -177,7 +176,7 @@ const NewResidentList = () => {
                         size="small"
                         onClick={() => handleTogglePayments(resident._id)}
                       >
-                        {openResidents[resident._id] ? <IoIosArrowDropup/> : <IoIosArrowDropdown/> }
+                        {openResidents[resident._id] ? 'up' : 'down' }
                       </IconButton>
                     </TableCell>
                     <TableCell>{resident.name}</TableCell>
