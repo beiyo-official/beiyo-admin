@@ -7,6 +7,18 @@ const Payment = () => {
   const [payments, setPayments] = useState([]);
   const [filteredPayments, setFilteredPayments] = useState([]);
   const [month, setMonth] = useState(dayjs().format('YYYY-MM')); 
+  const [hostels, setHostels] = useState([]);
+  const [residents,setResidents] = useState([]);
+  
+  useEffect(() => {
+    axios.get('https://beiyo-admin.vercel.app/api/hostels')
+      .then(response => {
+        setHostels(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching hostels:', error);
+      });
+  }, []);
 
   useEffect(() => {
     axios.get('https://beiyo-admin.vercel.app/api/dashboard/payments')
@@ -52,6 +64,22 @@ const Payment = () => {
           );
         })}
       </Select>
+      {/* <FormControl fullWidth variant="outlined">
+            <InputLabel>Hostel</InputLabel>
+            <Select
+              name="hostel"
+              value={filterOptions.hostel}
+              onChange={handleFilterChange}
+              label="Hostel"
+            >
+              <MenuItem value="all">All</MenuItem>
+              {hostels.map((hostel) => (
+                <MenuItem key={hostel._id} value={hostel._id}>
+                  {hostel.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl> */}
       <ol>
         {filteredPayments.map(payment => (
           <li key={payment.id}> {payment.userName} {payment.amount} {payment.status} {payment.cash&&(<>through cash</>)}</li>
