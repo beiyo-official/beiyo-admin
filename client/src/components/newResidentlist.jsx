@@ -23,7 +23,7 @@ import {
   IconButton,
   useMediaQuery
 } from '@mui/material';
-// import { IoIosArrowDropup, IoIosArrowDropdown } from "react-icons/io";
+
 import { format } from 'date-fns';
 
 const NewResidentList = () => {
