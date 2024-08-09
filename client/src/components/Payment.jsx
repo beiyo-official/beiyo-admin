@@ -126,6 +126,7 @@ const Payment = () => {
   const [selectedHostel, setSelectedHostel] = useState('');
   const [hostels, setHostels] = useState([]);
   const [residents, setResidents] = useState({});
+  const [searchPayments,setSearchPayments]=useState([])
 
   useEffect(() => {
     axios.get('https://beiyo-admin.vercel.app/api/hostels')
@@ -141,7 +142,7 @@ const Payment = () => {
     const filtered = filteredPayments.filter(payment =>
       payment.userName.toLowerCase().startsWith(searchQuery.toLowerCase())
     );
-    setFilteredPayments(filtered);
+    setSearchPayments(filtered);
   };
 
 
@@ -195,6 +196,7 @@ const Payment = () => {
       }
 
       setFilteredPayments(filtered);
+      setSearchPayments(filtered);
     };
 
     filterPayments(payments, month, status, selectedHostel);
@@ -279,7 +281,7 @@ const Payment = () => {
           </FormControl>
 
       <ol>
-        {filteredPayments.map(payment => {
+        {searchPayments.map(payment => {
           const resident = residents[payment._id];
           return (
             <li key={payment._id}>
