@@ -138,7 +138,7 @@ const Payment = () => {
   }, []);
 
   const handleSearch = () => {
-    const filtered = payments.filter(payment =>
+    const filtered = filteredPayments.filter(payment =>
       payment.userName.toLowerCase().startsWith(searchQuery.toLowerCase())
     );
     setFilteredPayments(filtered);
@@ -219,7 +219,7 @@ const Payment = () => {
       {/* <Typography variant="h6">Select Month:</Typography> */}
       <TextField
             fullWidth
-            label="Search by hostel name"
+            label="Search by Name"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             variant="outlined"
