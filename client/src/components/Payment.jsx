@@ -114,11 +114,12 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { CssBaseline, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import { Button, CssBaseline, FormControl, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 
 const Payment = () => {
   const [payments, setPayments] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [filteredPayments, setFilteredPayments] = useState([]);
   const [month, setMonth] = useState(dayjs().format('YYYY-MM'));
   const [status, setStatus] = useState('');
@@ -136,6 +137,12 @@ const Payment = () => {
       });
   }, []);
 
+  const handleSearch = () => {
+    const filtered = payments.filter(payment =>
+      payment.userName.toLowerCase().startsWith(searchQuery.toLowerCase())
+    );
+    setFilteredPayments(filtered);
+  };
 
 
   useEffect(() => {
@@ -210,6 +217,22 @@ const Payment = () => {
       <CssBaseline />
       <h1>Payments</h1>
       {/* <Typography variant="h6">Select Month:</Typography> */}
+      <TextField
+            fullWidth
+            label="Search by hostel name"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            variant="outlined"
+          />
+            <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={handleSearch}
+            sx={{ height: '100%' }}
+          >
+            Search
+          </Button>
       <Select
         value={month}
         onChange={handleMonthChange}
