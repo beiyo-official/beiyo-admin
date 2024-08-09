@@ -29,9 +29,7 @@ const { connectDB } = require('./db');
 
 const app = express();
 app.use(cors(
-  {
-    origin: ['https://beiyo-admin-frontend-2.vercel.app/'],
-  }
+
 ));
 config();
 // Middleware
