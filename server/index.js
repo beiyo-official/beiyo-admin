@@ -23,7 +23,7 @@ const Dashboard = require('./routes/DashBoard')
 const Staff = require('./routes/Staff')
 const Ticket = require('./routes/Tickets');
 const { connectDB } = require('./db');
-
+const AppVersion  = require('./routes/appVersion')
 
 
 
@@ -54,7 +54,8 @@ app.use('/api/newResident',newResident)
 app.use('/api/login',login)
 app.use('/api/dashboard',Dashboard)
 app.use('/api/staff', Staff );
-app.use('/api/ticket',Ticket)
+app.use('/api/ticket',Ticket);
+app.use('/api/appVersion',AppVersion);
 
 // Start the server
 app.listen(PORT, () => {
