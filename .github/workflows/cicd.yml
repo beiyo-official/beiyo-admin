@@ -33,7 +33,7 @@ deploy:
         -e SECRET_KEY='${{ secrets.SECRET_KEY }}' \
         -e BASE_URL='${{ secrets.BASE_URL }}' \
         -e KEY_INDEX='${{ secrets.KEY_INDEX }}' \
-        -e JWT_SECRET='${{ secrets.JWT_SECRET }}'\
+        -e JWT_SECRET='${{ secrets.JWT_SECRET }}' \
         beiyotech/beiyo-backend-server
 
 
