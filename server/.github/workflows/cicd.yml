@@ -10,6 +10,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source 
-        uses: action/checkout@v4
+        uses: actions/checkout@v4
       - name: Login to docker hub
-        run:  docker login -u ${{ secrets.DOCK }} -p
+        run:  docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+      - name: Build docker Image
+        run:  docker build -t beiyotech/beiyo-backend-server .
+      - name: Publish this Image to docker Hub
+        run:  docker push beiyotech/beiyo-backend-server:latest
+
+deploy:
+  needs: build
+  runs-on: self-hosted 
+  steps:
+       - name: Pull image from docker hub
+        run: docker pull beiyotech/beiyo-backend-server:latest
+      - name: Delete old container
+        run: docker rm -f nodejs-app-container  
+      - name: Run Docker Container
+        run: docker run -d -p 5000:5000 --name nodejs-beiyo-app-container \
+        -e MONGO_URI='${{ secrets.MONGO_URI }}' \
+        -e MERCHANTID='${{ secrets.MERCHANTID }}' \
+        -e SECRET_KEY='${{ secrets.SECRET_KEY }}' \
+        -e BASE_URL='${{ secrets.BASE_URL }}' \
+        -e KEY_INDEX='${{ secrets.KEY_INDEX }}' \
+        -e JWT_SECRET='${{ secrets.JWT_SECRET }}'\
+        beiyotech/beiyo-backend-server
+
+
+
+
