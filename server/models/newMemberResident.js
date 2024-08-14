@@ -26,8 +26,8 @@ const residentSchema = new mongoose.Schema({
   // intitutionDetails:String,
   payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
   contract: { type: Date },
-  amount:{type:String}
-  
+  amount:{type:String},
+  hostelId:{type : mongoose.Schema.Types.ObjectId,ref:'Hostel'}
 
   // other fields
 });

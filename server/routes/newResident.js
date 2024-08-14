@@ -6,6 +6,7 @@ const router = express.Router();
 const Resident = require('../models/newMemberResident'); // Your Resident model
 const dayjs = require('dayjs');
 const Payment = require('../models/Payment');
+const Hostel = require('../models/Hostel');
  router.post('/',async(req,res)=>{
     try {
         const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber , dateJoined, password,cash,contract,amount} = req.body;
@@ -34,7 +35,7 @@ const Payment = require('../models/Payment');
  router.get('/', async (req, res) => {
     try {
       const newResidents = await Resident.find();
-     
+      updateResidentHostelIds();
       res.json(newResidents);
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -120,4 +121,30 @@ router.post('/amount',async(req,res)=>{
       console.log(error);
      }
     };
+    
+    async function updateResidentHostelIds() {
+      try {
+        // Fetch all residents
+        const residents = await Resident.find();
+    
+        // Iterate over each resident
+        for (const resident of residents) {
+          // Find hostel ID by hostel name
+          const hostel = await Hostel.findOne({ name: resident.hostel });
+          
+          if (hostel) {
+            // Update resident with the found hostel ID
+            await Resident.updateOne(
+              { _id: resident._id },
+              { $set: { hostelId: hostel._id } }
+            );
+            console.log(`Updated resident ${resident.name} with hostel ID ${hostel._id}`);
+          } else {
+            console.log(`Hostel not found for resident ${resident.name}`);
+          }
+        }
+      } catch (error) {
+        console.error('Error updating resident hostel IDs:', error);
+      }
+    }
     
