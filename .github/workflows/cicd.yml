@@ -25,7 +25,7 @@ deploy:
       - name: Pull image from docker hub
         run: docker pull beiyotech/beiyo-backend-server:latest
       - name: Run Docker Container
-        run: docker run -d -p 5000:5000 --name nodejs-beiyo-app-container   -e MONGO_URI='${{ secrets.MONGO_URI }}'   -e MERCHANTID='${{ secrets.MERCHANTID }}'   -e SECRET_KEY='${{ secrets.SECRET_KEY }}'    -e BASE_URL='${{ secrets.BASE_URL }}'  -e KEY_INDEX='${{ secrets.KEY_INDEX }}'    -e JWT_SECRET='${{ secrets.JWT_SECRET }}'   beiyotech/beiyo-backend-server
+        run: docker run -d -p 5000:5000 --name nodejs-beiyo-app-container -e MONGO_URI='${{ secrets.MONGO_URI }}' -e MERCHANTID='${{ secrets.MERCHANTID }}' -e SECRET_KEY='${{ secrets.SECRET_KEY }}' -e BASE_URL='${{ secrets.BASE_URL }}' -e KEY_INDEX='${{ secrets.KEY_INDEX }}' -e JWT_SECRET='${{ secrets.JWT_SECRET }}'  beiyotech/beiyo-backend-server
 
 
 
