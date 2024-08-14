@@ -127,7 +127,7 @@ const Payment = () => {
   const [hostels, setHostels] = useState([]);
   const [residents, setResidents] = useState({});
   const [searchPayments,setSearchPayments]=useState([])
-
+  const [hostelTotals, setHostelTotals] = useState({});
   useEffect(() => {
     axios.get('https://beiyo-admin.vercel.app/api/hostels')
       .then(response => {
@@ -175,7 +175,6 @@ const Payment = () => {
         console.error('Error fetching payments or residents:', error);
       }
     };
-
     fetchPaymentsAndResidents();
   }, []);
 
@@ -191,12 +190,28 @@ const Payment = () => {
         filtered = filtered.filter(payment => {
           const resident = residents[payment._id];
           return resident && resident[0].hostel === hostel;
+
         });
         // console.log(filtered);
       }
 
       setFilteredPayments(filtered);
       setSearchPayments(filtered);
+
+      // const totals = {};
+      // filtered.forEach(payment => {
+      //   const resident = residents[payment._id];
+      //   if (resident) {
+      //     const hostelName = resident[0].hostel;
+      //     if (!totals[hostelName]) {
+      //       totals[hostelName] = 0;
+      //     }
+      //     totals[hostelName] += payment.amount;
+      //   }
+      // });
+  
+      // setHostelTotals(totals);
+
     };
 
     filterPayments(payments, month, status, selectedHostel);
@@ -279,7 +294,12 @@ const Payment = () => {
           ))}
         </Select>
           </FormControl>
-
+          {/* <h2>Totals by Hostel</h2>
+    <ul>
+      {Object.entries(hostelTotals).map(([hostelName, totalAmount]) => (
+        <li key={hostelName}>{hostelName}: {totalAmount}</li>
+      ))}
+    </ul> */}
       <ol>
         {searchPayments.map(payment => {
           const resident = residents[payment._id];

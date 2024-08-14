@@ -1,0 +1,15 @@
+name: Deploy Node App Server
+
+on:
+  push:
+    branches:
+      -docker-branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source 
+        uses: action/checkout@v4
+      - name: Login to docker hub
+        run:  docker login -u ${{ secrets.DOCK }} -p
