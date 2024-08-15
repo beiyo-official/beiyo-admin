@@ -8,6 +8,7 @@ const Resident = require('../models/newMemberResident');
 const Ticket = require('../models/ticket');
 const authMiddleware = require('../middleware/middleware');
 const dayjs = require('dayjs');
+const totalTickets = require('../functions/TotalTickets');
 
 
 // Fetch payments for a user
@@ -148,6 +149,7 @@ router.post('/raise-ticket', async (req, res) => {
     const ticket = new Ticket({name, userId, hostel, room, helpTopic, description,hostelId });
     await ticket.save();
     res.status(201).json(ticket);
+    totalTickets(userDetails.hostelId);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to raise a support ticket' });

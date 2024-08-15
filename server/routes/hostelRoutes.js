@@ -7,6 +7,7 @@ const Room = require('../models/Room');
 const Resident = require('../models/newMemberResident');
 const Payment = require('../models/Payment');
 const Ticket = require('../models/ticket');
+const totalTickets = require('../functions/TotalTickets');
 
 
 router.get('/calculateTotalRemainingBeds', async (req, res) => {
@@ -42,14 +43,13 @@ router.get('/paymentCheck/:hostelId', async (req,res)=>{
 });
 
 router.get('/totaltickets/:hostelId',async(req,res)=>{
-  const totalTickets = 0;
-  const hostelId = req.params.hostelId;
-  const tickets = await Ticket.find({hostelId:hostelId});
-  for(const ticket of tickets){
-    totalTickets++;
+  try {
+    const hostelId = req.params.hostelId;
+    const  total = await totalTickets(hostelId);
+    res.json(total);
+  } catch (error) {
+    res.status(500).json(error);
   }
-  res.json({totalTickets});
-
 })
 
 // Get all hostels

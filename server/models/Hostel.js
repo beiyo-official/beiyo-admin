@@ -44,6 +44,9 @@ nearby3:{
 },
 totalTenants:{
   type:Number,
+},
+totalTickets:{
+  type:Number,
 }
 
 
