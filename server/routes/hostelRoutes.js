@@ -91,6 +91,7 @@ router.post('/', async (req, res) => {
     res.status(201).json(newHostel);
   } catch (err) {
     res.status(400).json({ message: err.message });
+    console.log(err);
   }
 });
 
