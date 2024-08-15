@@ -140,7 +140,7 @@ router.post('/raise-ticket', async (req, res) => {
     const hostel = userDetails.hostel;
     const hostelId = userDetails.hostelId;
     const room = userDetails.roomNumber;
-   
+    console.log(hostelId);
 
     if (!helpTopic || !description) {
       return res.status(400).json({ message: 'Help topic and description are required' });
