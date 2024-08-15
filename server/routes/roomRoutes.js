@@ -149,7 +149,7 @@ router.get("/:id",async(req,res)=>{
    if(!room){
      alert("no room are available");
    }
-   res.json(hostel);
+   res.json(room);
   }catch(error){
    console.error('Error fetching ', error);
    res.status(500).json({ error: 'Internal Server Error' });
