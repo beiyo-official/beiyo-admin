@@ -155,6 +155,18 @@ router.get("/:id",async(req,res)=>{
    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+router.get("/:hostelid",async(req,res)=>{
+  try{
+   const room = await Room.find({hostelId:req.params.hostelid});  
+   if(!room){
+     alert("no room are available");
+   }
+   res.json(room);
+  }catch(error){
+   console.error('Error fetching ', error);
+   res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 // Delete a room
 router.delete('/delete/:id', getRoom, async (req, res) => {
   try {
