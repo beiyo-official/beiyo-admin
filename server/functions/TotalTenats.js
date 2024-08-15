@@ -12,6 +12,7 @@ const totalTenants = async ()=>{
         console.log("room remainingCapacity: "+room.capacity);
       }
       hostel.totalTenants=totalTenants;
+      await hostel.save();
     }
 }
 module.exports = totalTenants;

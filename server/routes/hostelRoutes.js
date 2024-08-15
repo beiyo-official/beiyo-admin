@@ -37,6 +37,7 @@ router.get('/calculateTotalTenants',async(req,res)=>{
       totalTenants += room.capacity-room.remainingCapacity;
     }
     hostel.totalTenants=totalTenants;
+    await hostel.save();
   }
   // res.json({ message: 'Total remaining beds calculated successfully.' });
   res.json(hostels);
