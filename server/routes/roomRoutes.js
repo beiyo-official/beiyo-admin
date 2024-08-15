@@ -7,15 +7,42 @@ const Hostel = require('../models/Hostel');
 const cron = require('node-cron');
 const Beds = require('../models/Beds');
 const totalTenants = require('../functions/TotalTenats');
+const Resident = require('../models/newMemberResident');
+const mappingResident = require('../functions/MappingResident');
+
 // Get all rooms
 router.get('/', async (req, res) => {
   try {
+    mappingResident();
     const rooms = await Room.find().sort({hostel:1}).sort({roomNumber:1});
+
     res.json(rooms);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
+// geting resident information through room
+router.get('/residentDetail/:id', async (req, res) => {
+  try {
+    const room = await Room.findById(req.params.id).populate('residents');
+
+    // Check if room exists
+    if (!room) {
+      return res.status(404).json({ message: 'Room not found' });
+    }
+
+    // Fetch all resident details (populated residents from the Room document)
+    const residents = room.residents;
+
+    // Return the details of the residents
+    res.json(residents);
+  } catch (error) {
+    console.error('Error fetching resident details:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 // Get a single room
 router.get('/:id', getRoom, (req, res) => {
@@ -31,6 +58,47 @@ router.get('/single', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+router.get('/mapingResident',async(req,res)=>{
+  try {
+    const Hostels = await Hostel.find();
+    const Rooms = await Room.find();
+    for(const hostel of Hostels ){
+     
+      const rooms = await Room.find({hostel:hostel._id});
+      for(const room of rooms ){
+        if(room.capacity<=room.residents.length){
+          const Residents = await Resident.find({hostelId:hostel._id,roomNumber:room.roomNumber});
+       for(const resident of Residents){
+        room.residents.push(resident._id);
+       }
+        }
+      }
+    }
+  res.json(Rooms);
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+router.get('/availableRooms/:hostelId',async(req,res)=>{
+  try {
+    const { hostelId } = req.params;
+
+    // Find rooms where remainingCapacity is greater than 0 and match the hostelId
+    const availableRooms = await Room.find({
+      hostelId: hostelId, // Assuming you want to filter by hostelId as well
+      remainingCapacity: { $gt: 0 }
+    });
+    if(!availableRooms){
+      res.json({message:"No available rooms"});
+    }
+    res.json(availableRooms); // Respond with the available rooms
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error'); // Send a generic error response
+  }
+})
 
 // Get all double rooms
 router.get('/double', async (req, res) => {

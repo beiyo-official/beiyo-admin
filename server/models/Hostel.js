@@ -47,6 +47,12 @@ totalTenants:{
 },
 totalTickets:{
   type:Number,
+},
+totalRooms:{
+  type:Number
+},
+totalBeds:{
+  type:Number
 }
 
 
