@@ -148,7 +148,7 @@ router.post('/raise-ticket', async (req, res) => {
 
     const ticket = new Ticket({name, userId, hostel, room, helpTopic, description,hostelId });
     await ticket.save();
-    totalTickets(userDetails.hostelId);
+   await totalTickets(userDetails.hostelId);
     res.status(201).json(ticket);
    
   } catch (error) {
