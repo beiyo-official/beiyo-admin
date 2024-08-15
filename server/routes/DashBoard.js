@@ -148,8 +148,9 @@ router.post('/raise-ticket', async (req, res) => {
 
     const ticket = new Ticket({name, userId, hostel, room, helpTopic, description,hostelId });
     await ticket.save();
-    res.status(201).json(ticket);
     totalTickets(userDetails.hostelId);
+    res.status(201).json(ticket);
+   
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to raise a support ticket' });
