@@ -137,6 +137,7 @@ router.post('/raise-ticket', async (req, res) => {
     }
     const name = userDetails.name;
     const hostel = userDetails.hostel;
+    const hostelId = userDetails.hostelId;
     const room = userDetails.roomNumber;
    
 
@@ -144,7 +145,7 @@ router.post('/raise-ticket', async (req, res) => {
       return res.status(400).json({ message: 'Help topic and description are required' });
     }
 
-    const ticket = new Ticket({name, userId, hostel, room, helpTopic, description });
+    const ticket = new Ticket({name, userId, hostel, room, helpTopic, description,hostelId });
     await ticket.save();
     res.status(201).json(ticket);
   } catch (error) {

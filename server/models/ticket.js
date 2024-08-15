@@ -47,6 +47,7 @@ const ticketSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'Resident', required: true },
   name: { type: String, required: true },
   hostel: { type: String, required: true },
+  hostelId:{ type: Schema.Types.ObjectId, ref: 'Hostel'},
   room: { type: String, required: true },
   helpTopic: { type: String, required: true },
   description: { type: String, required: true },

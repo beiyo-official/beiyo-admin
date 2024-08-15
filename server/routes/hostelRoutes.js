@@ -4,6 +4,9 @@ const express = require('express');
 const router = express.Router();
 const Hostel = require('../models/Hostel');
 const Room = require('../models/Room');
+const Resident = require('../models/newMemberResident');
+const Payment = require('../models/Payment');
+const Ticket = require('../models/ticket');
 
 
 router.get('/calculateTotalRemainingBeds', async (req, res) => {
@@ -26,27 +29,28 @@ router.get('/calculateTotalRemainingBeds', async (req, res) => {
   }
 });
 
-router.get('/calculateTotalTenants',async(req,res)=>{
-  try {
-    const hostels = await Hostel.find();
- 
-  for(const hostel of hostels){
-    let totalTenants = 0;
-    const rooms = await Room.find({hostelId:hostel._id});
-    for(const room of rooms){
-      totalTenants += room.capacity-room.remainingCapacity;
-    }
-    hostel.totalTenants=totalTenants;
-    await hostel.save();
-  }
-  // res.json({ message: 'Total remaining beds calculated successfully.' });
-  res.json(hostels);
-  
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-})
+router.get('/paymentCheck/:hostelId', async (req,res)=>{
+    const allMonthPayments = [];
+    const month = req.body.month;
+    const hostelId = req.params.hostelId
+    const Residents = await Resident.find({hostelId:hostelId});
+   for(const Resident of Residents){
+    const Payments = await Payment.find({userId:Resident._id ,month:month});
+    allMonthPayments.push(Payments);
+   }
+    res.json(allMonthPayments);
+});
 
+router.get('/totaltickets/:hostelId',async(req,res)=>{
+  const totalTickets = 0;
+  const hostelId = req.params.hostelId;
+  const tickets = await Ticket.find({hostelId:hostelId});
+  for(const ticket of tickets){
+    totalTickets++;
+  }
+  res.json({totalTickets});
+
+})
 
 // Get all hostels
 router.get('/', async (req, res) => {
