@@ -155,12 +155,9 @@ router.get("/:id",async(req,res)=>{
    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-router.get("/:hostelid",async(req,res)=>{
+router.get("/hostel/:hostelId",async(req,res)=>{
   try{
-   const room = await Room.find({hostelId:req.params.hostelid});  
-   if(!room){
-     alert("no room are available");
-   }
+   const room = await Room.find({hostelId:req.params.hostelId});  
    res.json(room);
   }catch(error){
    console.error('Error fetching ', error);
