@@ -41,6 +41,9 @@ nearby2:{
 },
 nearby3:{
   type:String,
+},
+totalTenants:{
+  type:Number,
 }
 
 

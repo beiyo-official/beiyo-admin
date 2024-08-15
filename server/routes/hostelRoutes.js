@@ -26,6 +26,26 @@ router.get('/calculateTotalRemainingBeds', async (req, res) => {
   }
 });
 
+router.get('/calculateTotalTenants',async(req,res)=>{
+  try {
+    const hostels = await Hostel.find();
+ 
+  for(const hostel of hostels){
+    let totalTenants = 0;
+    const rooms = await Room.find({hostelId:hostel._id});
+    for(const room of rooms){
+      totalTenants += room.capacity-room.remainingCapacity;
+    }
+    hostel.totalTenants=totalTenants;
+  }
+  // res.json({ message: 'Total remaining beds calculated successfully.' });
+  res.json(hostels);
+  
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+})
+
 
 // Get all hostels
 router.get('/', async (req, res) => {

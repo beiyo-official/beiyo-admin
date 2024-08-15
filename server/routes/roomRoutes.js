@@ -3,8 +3,10 @@
 const express = require('express');
 const router = express.Router();
 const Room = require('../models/Room');
+const Hostel = require('../models/Hostel');
 const cron = require('node-cron');
 const Beds = require('../models/Beds');
+const totalTenants = require('../functions/TotalTenats');
 // Get all rooms
 router.get('/', async (req, res) => {
   try {
@@ -131,10 +133,13 @@ router.patch('/:id/updateRemainingBeds', getRoom, async (req, res) => {
   res.room.lastUpdatedBy = lastUpdatedBy;
   try {
     const updatedRoom = await res.room.save();
+    totalTenants();
     res.json(updatedRoom);
+
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
+
 });
 
 // getting single room
@@ -177,3 +182,5 @@ async function getRoom(req, res, next) {
 }
 
 module.exports = router;
+
+
