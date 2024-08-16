@@ -150,7 +150,7 @@ router.post('/raise-ticket', async (req, res) => {
 
     const ticket = new Ticket({name, userId, hostel, room, helpTopic, description,hostelId });
     await ticket.save();
-   await totalTickets(userDetails.hostelId);
+   await totalTickets(hostelId);
    const Hostel = await Hostels.findById(hostelId);
     Hostel.managerTickets.push(ticket.id); 
     await Hostel.save();
