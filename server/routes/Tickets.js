@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Ticket = require('../models/ticket');
-
+const Hostels = require('../models/Hostel')
 
 router.get('/', async (req, res) => {
     try {
@@ -19,7 +19,17 @@ router.get('/', async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
-  
+ 
+ router.get('/:hostelId',async(req,res)=>{
+  try {
+    const tickets = await Ticket.find({hostelId:req.params.hostelId});
+    res.json(tickets);
+  } catch (error) {
+    console.log(error);
+  }
+ }) 
+
+
 
 router.put('/:id', async (req, res) => {
     try {
@@ -33,6 +43,32 @@ router.put('/:id', async (req, res) => {
       res.json(ticket);
     } catch (error) {
       res.status(500).json({ error: error.message });
+    }
+  });
+
+  router.put('/tranferToAdmin/:ticketId', async (req, res) => {
+    try {
+      const  ticketId   = req.params.ticketId;
+  
+      const ticket = await Ticket.findById(ticketId);
+      if (!ticket) {
+        return res.status(404).json({ message: 'Ticket not found' });
+      }
+  
+      const hostel = await Hostels.findById(ticket.hostelId); 
+      if (!user) {
+        return res.status(404).json({ message: 'hostel not found' });
+      }
+        // Remove ticket from managerTickets
+        hostel.managerTickets = user.managerTickets.filter(id => id.toString() !== ticketId);
+        // Add ticket to adminTickets
+        hostel.adminTickets.push(ticketId);
+      await hostel.save();
+  
+      res.status(200).json({ message: 'Ticket authority updated successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error' });
     }
   });
 

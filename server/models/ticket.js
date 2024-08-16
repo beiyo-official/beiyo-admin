@@ -52,6 +52,7 @@ const ticketSchema = new Schema({
   helpTopic: { type: String, required: true },
   description: { type: String, required: true },
   priority: { type: String, enum: ['High', 'Medium', 'Low'], default: 'Medium' }, // Priority
+  authority:{type: String, enum:['Manager','Admin'],default:'Manager'},
   category: { type: String, enum: ['Maintenance', 'Cleanliness', 'Security', 'Other'], default: 'Other' }, // Category
   status: { type: String, enum: ['Open', 'In Progress', 'Closed'], default: 'Open' },
   assignedTo: { type: Schema.Types.ObjectId, ref: 'Staff' }, // Staff member assigned

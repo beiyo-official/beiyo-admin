@@ -53,7 +53,9 @@ totalRooms:{
 },
 totalBeds:{
   type:Number
-}
+},
+managerTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'ticket'}],
+adminTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'ticket'}]
 
 
 

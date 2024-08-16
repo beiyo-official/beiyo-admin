@@ -9,6 +9,7 @@ const Ticket = require('../models/ticket');
 const authMiddleware = require('../middleware/middleware');
 const dayjs = require('dayjs');
 const totalTickets = require('../functions/TotalTickets');
+const Hostels = require('../models/Hostel');
 
 
 // Fetch payments for a user
@@ -140,7 +141,8 @@ router.post('/raise-ticket', async (req, res) => {
     const hostel = userDetails.hostel;
     const hostelId = userDetails.hostelId;
     const room = userDetails.roomNumber;
-    console.log(hostelId);
+    
+
 
     if (!helpTopic || !description) {
       return res.status(400).json({ message: 'Help topic and description are required' });
@@ -149,6 +151,9 @@ router.post('/raise-ticket', async (req, res) => {
     const ticket = new Ticket({name, userId, hostel, room, helpTopic, description,hostelId });
     await ticket.save();
    await totalTickets(userDetails.hostelId);
+   const Hostel = await Hostels.findById(hostelId);
+    Hostel.managerTickets.push(ticket.id); 
+    await Hostel.save();
     res.status(201).json(ticket);
    
   } catch (error) {
