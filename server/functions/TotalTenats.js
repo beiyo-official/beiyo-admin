@@ -8,8 +8,6 @@ const totalTenants = async ()=>{
       const rooms = await Room.find({hostelId:hostel._id});
       for(const room of rooms){
         totalTenants += room.capacity-room.remainingCapacity;
-        console.log("room capacity: "+room.capacity);
-        console.log("room remainingCapacity: "+room.capacity);
       }
       hostel.totalTenants=totalTenants;
       await hostel.save();

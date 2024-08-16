@@ -3,29 +3,64 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
+const moment = require('moment')
+
 const Resident = require('../models/newMemberResident'); // Your Resident model
 const dayjs = require('dayjs');
 const Payment = require('../models/Payment');
-const Hostel = require('../models/Hostel');
+const Hostels = require('../models/Hostel');
+const Rooms = require('../models/Room');
+const totalTenants = require('../functions/TotalTenats');
+const uuid = require('uuid');
+const uploadFile = require('../firebase/firebase');
+
+
+
  router.post('/',async(req,res)=>{
     try {
-        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostel, roomNumber , dateJoined, password,cash,contract,amount} = req.body;
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostelId, roomNumberId , dateJoined, password, rent,deposit,contractTerm,discountRate} = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
-        const contractformattedDate = contract ? dayjs(contract).format('YYYY-MM-DD') : null;
-        
+        const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
+        // const contractformattedDate = contract ? dayjs(contract).format('YYYY-MM-DD') : null;
+        const Hostel = await Hostels.findById(hostelId);
+        const Room = await Rooms.findById(roomNumberId);
+        const hostelName = Hostel.name;
+        const roomNumber  = Room.roomNumber;
+        // const contractEndDate  
+        if(Room.remainingCapacity>0){
+          Room.remainingCapacity--;
+        }else{
+          return res.status(400).json({message:"Room is full"});
+        }
+        totalTenants();
+        if (!req.files || !req.files.aadhaarCard || !req.files.photo) {
+          return res.status(400).json({ message: "Missing Aadhaar card or photo file" });
+        }
+        const firebaseUserId = uuid.v4();
+        const [aadhaarCardUrl, imageUrl] = await Promise.all([
+          uploadFile(req.files.aadhaarCard, `aadhaarCards/${firebaseUserId}_aadhaar.jpg`),
+          uploadFile(req.files.image, `residentImages/${firebaseUserId}_image.jpg`),
+        ]);
+        // Upload Aadhaar Card
         const newResident = new Resident({
-            name, email, mobileNumber, address, parentsName,
-            parentsMobileNo, hostel, roomNumber,password,cash,
-            dateJoined: formattedDate,
-            contract: contractformattedDate,
-            amount:amount
-          });
-          await newResident.save();
-          const resident = await Resident.findOne( 
-            {email}
-         );
-          await generateMonthlyPayments(resident._id, resident.contract);
-    res.status(201).json(newResident);
+          name, email, mobileNumber, address, parentsName,
+          parentsMobileNo, hostelId, roomNumberId, password, 
+          hostel: hostelName,
+          roomNumber: roomNumber,
+          dateJoined: formattedDate,
+          contractEndDate,
+          discountRate,
+          contractTerm,
+          rent:rent,
+          deposit:deposit,
+          aadhaarCardUrl,
+          imageUrl
+        });
+        await newResident.save();
+        const resident = await Resident.findOne({ email });
+        await generateMonthlyPayments(resident._id, resident.contractEndDate);
+    
+        res.status(201).json(newResident);
     } catch (error) {
         console.error('Error creating resident or processing payment:', error);
         res.status(500).send('Internal Server Error');

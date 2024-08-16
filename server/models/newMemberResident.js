@@ -8,7 +8,6 @@ const residentSchema = new mongoose.Schema({
   address: { type: String,
     //  required: true 
     },
-    amount:{type:String},
   parentsName: { type: String, 
     // required: true 
   },
@@ -20,13 +19,18 @@ const residentSchema = new mongoose.Schema({
   dateJoined:{type:Date},
   password: { type: String, required: true },
   cash:{type:Boolean,default:false},
-  // photo: String,
-  // aadharCard: String,
+  photo: String,
+  aadharCard: String,
   // signedDocuments:String,
   // intitutionDetails:String,
   payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
-  contract: { type: Date },
-  amount:{type:String},
+  contractEndDate: { type: Date },
+  contractTerms:{type:Number},
+  rent:{type:Number},
+  deposit:{type:Number},
+  roomId:{type : mongoose.Schema.Types.ObjectId,ref:'Room'},
+  
+ 
   hostelId:{type : mongoose.Schema.Types.ObjectId,ref:'Hostel'}
 
   // other fields
