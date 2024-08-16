@@ -16,8 +16,11 @@ const totalBeds = async () => {
                 total+=room.capacity
         }
 
-        hostel.totalBeds = total;
-        await hostel.save();
+        await Hostel.findByIdAndUpdate(
+            hostel._id,
+            { totalBeds: total },
+            { new: true } // Returns the updated document
+        );
     }
 
     return;

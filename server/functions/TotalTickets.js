@@ -1,15 +1,21 @@
 const Hostel = require('../models/Hostel')
 const Ticket = require('../models/ticket')
-const totalTickets = async (hostel)=>{
-    let totalTickets = 0;
-  const hostelId = hostel;
-  const tickets = await Ticket.find({hostelId:hostelId});
-  for(let i=0; i<tickets.length; i++){
-    totalTickets++;
+const totalTickets = async (hostelId) => {
+  try {
+      // Count the number of tickets directly
+      const totalTickets = await Ticket.countDocuments({ hostelId: hostelId });
+
+      // Update the totalTickets field in the Hostel document
+      await Hostel.findByIdAndUpdate(
+          hostelId,
+          { totalTickets: totalTickets },
+          { new: true } // Returns the updated document
+      );
+
+      return totalTickets;
+  } catch (error) {
+      console.error('Error updating total tickets:', error);
+      throw error; // Rethrow the error or handle it as needed
   }
-  const singleHostel = await Hostel.findById(hostelId);
-  singleHostel.totalTickets = totalTickets;
-  await singleHostel.save();
-  return totalTickets;
-}
+};
 module.exports = totalTickets;

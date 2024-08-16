@@ -49,18 +49,18 @@ router.put('/:id', async (req, res) => {
   router.put('/tranferToAdmin/:ticketId', async (req, res) => {
     try {
       const  ticketId   = req.params.ticketId;
-  
-      const ticket = await Ticket.findById(ticketId);
+      const ticket = await Ticket.findByIdAndUpdate(ticketId,{
+        authority:'Admin', 
+      },{new:true});
       if (!ticket) {
         return res.status(404).json({ message: 'Ticket not found' });
-      }
-  
+      }  
       const hostel = await Hostels.findById(ticket.hostelId); 
-      if (!user) {
+      if (!hostel) {
         return res.status(404).json({ message: 'hostel not found' });
       }
         // Remove ticket from managerTickets
-        hostel.managerTickets = user.managerTickets.filter(id => id.toString() !== ticketId);
+        hostel.managerTickets = hostel.managerTickets.filter(id => id.toString() !== ticketId);
         // Add ticket to adminTickets
         hostel.adminTickets.push(ticketId);
       await hostel.save();
@@ -71,6 +71,7 @@ router.put('/:id', async (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   });
+
 
 router.put('/:id/assign', async (req, res) => {
     try {

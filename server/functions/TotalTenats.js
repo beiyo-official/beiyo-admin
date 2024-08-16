@@ -9,8 +9,11 @@ const totalTenants = async ()=>{
       for(const room of rooms){
         totalTenants += room.capacity-room.remainingCapacity;
       }
-      hostel.totalTenants=totalTenants;
-      await hostel.save();
+      await Hostel.findByIdAndUpdate(
+        hostel._id,
+        { totalTenants: totalTenants },
+        { new: true } // Returns the updated document
+    );
     }
 }
 module.exports = totalTenants;

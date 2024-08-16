@@ -54,6 +54,33 @@ router.get('/totaltickets/:hostelId',async(req,res)=>{
   }
 })
 
+router.get('/adminTickets/:hostelId',async(req,res)=>{
+  try {
+    const hostel = await Hostel.findById(req.params.hostelId).populate('adminTickets');
+    const adminTickets = hostel.adminTickets;
+   
+    
+    res.json(adminTickets);
+
+  } catch (error) {
+   console.error('Error fetching ticket details:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+})
+router.get('/managerTickets/:hostelId',async(req,res)=>{
+  try {
+    const hostel = await Hostel.findById(req.params.hostelId).populate('managerTickets');
+    const managerTickets = hostel.managerTickets;
+   
+   
+    res.json(managerTickets);
+
+  } catch (error) {
+   console.error('Error fetching ticket details:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+})
+
 // Get all hostels
 router.get('/', async (req, res) => {
   try {
