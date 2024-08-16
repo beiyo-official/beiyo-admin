@@ -8,8 +8,9 @@ const Resident = require('../models/newMemberResident');
 const Ticket = require('../models/ticket');
 const authMiddleware = require('../middleware/middleware');
 const dayjs = require('dayjs');
-const totalTickets = require('../functions/TotalTickets');
+
 const Hostels = require('../models/Hostel');
+const { totalTickets, totalClosedTickets, totalPendingTickets } = require('../functions/TotalTickets');
 
 
 // Fetch payments for a user
@@ -151,6 +152,8 @@ router.post('/raise-ticket', async (req, res) => {
     const ticket = new Ticket({name, userId, hostel, room, helpTopic, description,hostelId });
     await ticket.save();
    await totalTickets(hostelId);
+   await totalClosedTickets(hostelId);
+   await totalPendingTickets(hostelId);
    const Hostel = await Hostels.findById(hostelId);
     Hostel.managerTickets.push(ticket.id); 
     await Hostel.save();
