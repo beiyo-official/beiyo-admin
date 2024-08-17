@@ -38,7 +38,7 @@ const uploadFile = require('../firebase/firebase');
         }
         const firebaseUserId = uuid.v4();
         const [aadhaarCardUrl, imageUrl] = await Promise.all([
-          uploadFile(req.files.aadhaarCard, `aadhaarCards/${firebaseUserId}_aadhaar.jpg`),
+          uploadFile(req.files.aadhaarCard, `residentAadhaarCards/${firebaseUserId}_aadhaar.jpg`),
           uploadFile(req.files.image, `residentImages/${firebaseUserId}_image.jpg`),
         ]);
         // Upload Aadhaar Card
@@ -54,7 +54,8 @@ const uploadFile = require('../firebase/firebase');
           rent:rent,
           deposit:deposit,
           aadhaarCardUrl,
-          imageUrl
+          imageUrl,
+          documentId:firebaseUserId
         });
         await newResident.save();
         const resident = await Resident.findOne({ email });
