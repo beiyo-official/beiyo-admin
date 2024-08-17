@@ -1,7 +1,7 @@
 // models/Hostel.js
 
 const mongoose = require('mongoose');
-const totalTickets = require('../functions/TotalTickets');
+
 
 const hostelSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -44,22 +44,22 @@ nearby3:{
   type:String,
 },
 totalTenants:{
-  type:Number,
+  type:Number,default:0
 },
 totalTickets:{
-  type:Number,
+  type:Number,default:0
 },
 totalPendingTickets:{
-  type:Number,
+  type:Number,default:0
 },
 totalClosedTickets:{
-  type:Number,
+  type:Number,default:0
 },
 totalRooms:{
-  type:Number
+  type:Number,default:0
 },
 totalBeds:{
-  type:Number
+  type:Number, default:0
 },
 managerTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'}],
 adminTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'}]

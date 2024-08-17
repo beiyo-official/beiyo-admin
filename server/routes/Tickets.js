@@ -31,20 +31,6 @@ router.get('/', async (req, res) => {
 
 
 
-router.put('/:id', async (req, res) => {
-    try {
-      const ticketId = req.params.id;
-      const updates = req.body;
-  
-      const ticket = await Ticket.findByIdAndUpdate(ticketId, updates, { new: true });
-      if (!ticket) {
-        return res.status(404).json({ message: 'Ticket not found' });
-      }
-      res.json(ticket);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
 
   router.put('/tranferToAdmin/:ticketId', async (req, res) => {
     try {
@@ -73,21 +59,6 @@ router.put('/:id', async (req, res) => {
   });
 
 
-router.put('/:id/assign', async (req, res) => {
-    try {
-      const ticketId = req.params.id;
-      const { areaManagerId } = req.body;
-  
-      const ticket = await Ticket.findByIdAndUpdate(ticketId, { assignedTo: areaManagerId }, { new: true });
-      if (!ticket) {
-        return res.status(404).json({ message: 'Ticket not found' });
-      }
-      res.json(ticket);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-  
 
 router.get('/area-manager/:areaManagerId', async (req, res) => {
     try {
@@ -136,15 +107,20 @@ router.get('/area-manager/:areaManagerId', async (req, res) => {
     }
   });
 
-  router.put('/:id/status', async (req, res) => {
+  router.put('/close/:id', async (req, res) => {
     try {
       const ticketId = req.params.id;
-      const { status } = req.body;
-  
-      const ticket = await Ticket.findByIdAndUpdate(ticketId, { status }, { new: true });
+      const ticket = await Ticket.findByIdAndUpdate(ticketId, { status:'Closed' }, { new: true });
       if (!ticket) {
         return res.status(404).json({ message: 'Ticket not found' });
       }
+      const totalTickets = await Ticket.countDocuments({hostelId:ticket.hostelId});
+      await Hostels.findByIdAndUpdate(ticket.hostelId,{totalTickets:totalTickets},{new:true});
+      const totalPendingTickets = await Ticket.countDocuments({hostelId:ticket.hostelId,status:'Open'});
+      await Hostels.findByIdAndUpdate(ticket.hostelId,{totalPendingTickets:totalPendingTickets},{new:true});
+      const totalClosedTickets = await Ticket.countDocuments({hostelId:ticket.hostelId,status:'Closed'});
+      await Hostels.findByIdAndUpdate(ticket.hostelId,{totalClosedTickets:totalClosedTickets},{new:true});
+
       res.json(ticket);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -202,8 +178,9 @@ router.get('/area-manager/:areaManagerId', async (req, res) => {
     }
   });
 
-//   analytics reporting
 
+
+//   analytics reporting
 router.get('/stats/status', async (req, res) => {
     try {
       const ticketCounts = await Ticket.aggregate([
@@ -230,6 +207,17 @@ router.get('/stats/status', async (req, res) => {
     try {
       const ticketCounts = await Ticket.aggregate([
         { $group: { _id: '$category', count: { $sum: 1 } } }
+      ]);
+      res.json(ticketCounts);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  router.get('/stats/authority', async (req, res) => {
+    try {
+      const ticketCounts = await Ticket.aggregate([
+        { $group: { _id: '$authority', count: { $sum: 1 } } }
       ]);
       res.json(ticketCounts);
     } catch (error) {

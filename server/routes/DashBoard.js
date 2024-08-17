@@ -10,7 +10,10 @@ const authMiddleware = require('../middleware/middleware');
 const dayjs = require('dayjs');
 
 const Hostels = require('../models/Hostel');
-const { totalTickets, totalClosedTickets, totalPendingTickets } = require('../functions/TotalTickets');
+const filterPaymentsByCurrentMonth = require('../functions/filterCurrentmonthPayments');
+// const { totalPendingTickets, totalTickets } = require('../functions/TotalTickets');
+
+
 
 
 // Fetch payments for a user
@@ -109,6 +112,26 @@ router.post('/cashPayments',async(req,res)=>{
   }
 
 })
+router.get('/currentMonthPayments/:hostelId',async(req,res)=>{
+  try {
+    // Step 1: Find users by hostelId and populate their payments
+    const Residents = await Resident.find({ hostelId: req.params.hostelId }).populate('payments');
+
+    // Step 2: Filter payments for each user to include only payments from the current month
+    const usersWithCurrentMonthPayments = Residents.map(user => {
+        const currentMonthPayments = filterPaymentsByCurrentMonth(user.payments);
+      return currentMonthPayments
+    });
+
+    // Step 3: Send the filtered users and their current month payments as a response
+    res.json(usersWithCurrentMonthPayments);
+
+} catch (error) {
+    console.error('Error fetching payments:', error);
+    res.status(500).json({ message: 'Server error' });
+}
+})
+
 
 
 
@@ -151,9 +174,13 @@ router.post('/raise-ticket', async (req, res) => {
 
     const ticket = new Ticket({name, userId, hostel, room, helpTopic, description,hostelId });
     await ticket.save();
-   await totalTickets(hostelId);
-   await totalClosedTickets(hostelId);
-   await totalPendingTickets(hostelId);
+      const totalTickets = await Ticket.countDocuments({hostelId:hostelId});
+       await Hostels.findByIdAndUpdate(hostelId,{totalTickets:totalTickets},{new:true});
+       const totalPendingTickets = await Ticket.countDocuments({hostelId:hostelId},{status:'Open'});
+       await Hostels.findByIdAndUpdate(hostelId,{totalPendingTickets:totalPendingTickets},{new:true});
+
+
+
    const Hostel = await Hostels.findById(hostelId);
     Hostel.managerTickets.push(ticket.id); 
     await Hostel.save();
@@ -164,6 +191,9 @@ router.post('/raise-ticket', async (req, res) => {
     res.status(500).json({ message: 'Failed to raise a support ticket' });
   }
 });
+
+
+
 router.get('/oldTickets/:userid',async(req,res)=>{
   try {
     const userId = req.params.userid;
