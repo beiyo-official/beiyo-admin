@@ -90,20 +90,20 @@ router.get('/', async (req, res) => {
     await totalRooms();
     await totalBeds();
 
-    const { page = 1, limit = 10 } = req.params; // Default to page 1 and limit of 10
+    // const { page = 1, limit = 10 } = req.params; // Default to page 1 and limit of 10
 
     const hostels = await Hostel.find()
-      .sort({ totalRemainingBeds: -1, name: 1 })
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
+      // .sort({ totalRemainingBeds: -1, name: 1 })
+      // .skip((page - 1) * limit)
+      // .limit(parseInt(limit));
 
     const totalHostels = await Hostel.countDocuments(); // Total number of hostels
 
     res.json({
       hostels,
-      currentPage: page,
-      totalPages: Math.ceil(totalHostels / limit),
-      totalHostels,
+      // currentPage: page,
+      // totalPages: Math.ceil(totalHostels / limit),
+      // totalHostels,
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
