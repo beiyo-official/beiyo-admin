@@ -170,10 +170,10 @@ const RoomForm = ({ room, hostels=[], onSubmit, onClose }) => {
       return;
     }
 
-    if (existingRoomNumbers.includes(roomNumber) && (!room || room.roomNumber !== roomNumber)) {
-      setError('Room number already exists. Please choose a different room number.');
-      return;
-    }
+    // if (existingRoomNumbers.includes(roomNumber) && (!room || room.roomNumber !== roomNumber)) {
+    //   setError('Room number already exists. Please choose a different room number.');
+    //   return;
+    // }
 
     const data = {
       roomNumber,

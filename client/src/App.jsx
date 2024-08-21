@@ -22,7 +22,7 @@ import StudentForm from './components/StudentForm';
 import AmountForm from './components/amountUpdate';
 import Payment from './components/Payment';
 import CashPayments from './components/CashPayments';
-import CreateManagerForm from './components/ManagerForm';
+
 
 const theme = createTheme({
   components: {
