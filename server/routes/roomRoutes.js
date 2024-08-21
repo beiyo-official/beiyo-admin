@@ -9,6 +9,7 @@ const Beds = require('../models/Beds');
 const totalTenants = require('../functions/TotalTenats');
 const Resident = require('../models/newMemberResident');
 const mappingResident = require('../functions/MappingResident');
+const totalRemainingBeds = require('../functions/totalRemainingBeds');
 
 // Get all rooms
 router.get('/', async (req, res) => {
@@ -147,7 +148,7 @@ router.post('/', async (req, res) => {
     // Update room with created beds
     room.beds = beds;
     await room.save();
-
+    totalRemainingBeds();
     res.status(201).json(room);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -202,6 +203,7 @@ router.patch('/:id/updateRemainingBeds', getRoom, async (req, res) => {
   try {
     const updatedRoom = await res.room.save();
     totalTenants();
+    totalRemainingBeds();
     res.json(updatedRoom);
 
   } catch (err) {
