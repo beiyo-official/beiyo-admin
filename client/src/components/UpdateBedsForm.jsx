@@ -24,7 +24,7 @@ const UpdateBedsForm = ({ room, onSubmit, onClose }) => {
 
     try {
      await axios.patch(`https://beiyo-admin.vercel.app/api/rooms/${room._id}/updateRemainingBeds`, {remainingBeds});
-     await axios.get(`https://beiyo-admin.vercel.app/api/hostels/calculateTotalRemainingBeds`);
+    //  await axios.get(`https://beiyo-admin.vercel.app/api/hostels/calculateTotalRemainingBeds`);
       onSubmit();
     } catch (error) {
       console.error('Error updating beds:', error);
