@@ -53,7 +53,6 @@ const totalRemainingBeds = require('../functions/totalRemainingBeds');
           deposit:deposit,
           aadhaarCardUrl:aadhaarCardUrl,
           imageUrl:imageUrl,
-          documentId:firebaseUserId
         });
         await newResident.save();
         const resident = await Resident.findOne({ email });
@@ -61,7 +60,7 @@ const totalRemainingBeds = require('../functions/totalRemainingBeds');
         if(Room.remainingCapacity>0){
           Room.remainingCapacity--;
 
-          Room.residents.push[resident._id];
+          Room.residents.push(resident._id);
           await Room.save();
         }else{
           return res.status(400).json({message:"Room is full"});
