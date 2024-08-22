@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { config } = require('dotenv');
-
 const PORT = process.env.PORT || 5000;
 const cron = require('node-cron');
 const cookieParser = require('cookie-parser');
@@ -34,7 +33,12 @@ app.use(cors(
 ));
 config();
 // Middleware
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
+
+// Increase the limit for URL-encoded requests
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 
 connectDB();``
 // updateRoomStatuses();

@@ -13,35 +13,34 @@ const Rooms = require('../models/Room');
 const totalTenants = require('../functions/TotalTenats');
 const uuid = require('uuid');
 const uploadFile = require('../firebase/firebase');
+const Hostel = require('../models/Hostel');
+const totalRemainingBeds = require('../functions/totalRemainingBeds');
 
 
 
  router.post('/',async(req,res)=>{
     try {
-        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostelId, roomNumberId , dateJoined, password, rent,deposit,contractTerm,discountRate} = req.body;
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostelId, roomNumberId , dateJoined, password, rent,deposit,contractTerm,aadhaarCardUrl,imageUrl} = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
-        // const contractformattedDate = contract ? dayjs(contract).format('YYYY-MM-DD') : null;
+      
+        console.log(hostelId);
         const Hostel = await Hostels.findById(hostelId);
         const Room = await Rooms.findById(roomNumberId);
         const hostelName = Hostel.name;
         const roomNumber  = Room.roomNumber;
-        // const contractEndDate  
-        if(Room.remainingCapacity>0){
-          Room.remainingCapacity--;
-        }else{
-          return res.status(400).json({message:"Room is full"});
-        }
-        totalTenants();
-        if (!req.files || !req.files.aadhaarCard || !req.files.photo) {
-          return res.status(400).json({ message: "Missing Aadhaar card or photo file" });
-        }
-        const firebaseUserId = uuid.v4();
-        const [aadhaarCardUrl, imageUrl] = await Promise.all([
-          uploadFile(req.files.aadhaarCard, `residentAadhaarCards/${firebaseUserId}_aadhaar.jpg`),
-          uploadFile(req.files.image, `residentImages/${firebaseUserId}_image.jpg`),
-        ]);
+        
+
         // Upload Aadhaar Card
+        // if (!req.files || !req.files.aadhaarCard || !req.files.image) {
+        //   return res.status(400).json({ message: "Missing Aadhaar card or photo file" });
+        // }
+        // const firebaseUserId = uuid.v4();
+        // const [aadhaarCardUrl, imageUrl] = await Promise.all([
+        //   uploadFile(req.files.aadhaarCard, `residentAadhaarCards/${firebaseUserId}_aadhaar.jpg`),
+        //   uploadFile(req.files.image, `residentImages/${firebaseUserId}_image.jpg`),
+        // ]);
+        
         const newResident = new Resident({
           name, email, mobileNumber, address, parentsName,
           parentsMobileNo, hostelId, roomNumberId, password, 
@@ -49,17 +48,26 @@ const uploadFile = require('../firebase/firebase');
           roomNumber: roomNumber,
           dateJoined: formattedDate,
           contractEndDate,
-          discountRate,
           contractTerm,
           rent:rent,
           deposit:deposit,
-          aadhaarCardUrl,
-          imageUrl,
+          aadhaarCardUrl:aadhaarCardUrl,
+          imageUrl:imageUrl,
           documentId:firebaseUserId
         });
         await newResident.save();
         const resident = await Resident.findOne({ email });
         await generateMonthlyPayments(resident._id, resident.contractEndDate);
+        if(Room.remainingCapacity>0){
+          Room.remainingCapacity--;
+
+          Room.residents.push[resident._id];
+          await Room.save();
+        }else{
+          return res.status(400).json({message:"Room is full"});
+        }
+        await totalTenants(hostelId);
+        await totalRemainingBeds(hostelId);
     
         res.status(201).json(newResident);
     } catch (error) {
@@ -85,7 +93,7 @@ const uploadFile = require('../firebase/firebase');
       }
       
       // console.log(`Generating payments for resident: ${resident._id}, contract end date: ${resident.contract}`);
-      await generateMonthlyPayments(resident._id, resident.contract);
+      await generateMonthlyPayments(resident._id, resident.contractEndDate);
       res.json(resident);
     } catch (error) {
       console.error('Error fetching resident or generating payments:', error);
@@ -139,7 +147,7 @@ router.post('/amount',async(req,res)=>{
           const payment = new Payment({
             userId,
             userName:resident.name,
-            amount: resident.amount, // Replace with the appropriate amount
+            amount: resident.rent, // Replace with the appropriate amount
             month,
             date: currentDate.toDate(),
             status: 'due'

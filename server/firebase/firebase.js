@@ -27,8 +27,16 @@ async function uploadFile(file, destinationPath) {
       });
 
       uploadStream.on('finish', async () => {
-        const url = await fileRef.getSignedUrl({ action: 'read', expires: '03-01-01 00:00:00' });
-        resolve(url);
+        try {
+          const [url] = await fileRef.getSignedUrl({
+              action: 'read',
+              expires: '03-01-01 00:00:00'
+          });
+          resolve(url);
+      } catch (err) {
+          console.error('Error generating signed URL:', err);
+          reject(err);
+      }
       });
 
       uploadStream.end(file.buffer);
