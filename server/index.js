@@ -21,7 +21,8 @@ const login = require('./routes/login')
 const Dashboard = require('./routes/DashBoard')
 const Staff = require('./routes/Staff')
 const Ticket = require('./routes/Tickets');
-const Manager = require('./routes/Manager')
+const Manager = require('./routes/Manager');
+const requestForm = require('./routes/requestForm');
 const { connectDB } = require('./db');
 const AppVersion  = require('./routes/appVersion')
 
@@ -62,6 +63,7 @@ app.use('/api/staff', Staff );
 app.use('/api/ticket',Ticket);
 app.use('/api/appVersion',AppVersion);
 app.use('/api/manager',Manager);
+app.use('/api/requestForm',requestForm);
 
 // Start the server
 app.listen(PORT, () => {
