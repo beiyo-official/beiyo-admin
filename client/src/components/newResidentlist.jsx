@@ -40,7 +40,7 @@ const NewResidentList = () => {
 
   useEffect(() => {
     axios
-      .get('https://beiyo-admin.vercel.app/api/hostels')
+      .get('http://13.233.120.199:5000/api/hostels')
       .then((response) => {
         setHostels(response.data);
       })
@@ -51,7 +51,7 @@ const NewResidentList = () => {
 
   useEffect(() => {
     axios
-      .get('https://beiyo-admin.vercel.app/api/newResident')
+      .get('http://13.233.120.199:5000/api/newResident')
       .then((response) => {
         const residentData = response.data;
         setResidents(residentData);
@@ -89,7 +89,7 @@ const NewResidentList = () => {
     if (!payments[residentId] && !openResidents[residentId]) {
       try {
         const response = await axios.get(
-          `https://beiyo-admin.vercel.app/api/dashboard/payments/${residentId}`
+          `http://13.233.120.199:5000/api/dashboard/payments/${residentId}`
         );
         setPayments((prevPayments) => ({
           ...prevPayments,

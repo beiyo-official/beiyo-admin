@@ -129,7 +129,7 @@ const Payment = () => {
   const [searchPayments,setSearchPayments]=useState([])
 
   useEffect(() => {
-    axios.get('https://beiyo-admin.vercel.app/api/hostels')
+    axios.get('http://13.233.120.199:5000/api/hostels')
       .then(response => {
         setHostels(response.data);
       })
@@ -150,14 +150,14 @@ const Payment = () => {
     const fetchPaymentsAndResidents = async () => {
       try {
         // Fetch payments
-        const paymentsResponse = await axios.get('https://beiyo-admin.vercel.app/api/dashboard/payments');
+        const paymentsResponse = await axios.get('http://13.233.120.199:5000/api/dashboard/payments');
         const paymentsData = paymentsResponse.data;
         setPayments(paymentsData);
 
         // Fetch residents for each payment concurrently
         const residentPromises = paymentsData.map(async (payment) => {
           try {
-            const residentResponse = await axios.get(`https://beiyo-admin.vercel.app/api/dashboard/payment/user/${payment._id}`);
+            const residentResponse = await axios.get(`http://13.233.120.199:5000/api/dashboard/payment/user/${payment._id}`);
             return { [payment._id]: residentResponse.data };
           } catch (error) {
             console.error('Error fetching user:', error);
@@ -286,7 +286,7 @@ const Payment = () => {
           return (
             <li key={payment._id}>
               {payment.userName} {payment.amount} {payment.status} {payment.cash && 'through cash'}
-              {resident && resident[0].hostel} {resident && resident[0].roomNumber}
+              {resident && resident[0].hostelId} {resident && resident[0].roomNumber}
             </li>
           );
         })}
