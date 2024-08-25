@@ -20,7 +20,7 @@ const HostelList = () => {
   const [openForm, setOpenForm] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    axios.get('http://13.233.120.199:5000/api/hostels')
+    axios.get('http://beiyo-admin.vercel.app/api/hostels')
       .then(response => {
         setHostels(response.data);
       })

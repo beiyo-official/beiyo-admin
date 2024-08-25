@@ -27,7 +27,7 @@ const RoomList = () => {
   const handleUpdateBedsSubmit = () => {
     // Handle beds update submission (e.g., refetch data)
     setIsUpdateBedsFormOpen(false);
-    axios.get('http://13.233.120.199:5000/api/rooms')
+    axios.get('https://beiyo-admin.vercel.app/api/rooms')
     .then(response => {
       setRooms(response.data);
       setFilteredRooms(response.data);
