@@ -28,5 +28,15 @@ router.get('/',async(req,res)=>{
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+router.put('/statusChange/:id',async (req,res)=>{
+    try {
+        const form = await requestForm.findByIdAndUpdate(req.params.id,{
+            status:'close'
+        });
+        res.json(form);
+    } catch (error) {
+        
+    }
+})
 
 module.exports = router;
