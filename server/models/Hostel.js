@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 
 
 const hostelSchema = new mongoose.Schema({
-  name: { type: String, required: true },
+  name: { type: String, required: true ,index:true},
   location: { type: String, required: true },
   roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: false },
   // remainingBeds:{type:Number,required:true}
-  totalRemainingBeds:{type:Number,},
+  totalRemainingBeds:{type:Number,index: true},
   locationLink:{type:String},
   price: {
     type: String,

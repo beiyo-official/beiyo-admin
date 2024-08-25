@@ -78,8 +78,10 @@ router.get('/', async (req, res) => {
   try {
   await  totalRooms();
   await  totalBeds();
-  const { page = 1, limit = 7 } = req.query;
-    const hostels = await Hostel.find().sort({totalRemainingBeds : -1}).sort({name:1}).skip((page - 1) * limit) 
+  const { page = 1, limit = 7  } = req.params;
+  const hostels = await Hostel.find()
+  .sort({ totalRemainingBeds: -1, name: 1 })
+  .skip((page - 1) * limit)
   .limit(parseInt(limit));
     res.json(hostels);
   } catch (err) {
