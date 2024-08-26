@@ -188,11 +188,11 @@ router.patch('/:id', getHostel, async (req, res) => {
   if (req.body.singlePrice != null) {
     res.hostel.singlePrice = req.body.singlePrice;
   }
-  if (req.body.doubleprice != null) {
-    res.hostel.doubleprice = req.body.doubleprice;
+  if (req.body.doublePrice != null) {
+    res.hostel.doublePrice = req.body.doublePrice;
   }
-  if (req.body.tripleprice != null) {
-    res.hostel.tripleprice = req.body.tripleprice;
+  if (req.body.triplePrice != null) {
+    res.hostel.triplePrice = req.body.triplePrice;
   }
   if (req.body.nearby1 != null) {
     res.hostel.nearby1 = req.body.nearby1;
