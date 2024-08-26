@@ -78,7 +78,7 @@ router.get('/', async (req, res) => {
   try {
   await  totalRooms();
   await  totalBeds();
-  const { page = 1, limit = 7  } = req.params;
+  const { page = 1, limit = 10  } = req.params;
   const hostels = await Hostel.find()
   .sort({ totalRemainingBeds: -1, name: 1 })
   .skip((page - 1) * limit)
