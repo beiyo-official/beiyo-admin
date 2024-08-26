@@ -45,5 +45,18 @@ router.put('/statusChange/:id',async (req,res)=>{
         
     }
 })
+router.put('/mappingHostelNames',async(req,res)=>{
+    try {
+        const forms = await requestForm.find();
+        for(const form of forms){
+            const hostel = await Hostel.findById(form.hostelId);
+            form.hostelName = hostel.name;
+            await form.save();
+        }
+        res.json(forms);
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 module.exports = router;
