@@ -148,7 +148,7 @@ router.post('/', async (req, res) => {
     // Update room with created beds
     room.beds = beds;
     await room.save();
-    totalRemainingBeds();
+    totalRemainingBeds(room.hostelId);
     res.status(201).json(room);
   } catch (err) {
     res.status(400).json({ message: err.message });
