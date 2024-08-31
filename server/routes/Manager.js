@@ -12,18 +12,6 @@ router.post('/create', async (req, res) => {
   try {
     const { name, email, mobileNumber, hostelIds, password } = req.body;
 
-    // if (!req.files || !req.files.aadhaarCard || !req.files.photo) {
-    //   return res.status(400).json({ message: "Missing Aadhaar card or photo file" });
-    // }
-
-    // const firebaseUserId = uuid.v4();
-
-    // // Upload Aadhaar card and image
-    // const [aadhaarCardUrl, imageUrl] = await Promise.all([
-    //   uploadFile(req.files.aadhaarCard, `managerAadhaarCards/${firebaseUserId}_aadhaar.jpg`),
-    //   uploadFile(req.files.photo, `managerImages/${firebaseUserId}_image.jpg`),
-    // ]);
-
     // Create new manager with the provided hostel IDs
     const newManager = new Manager({
       name,

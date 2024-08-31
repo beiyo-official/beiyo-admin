@@ -10,6 +10,7 @@ const Payment = require('../models/Payment');
 
 const totalRooms = require('../functions/TotalRooms');
 const totalBeds = require('../functions/TotalBeds');
+const mappingResidentToHostel = require('../functions/mappingResidentsToHostel');
 
 
 router.get('/calculateTotalRemainingBeds', async (req, res) => {
@@ -73,11 +74,14 @@ router.get('/managerTickets/:hostelId',async(req,res)=>{
   }
 })
 
+
+
 // Get all hostels
 router.get('/', async (req, res) => {
   try {
   await  totalRooms();
   await  totalBeds();
+  // await mappingResidentToHostel();
   const { page = 1, limit = 10  } = req.params;
   const hostels = await Hostel.find()
   .sort({ totalRemainingBeds: -1, name: 1 })

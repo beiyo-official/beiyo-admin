@@ -4,28 +4,23 @@ const Resident = require('../models/newMemberResident');
 
 const mappingResident = async () => {
   try {
-    const hostels = await Hostel.find();
-    
-    for (const hostel of hostels) {
-      const rooms = await Room.find({ hostelId: hostel._id });
+   const residents = await Resident.find();
+   for (const resident of residents){
+    const room = await Room.findOne({ roomNumber: resident.roomNumber ,hostelId:resident.hostelId});
+    if (room) {
+      // Update the resident with the room's _id
+      const res = await Resident.findByIdAndUpdate(
+        resident._id,
+        { roomNumberId: room._id },
+        { new: true }
+      );
       
-      for (const room of rooms) {
-        
-        if (room.capacity >= room.residents.length) {
-          const residents = await Resident.find({ hostelId: hostel._id, roomNumber: room.roomNumber });
-        
-          
-          for (const resident of residents) {
-            if (!room.residents.includes(resident._id)) { // Avoid duplicates
-              room.residents.push(resident._id);
-            }
-          }
-
-          // Save the updated room document
-          await room.save();
-        }
-      }
+      console.log(res);
+    } else {
+      console.log(`Room with roomNumber ${resident.roomNumber} not found for resident ${resident._id}`);
     }
+
+   }
     
     console.log('Resident mapping completed successfully');
   } catch (error) {

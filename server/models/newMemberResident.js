@@ -34,10 +34,11 @@ const residentSchema = new mongoose.Schema({
   contractTerms:{type:Number},
   rent:{type:Number},
   deposit:{type:Number},
-  roomId:{type : mongoose.Schema.Types.ObjectId,ref:'Room'},
-  
- 
-  hostelId:{type : mongoose.Schema.Types.ObjectId,ref:'Hostel'}
+  roomNumberId:{type : mongoose.Schema.Types.ObjectId,ref:'Room'},
+  amount:{type:String},
+  contract:{type:Date},
+  hostelId:{type : mongoose.Schema.Types.ObjectId,ref:'Hostel'},
+  living:{type:String,default:'current',enum:['current','old']}
 
   // other fields
 });

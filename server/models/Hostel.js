@@ -28,10 +28,10 @@ single:{
 singlePrice:{
   type:String,
 },
-doubleprice:{
+doublePrice:{
   type:String,
 },
-tripleprice:{
+triplePrice:{
   type:String,
 },
 nearby1:{
@@ -62,7 +62,8 @@ totalBeds:{
   type:Number, default:0
 },
 managerTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'}],
-adminTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'}]
+adminTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'}],
+residents:[{type: mongoose.Schema.Types.ObjectId, ref:'Resident'}]
 
 
 

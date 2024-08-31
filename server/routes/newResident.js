@@ -15,6 +15,9 @@ const uuid = require('uuid');
 const uploadFile = require('../firebase/firebase');
 const Hostel = require('../models/Hostel');
 const totalRemainingBeds = require('../functions/totalRemainingBeds');
+const mappingResident = require('../functions/MappingResident');
+
+
 
 
 
@@ -65,25 +68,72 @@ const totalRemainingBeds = require('../functions/totalRemainingBeds');
         }else{
           return res.status(400).json({message:"Room is full"});
         }
+        if(Hostel.totalRemainingBeds>0){
+          Hostel.totalRemainingBeds--;
+          Hostel.residents.push(resident._id);
+          await Hostel.save();
+        }else{
+          return res.status(400).json({message:"Hostel Room is full"});
+        }
         await totalTenants(hostelId);
         await totalRemainingBeds(hostelId);
     
         res.status(201).json(newResident);
     } catch (error) {
-        console.error('Error creating resident or processing payment:', error);
-        res.status(500).send('Internal Server Error');
+      
+        console.error('Error creating resident', error);
+        res.status(500).send('Error creating resident or processing payment:', error);
     }  
  });
 
  router.get('/', async (req, res) => {
     try {
       const newResidents = await Resident.find();
-      updateResidentHostelIds();
+      // updateResidentHostelIds();
+      // amountToRent();
+      // mappingResident();
       res.json(newResidents);
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
   });
+  // delting resident
+  router.delete('/deleteResident/:id',async(req,res)=>{
+    try {
+      
+      const residentId = req.params.id;
+      const resident = await Resident.findById(residentId);
+      if (!resident) {
+        return res.status(404).json({ message: "Resident not found" });
+        }
+        if(resident.living==='old'){
+          return res.status(200).json({ message: "Resident already left the beiyo" });
+        }
+        await Rooms.updateOne({ _id: resident.roomNumberId }, { $pull: { residents:
+          resident._id },$inc: { remainingCapacity: 1 } });
+        await Hostel.updateOne({_id:resident.hostelId},{
+          $pull:{residents:resident._id}
+        })  
+
+        await totalTenants(resident.hostelId);
+        await totalRemainingBeds(resident.hostelId);
+        resident.living='old'
+        await resident.save();
+        res.status(200).json('Resident Left the Beiyo')
+    } catch (error) {
+      res.json(error)
+      console.log(error);
+    }
+  })
+
+  router.get('/hostel/:id',async(req,res)=>{
+    try {
+      const newResidents = await Resident.find({hostelId:req.params.id});
+      res.json(newResidents);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  })
   router.get('/:id', async (req, res) => {
     try {
       const resident = await Resident.findById(req.params.id);
@@ -124,7 +174,8 @@ router.post('/amount',async(req,res)=>{
   }
 })
 
-  module.exports = router;
+
+
   
 
     // Payment successful, save user data

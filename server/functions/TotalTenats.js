@@ -8,9 +8,10 @@ const totalTenants = async (hostelId)=>{
       for(const room of rooms){
         totalTenants += room.capacity-room.remainingCapacity;
       }
+      const hostel = await Hostel.findById(hostelId)
       await Hostel.findByIdAndUpdate(
         hostelId,
-        { totalTenants: totalTenants },
+        { totalTenants: hostel.residents.length },
         { new: true } // Returns the updated document
     );
     
