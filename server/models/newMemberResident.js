@@ -38,7 +38,11 @@ const residentSchema = new mongoose.Schema({
   amount:{type:String},
   contract:{type:Date},
   hostelId:{type : mongoose.Schema.Types.ObjectId,ref:'Hostel'},
-  living:{type:String,default:'current',enum:['current','old']}
+  living:{type:String,default:'current',enum:['current','old']},
+  maintainaceCharge:{type:Number},
+  formFee:{type:Number},
+  dueAmount:{type:Number}
+  
 
   // other fields
 });

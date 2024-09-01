@@ -23,7 +23,7 @@ const mappingResident = require('../functions/MappingResident');
 
  router.post('/',async(req,res)=>{
     try {
-        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostelId, roomNumberId , dateJoined, password, rent,deposit,contractTerm,aadhaarCardUrl,imageUrl} = req.body;
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostelId, roomNumberId , dateJoined, password, rent,deposit,contractTerm,aadhaarCardUrl,imageUrl,maintainaceCharge,formFee,dueAmount} = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
       
@@ -56,6 +56,9 @@ const mappingResident = require('../functions/MappingResident');
           deposit:deposit,
           aadhaarCardUrl:aadhaarCardUrl,
           imageUrl:imageUrl,
+          maintainaceCharge:maintainaceCharge,
+          formFee:formFee,
+          dueAmount:dueAmount
         });
         await newResident.save();
         const resident = await Resident.findOne({ email });
@@ -99,8 +102,7 @@ const mappingResident = require('../functions/MappingResident');
   });
   // delting resident
   router.delete('/deleteResident/:id',async(req,res)=>{
-    try {
-      
+    try { 
       const residentId = req.params.id;
       const resident = await Resident.findById(residentId);
       if (!resident) {
@@ -125,6 +127,36 @@ const mappingResident = require('../functions/MappingResident');
       console.log(error);
     }
   })
+
+// update Put resident
+// PUT API to update resident data
+router.put('/:id', async (req, res) => {
+  try {
+    const residentId = req.params.id;
+    
+    // Extract the data to update from the request body
+    const updateData = req.body;
+
+    // Find the resident by ID and update it with the provided data
+    const updatedResident = await Resident.findByIdAndUpdate(
+      residentId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedResident) {
+      return res.status(404).json({ message: 'Resident not found' });
+    }
+
+    res.status(200).json({
+      message: 'Resident updated successfully',
+      data: updatedResident,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating resident', error: error.message });
+  }
+});
+
 
   router.get('/hostel/:id',async(req,res)=>{
     try {
