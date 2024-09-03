@@ -118,6 +118,33 @@ router.get('/', async (req, res) => {
   }
 });
 
+// update hostels
+router.put('/:id', async (req, res) => {
+  try {
+    const hostelId = req.params.id;
+    
+    // Extract the data to update from the request body
+    const updateData = req.body;
+
+    // Find the resident by ID and update it with the provided data
+    const updatedHostel = await Hostel.findByIdAndUpdate(
+      hostelId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedHostel) {
+      return res.status(404).json({ message: 'Hostel not found' });
+    }
+
+    res.status(200).json({
+      message: 'Hostel updated successfully',
+      data: updatedHostel,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating hostel', error: error.message });
+  }
+});
 
 
 // Get a single hostel

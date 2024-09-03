@@ -155,26 +155,43 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Update a room
-router.patch('/:id', getRoom, async (req, res) => {
-  if (req.body.roomNumber != null) {
-    res.room.roomNumber = req.body.roomNumber;
-  }
-  if (req.body.capacity != null) {
-    res.room.capacity = req.body.capacity;
-  }
-  if(req.body.status != null){
-    res.room.status = req.body.status;
-  }
-
-  
-    res.room.lastUpdatedBy = req.body.lastUpdatedBy;
-  
+// update room
+router.put('/:id', async (req, res) => {
   try {
-    const updatedRoom = await res.room.save();
-    res.json(updatedRoom);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    const roomId = req.params.id;
+    
+    // Extract the data to update from the request body
+    const updateData = req.body;
+
+    // Find the resident by ID and update it with the provided data
+    const updatedRoom = await Room.findByIdAndUpdate(
+      roomId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedRoom) {
+      return res.status(404).json({ message: 'Resident not found' });
+    }
+
+    res.status(200).json({
+      message: 'Room updated successfully',
+      data: updatedRoom,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating Room', error: error.message });
+  }
+});
+
+// deleting residnet from residents array 
+router.delete('resident/:id/:roomId', async (req, res) => {
+  const roomId = req.params.roomId;
+  const residentId = req.params.id;
+  try {
+    await Room.updateOne({ _id: roomId }, { $pull: { residents:
+      residentId } });
+  } catch (error) {
+    res.status(500).json(error)
   }
 });
 
@@ -225,6 +242,7 @@ router.get("/:id",async(req,res)=>{
    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 router.get("/hostel/:hostelId",async(req,res)=>{
   try{
    const room = await Room.find({hostelId:req.params.hostelId});  

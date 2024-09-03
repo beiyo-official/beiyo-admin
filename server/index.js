@@ -32,6 +32,16 @@ const app = express();
 app.use(cors(
 
 ));
+
+// Middleware to check API key
+app.use((req, res, next) => {
+  const apiKey = req.query.apiKey;
+  if (!apiKey || apiKey !== process.env.SERVER_API_KEY) {
+      return res.status(403).json({ message: 'Forbidden: Invalid API key' });
+  }
+  next();
+});
+
 config();
 // Middleware
 // app.use(bodyParser.json());

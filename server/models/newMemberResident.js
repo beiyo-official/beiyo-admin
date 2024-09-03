@@ -34,7 +34,7 @@ const residentSchema = new mongoose.Schema({
   contractTerms:{type:Number},
   rent:{type:Number},
   deposit:{type:Number},
-  roomNumberId:{type : mongoose.Schema.Types.ObjectId,ref:'Room'},
+  roomNumberId:{type : mongoose.Schema.Types.ObjectId, ref:'Room', required:true},
   amount:{type:String},
   contract:{type:Date},
   hostelId:{type : mongoose.Schema.Types.ObjectId,ref:'Hostel'},

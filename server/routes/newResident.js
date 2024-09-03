@@ -46,7 +46,8 @@ const mappingResident = require('../functions/MappingResident');
         
         const newResident = new Resident({
           name, email, mobileNumber, address, parentsName,
-          parentsMobileNo, hostelId, roomNumberId, password, 
+          parentsMobileNo, hostelId,  password, 
+          roomNumberId:roomNumberId,
           hostel: hostelName,
           roomNumber: roomNumber,
           dateJoined: formattedDate,
