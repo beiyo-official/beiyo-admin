@@ -36,6 +36,8 @@ router.get('/payments',async(req,res)=>{
   }
 })
 
+
+
 router.get('/payment/:id', async (req, res) => {
   try {
     const paymentId = req.params.id;
@@ -51,6 +53,7 @@ router.get('/payment/:id', async (req, res) => {
   }
 });
 
+
 router.get('/payment/user/:id', async (req, res) => {
   try {
     const paymentId = req.params.id;
@@ -65,6 +68,34 @@ router.get('/payment/user/:id', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+// current month payment
+router.get('/payment/currentmonth',async(req,res)=>{
+  try {
+       // Get the current date
+
+       const currentDate = new Date();
+       const date = dayjs(currentDate).startOf('month');
+       const month = date.format('YYYY-MM');
+       console.log(month);
+   
+     
+   
+       // Find payments where `date` is within the current month
+       const payments = await Payment.find({
+        month:month
+       });
+       res.json(payments);
+
+  } catch (error) {
+    res.status(500).json(error);
+  }
+})
+
+
+
+
+
 
 router.post('/paymentSave', async (req, res) => {
   try {
@@ -93,19 +124,13 @@ const paymentSave = async (userId,month,amount,cash)=>{
     return payment
 }
 
-router.post('/cashPayments',async(req,res)=>{
+router.put('/cashPayment/:id',async(req,res)=>{
   try {
-    const { email,month,amount } = req.body;
-    const formatMonth = dayjs(month).startOf('month');
-    const monthFormated = formatMonth.format('YYYY-MM');
-    const cash = true;
-
-    const resident = await Resident.findOne({email});
-    if(!resident){
-      return res.status(404).json({message:'Resident not found'});
-    }
-    paymentSave(resident.id,monthFormated,amount,cash)
-    res.json({message:'successfull through cash'});
+      const paymentId = req.params.id
+      const payment = await Payment.findByIdAndUpdate(paymentId,{
+        cash:true,status:'successful'
+      },{new:true})
+    res.json({message:'successful through cash'});
   } catch (error) {
     console.error('Error making payment:', error);
     res.status(500).send('Internal Server Error');
@@ -132,6 +157,29 @@ router.get('/currentMonthPayments/:hostelId',async(req,res)=>{
 }
 })
 
+
+router.get('/monthPayments/:hostelId',async(req,res)=>{
+  try {
+    // Step 1: Find users by hostelId and populate their payments
+    const Residents = await Resident.find({ hostelId: req.params.hostelId }).populate('payments');
+
+    // // Step 2: Filter payments for each user to include only payments from the current month
+    // const usersWithCurrentMonthPayments = Residents.map(user => {
+    //     const currentMonthPayments = filterPaymentsByCurrentMonth(user.payments);
+    //   return currentMonthPayments
+    // });
+  const userPayments = Residents.map(user=>{
+    return user.payments;
+  })
+  res.json(userPayments);
+    // Step 3: Send the filtered users and their current month payments as a response
+   
+
+} catch (error) {
+    console.error('Error fetching payments:', error);
+    res.status(500).json({ message: 'Server error' });
+}
+})
 
 
 

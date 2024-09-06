@@ -40,7 +40,7 @@ const NewResidentList = () => {
 
   useEffect(() => {
     axios
-      .get('http://13.233.120.199:5000/api/hostels')
+      .get('https://beiyo-admin.in/api/hostels')
       .then((response) => {
         setHostels(response.data);
       })
@@ -51,7 +51,7 @@ const NewResidentList = () => {
 
   useEffect(() => {
     axios
-      .get('http://13.233.120.199:5000/api/newResident')
+      .get('https://beiyo-admin.in/api/newResident')
       .then((response) => {
         const residentData = response.data;
         setResidents(residentData);
@@ -89,7 +89,7 @@ const NewResidentList = () => {
     if (!payments[residentId] && !openResidents[residentId]) {
       try {
         const response = await axios.get(
-          `http://13.233.120.199:5000/api/dashboard/payments/${residentId}`
+          `https://beiyo-admin.in/api/dashboard/payments/${residentId}`
         );
         setPayments((prevPayments) => ({
           ...prevPayments,
@@ -211,7 +211,7 @@ const NewResidentList = () => {
                     <TableCell>{resident.hostel}</TableCell>
                     {!isMobile && <TableCell>{resident.roomNumber}</TableCell>}
                     <TableCell>{resident.email}</TableCell>
-                    {!isMobile && <TableCell>{resident.amount}</TableCell>}
+                    {!isMobile && <TableCell>{resident.rent}</TableCell>}
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>

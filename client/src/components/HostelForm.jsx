@@ -57,9 +57,9 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
     };
     try {
       if (hostel) {
-        await axios.patch(`https://beiyo-admin.vercel.app/api/hostels/${hostel._id}`, data);
+        await axios.patch(`https://beiyo-admin.in/api/hostels/${hostel._id}`, data);
       } else {
-        await axios.post('https://beiyo-admin.vercel.app/api/hostels', data);
+        await axios.post('https://beiyo-admin.in/api/hostels', data);
       }
       onSubmit();
       onClose();

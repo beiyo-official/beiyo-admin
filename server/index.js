@@ -9,7 +9,6 @@ const PORT = process.env.PORT || 5000;
 const cron = require('node-cron');
 const cookieParser = require('cookie-parser');
 const cluster = require('cluster');
-
 const hostelRoutes = require('./routes/hostelRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
@@ -29,18 +28,16 @@ const AppVersion  = require('./routes/appVersion')
 
 
 const app = express();
-app.use(cors(
+app.use(cors());
 
-));
-
-// Middleware to check API key
-app.use((req, res, next) => {
-  const apiKey = req.query.apiKey;
-  if (!apiKey || apiKey !== process.env.SERVER_API_KEY) {
-      return res.status(403).json({ message: 'Forbidden: Invalid API key' });
-  }
-  next();
-});
+// // Middleware to check API key
+// app.use((req, res, next) => {
+//   const apiKey = req.query.apiKey;
+//   if (!apiKey || apiKey !== process.env.SERVER_API_KEY) {
+//       return res.status(403).json({ message: 'Forbidden: Invalid API key' });
+//   }
+//   next();
+// });
 
 config();
 // Middleware
@@ -51,7 +48,7 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 
-connectDB();``
+connectDB();
 // updateRoomStatuses();
 app.use(cookieParser())
 

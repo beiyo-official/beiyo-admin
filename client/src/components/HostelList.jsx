@@ -20,7 +20,7 @@ const HostelList = () => {
   const [openForm, setOpenForm] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    axios.get('https://beiyo-admin.vercel.app/api/hostels')
+    axios.get('https://beiyo-admin.in/api/hostels')
       .then(response => {
         setHostels(response.data);
       })
@@ -37,7 +37,7 @@ const HostelList = () => {
   const handleFormSubmit = () => {
     setEditingHostel(null);
     setOpenForm(false);
-    axios.get('https://beiyo-admin.vercel.app/api/hostels')
+    axios.get('https://beiyo-admin.in/api/hostels')
       .then(response => {
         setHostels(response.data);
       })
