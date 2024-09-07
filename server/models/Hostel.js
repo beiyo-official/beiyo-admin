@@ -72,7 +72,10 @@ totalBeds:{
 },
 managerTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'}],
 adminTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'}],
-residents:[{type: mongoose.Schema.Types.ObjectId, ref:'Resident'}]
+residents:[{type: mongoose.Schema.Types.ObjectId, ref:'Resident'}],
+hostelType:{
+  type:String,enum:['Boys','Girls'],default:'Boys'
+}
 
 
 

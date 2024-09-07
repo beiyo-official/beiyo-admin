@@ -79,8 +79,8 @@ router.get('/managerTickets/:hostelId',async(req,res)=>{
 // Get all hostels
 router.get('/', async (req, res) => {
   try {
-  await  totalRooms();
-  await  totalBeds();
+  // await  totalRooms();
+  // await  totalBeds();
   // await mappingResidentToHostel();
   const { page = 1, limit = 10  } = req.params;
   const hostels = await Hostel.find()
@@ -174,6 +174,7 @@ router.post('/', async (req, res) => {
     nearby1distance:req.body.nearby1distance,
     nearby2distance:req.body.nearby2distance,
     nearby3distance:req.body.nearby3distance,
+    hostelType:req.body.hostelType
   });
 
   try {
