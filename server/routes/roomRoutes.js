@@ -10,6 +10,7 @@ const totalTenants = require('../functions/TotalTenats');
 const Resident = require('../models/newMemberResident');
 const mappingResident = require('../functions/MappingResident');
 const totalRemainingBeds = require('../functions/totalRemainingBeds');
+const Payment = require('../models/Payment');
 
 // Get all rooms
 router.get('/', async (req, res) => {
@@ -238,6 +239,50 @@ router.get("/:id",async(req,res)=>{
    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// swap rooms
+router.put("roomSwap/:residentId",async(req,res)=>{
+  try {
+    const oldRoomId=req.body.oldRoomId;
+    const newRoomId = req.body.newRoomId
+    const residentId=req.params.residentId;
+    const oldRoom = await Room.findByIdAndUpdate(oldRoomId,{
+      $inc: { remainingCapacity: 1 }
+    },{new:true});
+    const oldHostel = await Hostel.findById(oldRoom.hostelId);
+    const newRoom = await Room.findByIdAndUpdate(newRoomId,{
+      $inc: { remainingCapacity: -1 }
+    },{new:true});
+    const newHostel = await Hostel.findById(newRoom.hostelId);
+    const resident = await Resident.findByIdAndUpdate(residentId,{
+      hostelId:newHostel._id,
+      roomNumberId:newRoom._id,
+      hostel:newHostel.name,
+      roomNumber:newRoom.roomNumber,
+      rent:newRoom.price
+    });
+    if (!oldRoom || !newRoom || !resident) {
+     res.status(404).json("Not Found")   
+    }
+    oldRoom.residents.pull(residentId);
+    oldHostel.residents.pull(residentId);
+    newRoom.residents.push(residentId);
+    newHostel.residents.push(residentId);
+    const currentDate = new Date();
+    const futurePayments = await Payment.updateMany(
+      { userId: residentId, date: { $gt: currentDate } },
+      { $set: { rent: newRoom.price, amount: newRoom.price } }
+    );
+    await totalTenants(oldHostel._id);
+    await totalTenants(newHostel._id);
+    await totalRemainingBeds(oldHostel._id);
+    await totalRemainingBeds(newHostel._id);
+  } catch (error) {
+    res.json(error);
+  }
+})
+
+
 
 router.get("/hostel/:hostelId",async(req,res)=>{
   try{

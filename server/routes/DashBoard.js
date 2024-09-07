@@ -27,6 +27,23 @@ router.get('/payments/:userId', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+// update amount 
+router.put('/updateAmount/:userId', async (req, res) => {
+  try {
+    const payments = await Payment.updateMany(  { userId: req.params.userId },  // Match all payments for this user
+      { 
+        rent: req.body.rent,
+        amount: req.body.amount 
+      });
+      if (payments.matchedCount === 0) {
+        return res.status(404).send('No payments found for this user');
+      }
+      res.json(payments);
+  } catch (error) {
+    res.json(error);
+  }
+})
+
 
 router.get('/payments',async(req,res)=>{
   try {
