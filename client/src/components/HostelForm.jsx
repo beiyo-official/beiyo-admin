@@ -39,7 +39,7 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
   const [nearby1distance,setNearby1distance]=useState(hostel?hostel.nearby1distance:'');
   const [nearby2distance,setNearby2distance]=useState(hostel?hostel.nearby2distance:'');
   const [nearby3distance,setNearby3distance]=useState(hostel?hostel.nearby3distance:'');
-
+  const [hostelType,setHostelType]=useState(hostel?hostel.hostelType:'');
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
@@ -92,6 +92,16 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
             onChange={(e) => setName(e.target.value)}
             required
           />
+            <Select
+                   label="HostelType"
+                  value={hostelType}
+                  onChange={(e)=>setHostelType(e.target.value)}
+                  
+                >
+                  <MenuItem value="">Select Hostel Type</MenuItem>
+                  <MenuItem value="single">Boys</MenuItem>
+                  <MenuItem value="double">Girls</MenuItem>
+                </Select>
           <TextField
             label="Location"
             value={location}
