@@ -138,16 +138,12 @@ router.post('/', async (req, res) => {
     res.status(201).json(newRoom);
   
 
-    const beds = [];
-    for (let i = 1; i <= room.capacity; i++) {
-      const bed = new Beds({ roomId: room._id, bedNumber: `Bed ${i}`,roomNumber: room.roomNumber });
-      await bed.save();
-      beds.push(bed._id);
-    }
+   
 
-    // Update room with created beds
-    room.beds = beds;
+
     await room.save();
+    await totalRooms();
+    await totalBeds();
     totalRemainingBeds(room.hostelId);
     res.status(201).json(room);
   } catch (err) {
@@ -256,6 +252,8 @@ router.get("/hostel/:hostelId",async(req,res)=>{
 router.delete('/delete/:id', getRoom, async (req, res) => {
   try {
     await res.room.remove();
+     await totalRooms();
+    await totalBeds();
     res.json({ message: 'Room deleted' });
   } catch (err) {
     res.status(500).json({ message: err.message });

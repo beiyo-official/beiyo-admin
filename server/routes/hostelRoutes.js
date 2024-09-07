@@ -76,27 +76,12 @@ router.get('/managerTickets/:hostelId',async(req,res)=>{
 
 
 
-// Get all hostels
-router.get('/', async (req, res) => {
-  try {
-  await  totalRooms();
-  await  totalBeds();
-  // await mappingResidentToHostel();
-  const { page = 1, limit = 10  } = req.params;
-  const hostels = await Hostel.find()
-  .sort({ totalRemainingBeds: -1, name: 1 })
-  .skip((page - 1) * limit)
-  .limit(parseInt(limit));
-    res.json(hostels);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+
 
 router.get('/', async (req, res) => {
   try {
-    await totalRooms();
-    await totalBeds();
+    // await totalRooms();
+    // await totalBeds();
 
     const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit of 10
 
@@ -171,6 +156,9 @@ router.post('/', async (req, res) => {
     nearby1:req.body.nearby1,
     nearby2:req.body.nearby2,
     nearby3:req.body.nearby3,
+    nearby1distance:req.body.nearby1distance,
+    nearby2distance:req.body.nearby2distance,
+    nearby3distance:req.body.nearby3distance,
   });
 
   try {

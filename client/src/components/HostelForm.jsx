@@ -36,6 +36,9 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
   const [nearby1, setNearby1] = useState(hostel ? hostel.nearby1 : '');
   const [nearby2, setNearby2] = useState(hostel ? hostel.nearby2 : '');
   const [nearby3, setNearby3] = useState(hostel ? hostel.nearby3 : '');
+  const [nearby1distance,setNearby1distance]=useState(hostel?hostel.nearby1distance:'');
+  const [nearby2distance,setNearby2distance]=useState(hostel?hostel.nearby2distance:'');
+  const [nearby3distance,setNearby3distance]=useState(hostel?hostel.nearby3distance:'');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,10 +57,13 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
       nearby1,
       nearby2,
       nearby3,
+      nearby1distance,
+      nearby2distance,
+      nearby3distance
     };
     try {
       if (hostel) {
-        await axios.patch(`https://beiyo-admin.in/api/hostels/${hostel._id}`, data);
+        await axios.put(`https://beiyo-admin.in/api/hostels/${hostel._id}`, data);
       } else {
         await axios.post('https://beiyo-admin.in/api/hostels', data);
       }
@@ -150,15 +156,31 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
             onChange={(e) => setNearby1(e.target.value)}
           />
           <TextField
+            label="Nearby Place 1 Distance"
+            value={nearby1distance}
+            onChange={(e) => setNearby1distance(e.target.value)}
+          />
+          <TextField
             label="Nearby Place 2"
             value={nearby2}
             onChange={(e) => setNearby2(e.target.value)}
+          />
+           <TextField
+            label="Nearby Place 2 Distance"
+            value={nearby2distance}
+            onChange={(e) => setNearby2distance(e.target.value)}
           />
           <TextField
             label="Nearby Place 3"
             value={nearby3}
             onChange={(e) => setNearby3(e.target.value)}
           />
+           <TextField
+            label="Nearby Place 3 Distance"
+            value={nearby3distance}
+            onChange={(e) => setNearby3distance(e.target.value)}
+          />
+          
         </Box>
       </DialogContent>
       <DialogActions>

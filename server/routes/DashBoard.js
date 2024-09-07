@@ -11,6 +11,7 @@ const dayjs = require('dayjs');
 
 const Hostels = require('../models/Hostel');
 const filterPaymentsByCurrentMonth = require('../functions/filterCurrentmonthPayments');
+const rentMapAmount = require('../functions/paymentfunction');
 // const { totalPendingTickets, totalTickets } = require('../functions/TotalTickets');
 
 
@@ -30,12 +31,54 @@ router.get('/payments/:userId', async (req, res) => {
 router.get('/payments',async(req,res)=>{
   try {
     const payments= await Payment.find();
+    // await rentMapAmount();
     res.json(payments); 
   } catch (error) {
     console.log(error);
   }
 })
 
+
+// due payments
+router.get('/duePayments',async(req,res)=>{
+  try {
+    const payments = await Payment.find({type:'dueCharge'});
+    res.json(payments);
+  } catch (error) {
+    res.json(error);
+  }
+})
+router.get('/updateDueAmount/:residentId',async(req,res)=>{
+  try {
+    const payment = await Payment.findOne({userId:req.params.residentId,type:'dueCharge'})
+    res.json(payment);
+  } catch (error) {
+   res.json(error); 
+  }
+})
+
+
+// update dueAmount
+router.put('/updateDueAmount/:id',async(req,res)=>{
+  try {
+    const payment = await Payment.findByIdAndUpdate(req.params.id,{
+      amount:req.body.amount
+    },{new:true});
+    res.json(payment);
+  } catch (error) {
+    res.json(error);
+  }
+}
+)
+router.put('/updateDueAmount/:residentId',async(req,res)=>{
+  try {
+    const payment = await Payment.findOneAndUpdate({userId:req.params.residentId,type:'dueCharge'},{amount:req.body.amount})
+    res.json(payment);
+
+  } catch (error) {
+   res.json(error); 
+  }
+})
 
 
 router.get('/payment/:id', async (req, res) => {

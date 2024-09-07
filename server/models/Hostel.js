@@ -37,6 +37,15 @@ triplePrice:{
 nearby1:{
   type:String,
 },
+nearby1distance:{
+  type:String,
+},
+nearby2distance:{
+  type:String,
+},
+nearby3distance:{
+  type:String,
+},
 nearby2:{
   type:String,
 },

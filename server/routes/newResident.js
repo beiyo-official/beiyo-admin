@@ -63,7 +63,7 @@ const mappingResident = require('../functions/MappingResident');
         });
         await newResident.save();
         const resident = await Resident.findOne({ email });
-        await generateMonthlyPayments(resident._id, resident.contractEndDate);
+
         if(Room.remainingCapacity>0){
           Room.remainingCapacity--;
 
@@ -79,8 +79,11 @@ const mappingResident = require('../functions/MappingResident');
         }else{
           return res.status(400).json({message:"Hostel Room is full"});
         }
+
         await totalTenants(hostelId);
         await totalRemainingBeds(hostelId);
+        await generateMonthlyPayments(resident._id, resident.contractEndDate);
+        await generateDueCharge(resident._id);
     
         res.status(201).json(newResident);
     } catch (error) {
@@ -101,6 +104,12 @@ const mappingResident = require('../functions/MappingResident');
       res.status(500).json({ message: err.message });
     }
   });
+
+
+
+
+
+
   // delting resident
   router.delete('/deleteResident/:id',async(req,res)=>{
     try { 
@@ -230,10 +239,12 @@ router.post('/amount',async(req,res)=>{
           const payment = new Payment({
             userId,
             userName:resident.name,
+            rent: resident.rent,
             amount: resident.rent, // Replace with the appropriate amount
             month,
             date: currentDate.toDate(),
-            status: 'due'
+            status: 'due',
+            type:'rent'
           });
     
           await payment.save();
@@ -249,6 +260,32 @@ router.post('/amount',async(req,res)=>{
      }
     };
     
+   const generateDueCharge = async(userId)=>{
+    try {
+      const resident = await Resident.findById(userId);
+      const startDate = dayjs(resident.dateJoined).startOf('month');
+        const month = startDate.format('YYYY-MM');
+        const existingPayment = await Payment.findOne({ userId, month ,type:'dueCharge'});
+        if(!existingPayment){
+          const payment = new Payment({
+            userId,
+            userName:resident.name,
+            amount: resident.dueAmount, // Replace with the appropriate amount
+            month,
+            date: startDate.toDate(),
+            status: 'due',
+            type:'dueCharge'
+          });
+    
+          await payment.save();
+          resident.dueChargePayment=payment._id;
+          await resident.save();
+        }
+    } catch (error) {
+      console.log(error);
+    }
+   }
+
     async function updateResidentHostelIds() {
       try {
         // Fetch all residents

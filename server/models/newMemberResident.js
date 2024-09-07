@@ -41,8 +41,8 @@ const residentSchema = new mongoose.Schema({
   living:{type:String,default:'current',enum:['current','old']},
   maintainaceCharge:{type:Number},
   formFee:{type:Number},
-  dueAmount:{type:Number}
-  
+  dueAmount:{type:Number,default:0},
+  dueChargePayment:{type:mongoose.Schema.Types.ObjectId,ref:'Payment'}
 
   // other fields
 });
