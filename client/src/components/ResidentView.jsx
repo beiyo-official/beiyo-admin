@@ -39,7 +39,7 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
           setResident(response.data);
           // Fetch resident payments
           if (response.data.payments && response.data.payments.length > 0) {
-            axios.get(`http://localhost:5000/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
+            axios.get(`https://beiyo-admin.in/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
               .then(paymentResponse => {
                 setPayments(paymentResponse.data);
                 setLoading(false);

@@ -51,7 +51,7 @@ const HostelList = () => {
     if (hostel.residents && hostel.residents.length > 0) {
       try {
         const residentIds = hostel.residents.join(','); // Assuming the resident IDs are in an array
-        const response = await axios.get(`http://localhost:5000/api/newResident/allResidentIds?ids=${residentIds}`);
+        const response = await axios.get(`https://beiyo-admin.in/api/newResident/allResidentIds?ids=${residentIds}`);
         setResidents(response.data); // Assuming the API returns the resident details
       } catch (error) {
         console.error('Error fetching residents:', error);

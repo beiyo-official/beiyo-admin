@@ -49,7 +49,7 @@ const PaymentList = () => {
 
   const handleFetchPayments = () => {
     setLoading(true);
-    axios.get(`http://localhost:5000/api/dashboard/monthPayments/${selectedHostel}/${selectedMonth}`)
+    axios.get(`https://beiyo-admin.in/api/dashboard/monthPayments/${selectedHostel}/${selectedMonth}`)
       .then(response => {
         setPayments(response.data);
         setFilteredPayments(response.data);
