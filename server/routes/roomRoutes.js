@@ -241,7 +241,7 @@ router.get("/:id",async(req,res)=>{
 });
 
 // swap rooms
-router.put("roomSwap/:residentId",async(req,res)=>{
+router.put("/roomSwap/:residentId",async(req,res)=>{
   try {
     const oldRoomId=req.body.oldRoomId;
     const newRoomId = req.body.newRoomId
@@ -277,6 +277,7 @@ router.put("roomSwap/:residentId",async(req,res)=>{
     await totalTenants(newHostel._id);
     await totalRemainingBeds(oldHostel._id);
     await totalRemainingBeds(newHostel._id);
+    res.json(resident);
   } catch (error) {
     res.json(error);
   }

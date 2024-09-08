@@ -206,3 +206,6 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
 };
 
 export default HostelForm;
+
+
+

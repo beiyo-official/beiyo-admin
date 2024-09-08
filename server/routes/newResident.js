@@ -106,6 +106,25 @@ const mappingResident = require('../functions/MappingResident');
   });
 
 
+// geting  all residents through ids
+router.get('/allResidentIds', async (req, res) => {
+  try {
+    // Get the list of resident IDs from the query parameter (assuming they are comma-separated)
+    const residentIds = req.query.ids.split(',');
+
+    // Find residents in the database whose IDs match the provided list
+    const residents = await Resident.find({
+      _id: { $in: residentIds }
+    });
+
+    // Return the list of residents
+    res.status(200).json(residents);
+  } catch (error) {
+    console.error('Error fetching residents:', error);
+    res.status(500).json({ error: 'Failed to fetch residents' });
+  }
+});
+
 
 
 

@@ -55,6 +55,25 @@ router.get('/payments',async(req,res)=>{
   }
 })
 
+router.get('/paymentsArray', async (req, res) => {
+  try {
+    // Get the list of resident IDs from the query parameter (assuming they are comma-separated)
+    const paymentsIds = req.query.ids.split(',');
+
+    // Find residents in the database whose IDs match the provided list
+    const payments = await Payment.find({
+      _id: { $in: paymentsIds }
+    });
+
+    // Return the list of residents
+    res.status(200).json(payments);
+  } catch (error) {
+    console.error('Error fetching residents:', error);
+    res.status(500).json({ error: 'Failed to fetch Payments' });
+  }
+});
+
+
 
 // due payments
 router.get('/duePayments',async(req,res)=>{
@@ -78,7 +97,7 @@ router.get('/updateDueAmount/:residentId',async(req,res)=>{
 // update dueAmount
 router.put('/updateDueAmount/:id',async(req,res)=>{
   try {
-    const payment = await Payment.findByIdAndUpdate(req.params.id,{
+    const payment = await Payment.findAndUpdate(req.params.id,{
       amount:req.body.amount
     },{new:true});
     res.json(payment);
@@ -87,9 +106,9 @@ router.put('/updateDueAmount/:id',async(req,res)=>{
   }
 }
 )
-router.put('/updateDueAmount/:residentId',async(req,res)=>{
+router.put('/resident/updateDueAmount/:residentId',async(req,res)=>{
   try {
-    const payment = await Payment.findOneAndUpdate({userId:req.params.residentId,type:'dueCharge'},{amount:req.body.amount})
+    const payment = await Payment.findOneAndUpdate({userId:req.params.residentId,type:'dueCharge'},{amount:req.body.amount},{new:true})
     res.json(payment);
 
   } catch (error) {
@@ -223,11 +242,7 @@ router.get('/monthPayments/:hostelId',async(req,res)=>{
     // Step 1: Find users by hostelId and populate their payments
     const Residents = await Resident.find({ hostelId: req.params.hostelId }).populate('payments');
 
-    // // Step 2: Filter payments for each user to include only payments from the current month
-    // const usersWithCurrentMonthPayments = Residents.map(user => {
-    //     const currentMonthPayments = filterPaymentsByCurrentMonth(user.payments);
-    //   return currentMonthPayments
-    // });
+
   const userPayments = Residents.map(user=>{
     return user.payments;
   })
@@ -241,6 +256,26 @@ router.get('/monthPayments/:hostelId',async(req,res)=>{
 }
 })
 
+router.get('/monthPayments/:hostelId/:month', async (req, res) => {
+  try {
+    const { hostelId, month } = req.params;
+
+    // Find residents by hostelId and populate their payments
+    const residents = await Resident.find({ hostelId,living:'current' })
+      .populate({
+        path: 'payments',
+        match: { month }  // Filter payments by month
+      });
+
+    // Extract payments from residents
+    const userPayments = residents.flatMap(resident => resident.payments);
+
+    res.json(userPayments);
+  } catch (error) {
+    console.error('Error fetching payments:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 
 
