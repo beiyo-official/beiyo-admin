@@ -65,7 +65,7 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
     };
     try {
       if (hostel) {
-        await axios.put(`http://localhost:5000/api/hostels/${hostel._id}`, data);
+        await axios.put(`https://beiyo-admin.in/api/hostels/${hostel._id}`, data);
       } else {
         await axios.post('https://beiyo-admin.in/api/hostels', data);
       }
