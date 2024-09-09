@@ -40,6 +40,7 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
   const [nearby2distance,setNearby2distance]=useState(hostel?hostel.nearby2distance:'');
   const [nearby3distance,setNearby3distance]=useState(hostel?hostel.nearby3distance:'');
   const [hostelType,setHostelType]=useState(hostel?hostel.hostelType:'');
+  const [siteTotalRemainingBeds,setSiteTotalRemainingBeds]=useState(hostel?hostel.siteTotalRemainingBeds:'')
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
@@ -59,11 +60,12 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
       nearby3,
       nearby1distance,
       nearby2distance,
-      nearby3distance
+      nearby3distance,
+      siteTotalRemainingBeds
     };
     try {
       if (hostel) {
-        await axios.put(`https://beiyo-admin.in/api/hostels/${hostel._id}`, data);
+        await axios.put(`http://localhost:5000/api/hostels/${hostel._id}`, data);
       } else {
         await axios.post('https://beiyo-admin.in/api/hostels', data);
       }
@@ -189,6 +191,11 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
             label="Nearby Place 3 Distance"
             value={nearby3distance}
             onChange={(e) => setNearby3distance(e.target.value)}
+          />
+            <TextField
+            label="Site Total Remaining Beds"
+            value={siteTotalRemainingBeds}
+            onChange={(e) => setSiteTotalRemainingBeds(e.target.value)}
           />
           
         </Box>
