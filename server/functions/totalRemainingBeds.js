@@ -18,7 +18,7 @@ const totalRemainingBeds = async (hostelId) => {
         const hostel = await Hostel.findById(hostelId)
         await Hostel.findByIdAndUpdate(
             hostelId,
-            { totalRemainingBeds:  hostel.totalBeds-hostel.totalTenants},
+            { totalRemainingBeds:  hostel.totalBeds - hostel.totalTenants},
             { new: true } // Returns the updated document
         );
     

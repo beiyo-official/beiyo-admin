@@ -246,6 +246,21 @@ router.patch('/:id', getHostel, async (req, res) => {
   }
 });
 
+router.put('/siteTotalRemainingBeds/:id',async(req,res)=>{
+  try {
+
+      const hostel = await Hostel.findById(req.params.id);
+      const updatedHostel = await Hostel.findByIdAndUpdate(req.params.id,{
+        siteTotalRemainingBeds: hostel.totalRemainingBeds
+      },{new:true})
+
+    res.json(updatedHostel);
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+
 // Delete a hostel
 router.delete('/:id', getHostel, async (req, res) => {
   try {

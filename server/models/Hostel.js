@@ -70,6 +70,9 @@ totalRooms:{
 totalBeds:{
   type:Number, default:0
 },
+siteTotalRemainingBeds:{
+  type:Number,default:0
+},
 managerTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'}],
 adminTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'}],
 residents:[{type: mongoose.Schema.Types.ObjectId, ref:'Resident'}],
