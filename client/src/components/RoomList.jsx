@@ -373,7 +373,8 @@ import {
   DialogActions,
   CssBaseline,
   TextField,
-  MenuItem
+  MenuItem,
+  CircularProgress
 } from '@mui/material';
 import ResidentDetails from './ResidentView';
 
@@ -389,6 +390,7 @@ const RoomList = () => {
   const [residents, setResidents] = useState([]);
   const [selectedResident, setSelectedResident] = useState(null);
   const [openResidentDetail, setOpenResidentDetail] = useState(false);
+  const [loading,setLoading]=useState(false);
   useEffect(() => {
     axios.get('https://beiyo-admin.in/api/rooms')
       .then(response => {
@@ -416,18 +418,35 @@ const RoomList = () => {
   const handleViewDetails = async (room) => {
     setSelectedRoom(room);
     setOpenDetail(true);
-    if (selectedRoom.residents && selectedRoom.residents.length > 0) {
+     
+    // Clear previous resident data and show the loader
+    setResidents([]); 
+    setLoading(true);
+  
+    if (room.residents && room.residents.length > 0) {
       try {
-        const residentIds = selectedRoom.residents.join(','); // Assuming the resident IDs are in an array
+        const residentIds = room.residents.join(','); // Assuming the resident IDs are in an array
         const response = await axios.get(`https://beiyo-admin.in/api/newResident/allResidentIds?ids=${residentIds}`);
         setResidents(response.data); // Assuming the API returns the resident details
       } catch (error) {
         console.error('Error fetching residents:', error);
+      } finally {
+        // Stop loading after fetching is complete or if there's an error
+        setLoading(false);
       }
     } else {
-      setResidents([]); // If no residents, clear the previous resident data
+      // If no residents, stop the loading and clear the previous resident data
+      setResidents([]);
+      setLoading(false);
     }
   };
+  
+  const handleCloseDetails = () => {
+    setOpenDetail(false);
+    setResidents([]); // Clear the residents array when closing the dialog
+    setLoading(false); // Reset the loading state
+  };
+  
 
   const handleFormSubmit = () => {
     setEditingRoom(null);
@@ -526,6 +545,7 @@ const RoomList = () => {
         <DialogContent>
           {selectedRoom && (
             <Box>
+               <Typography variant="h6">Room Number: {selectedRoom._id}</Typography>
               <Typography variant="h6">Room Number: {selectedRoom.roomNumber}</Typography>
               <Typography color="text.secondary">Capacity: {selectedRoom.capacity}</Typography>
               <Typography color="text.secondary">Remaining Capacity: {selectedRoom.remainingCapacity}</Typography>
@@ -534,7 +554,11 @@ const RoomList = () => {
               <Typography color="text.secondary">Hostel: {selectedRoom.hostel}</Typography>
               {/* Displaying resident names with view details button */}
               <Typography variant="h6" gutterBottom>Residents:</Typography>
-              {residents.length > 0 ? (
+         {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+              <CircularProgress />
+            </Box>
+          ) : residents.length > 0 ? (
                 <ul>
                   {residents.map((resident) => (
                     <li key={resident._id}>
@@ -554,13 +578,10 @@ const RoomList = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => {
-            setOpenDetail(false);
-            setResidents({});
-          } } color="primary">
-            Close
-          </Button>
-        </DialogActions>
+  <Button onClick={handleCloseDetails} color="primary">
+    Close
+  </Button>
+</DialogActions>
       </Dialog>
       <ResidentDetails
         residentId={selectedResident?._id}

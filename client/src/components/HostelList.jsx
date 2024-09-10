@@ -27,7 +27,7 @@ const HostelList = () => {
   const [residents, setResidents] = useState([]);
   const [selectedResident, setSelectedResident] = useState(null);
   const [openResidentDetail, setOpenResidentDetail] = useState(false);
-
+  
   useEffect(() => {
     axios.get('https://beiyo-admin.in/api/hostels')
       .then(response => {

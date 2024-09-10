@@ -241,47 +241,89 @@ router.get("/:id",async(req,res)=>{
 });
 
 // swap rooms
-router.put("/roomSwap/:residentId",async(req,res)=>{
+router.put("/roomSwap/:residentId", async (req, res) => {
   try {
-    const oldRoomId=req.body.oldRoomId;
-    const newRoomId = req.body.newRoomId
-    const residentId=req.params.residentId;
-    const oldRoom = await Room.findByIdAndUpdate(oldRoomId,{
-      $inc: { remainingCapacity: 1 }
-    },{new:true});
-    const oldHostel = await Hostel.findById(oldRoom.hostelId);
-    const newRoom = await Room.findByIdAndUpdate(newRoomId,{
-      $inc: { remainingCapacity: -1 }
-    },{new:true});
-    const newHostel = await Hostel.findById(newRoom.hostelId);
-    const resident = await Resident.findByIdAndUpdate(residentId,{
-      hostelId:newHostel._id,
-      roomNumberId:newRoom._id,
-      hostel:newHostel.name,
-      roomNumber:newRoom.roomNumber,
-      rent:newRoom.price
-    });
-    if (!oldRoom || !newRoom || !resident) {
-     res.status(404).json("Not Found")   
+    const { oldRoomId, newRoomId } = req.body;
+    const residentId = req.params.residentId;
+
+    // Find and update old room (increment remaining capacity by 1)
+    const oldRoom = await Room.findByIdAndUpdate(
+      oldRoomId,
+      { $inc: { remainingCapacity: 1 } },
+      { new: true }
+    );
+    if (!oldRoom) {
+      return res.status(404).json({ message: "Old room not found" });
     }
+
+    // Find old hostel
+    const oldHostel = await Hostel.findById(oldRoom.hostelId);
+    if (!oldHostel) {
+      return res.status(404).json({ message: "Old hostel not found" });
+    }
+
+    // Find and update new room (decrement remaining capacity by 1)
+    const newRoom = await Room.findByIdAndUpdate(
+      newRoomId,
+      { $inc: { remainingCapacity: -1 } },
+      { new: true }
+    );
+    if (!newRoom) {
+      return res.status(404).json({ message: "New room not found" });
+    }
+
+    // Find new hostel
+    const newHostel = await Hostel.findById(newRoom.hostelId);
+    if (!newHostel) {
+      return res.status(404).json({ message: "New hostel not found" });
+    }
+
+    // Update resident details with new hostel and room info
+    const resident = await Resident.findByIdAndUpdate(
+      residentId,
+      {
+        hostelId: newHostel._id,
+        roomNumberId: newRoom._id,
+        hostel: newHostel.name,
+        roomNumber: newRoom.roomNumber,
+        rent: newRoom.price
+      },
+      { new: true } // Return updated resident
+    );
+    if (!resident) {
+      return res.status(404).json({ message: "Resident not found" });
+    }
+
+    // Update residents array in rooms and hostels
     oldRoom.residents.pull(residentId);
+    await oldRoom.save();
     oldHostel.residents.pull(residentId);
+    await oldHostel.save();
     newRoom.residents.push(residentId);
+    await newRoom.save();
     newHostel.residents.push(residentId);
+    await newHostel.save();
+
+    // Update future payments for the resident
     const currentDate = new Date();
     const futurePayments = await Payment.updateMany(
       { userId: residentId, date: { $gt: currentDate } },
       { $set: { rent: newRoom.price, amount: newRoom.price } }
     );
+
+    // Update total tenants and remaining beds
     await totalTenants(oldHostel._id);
     await totalTenants(newHostel._id);
     await totalRemainingBeds(oldHostel._id);
     await totalRemainingBeds(newHostel._id);
+
+    // Return updated resident information
     res.json(resident);
   } catch (error) {
-    res.json(error);
+    console.error("Error during room swap:", error);
+    res.status(500).json({ message: "Internal server error", error });
   }
-})
+});
 
 
 

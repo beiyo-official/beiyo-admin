@@ -112,6 +112,9 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
             <Box>
               <Typography variant="h6">{resident.name}</Typography>
               <Typography color="text.secondary">
+                id: {resident._id}
+              </Typography>
+              <Typography color="text.secondary">
                 Email: {resident.email}
               </Typography>
               <Typography color="text.secondary">

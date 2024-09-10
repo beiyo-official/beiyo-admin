@@ -119,6 +119,15 @@ const ResidentEditForm = ({ resident, open, onClose, onUpdate }) => {
               margin="normal"
             />
             {/* Add other fields as needed */}
+            <TextField
+              label="Living"
+              name="living"
+              type="text"
+              value={formData?.living || ''}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+            />
           </>
         )}
       </DialogContent>
