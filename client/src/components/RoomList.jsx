@@ -561,7 +561,7 @@ const RoomList = () => {
           ) : residents.length > 0 ? (
                 <ul>
                   {residents.map((resident) => (
-                    <li key={resident._id}>
+                    <li key={resident._id} style={{display:'flex', justifyContent:'space-between'}}>
                       {resident.name}
                       <Button variant="contained" color="info" onClick={() => handleViewResidentDetails(resident)}>
                         View Details

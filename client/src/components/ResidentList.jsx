@@ -17,6 +17,7 @@ import {
 // import EditIcon from '@mui/icons-material/Edit';
 import ResidentDetails from './ResidentView';
 import ResidentEditForm from './ResidentEditForm';
+import SideBar from './Sider';
 
 const ResidentList = () => {
   const [residents, setResidents] = useState([]);
@@ -74,6 +75,7 @@ const ResidentList = () => {
   const handleCloseEdit = () => setOpenEdit(false);
 
   return (
+    <div style={{display:'flex',minHeight:'100vh'}}>
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>Resident List</Typography>
       
@@ -173,6 +175,7 @@ const ResidentList = () => {
         }}
       />
     </Box>
+    </div>
   );
 };
 

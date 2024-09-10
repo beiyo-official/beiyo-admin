@@ -17,6 +17,7 @@ import {
   CssBaseline
 } from '@mui/material';
 import ResidentDetails from './ResidentView';
+import SideBar from './Sider';
 
 const HostelList = () => {
   const [hostels, setHostels] = useState([]);
@@ -79,6 +80,8 @@ const HostelList = () => {
   };
 
   return (
+    <div style={{display:'flex',minHeight:'100vh'}}>
+    
     <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#f5f5f5', minHeight: '100vh' }}>
       <CssBaseline />
       <Typography variant="h4" gutterBottom>
@@ -215,6 +218,7 @@ const HostelList = () => {
         onClose={() => setOpenResidentDetail(false)}
       />
     </Box>
+   </div>
   );
 };
 

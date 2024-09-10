@@ -7,11 +7,14 @@ import HostelForm from './components/HostelForm';
 import RoomList from './components/RoomList';
 import ResidentList from './components/ResidentList';
 import PaymentList from './components/PaymentList';
+import SideBar from './components/Sider';
 
 const App = () => {
   return (
+    <div style={{display:'flex'}}>
+        <CssBaseline />
+        <SideBar/>
     <Router>
-      <CssBaseline />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/hostels" element={<HostelList />} />
@@ -21,6 +24,7 @@ const App = () => {
       <Route path='/payment' element={<PaymentList/>}/>
       </Routes>
     </Router>
+    </div>
   );
 };
 

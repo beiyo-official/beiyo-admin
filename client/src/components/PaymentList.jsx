@@ -89,7 +89,8 @@ const PaymentList = () => {
   const totalPerHostel = calculateTotalPerHostel();
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3 } }}>
+   <div style={{minHeight:'100vh'}}>
+     <Box sx={{ p: { xs: 2, sm: 3 } }}>
       <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>Payment List</Typography>
 
       <Card elevation={3} sx={{ mb: 4, p: 2 }}>
@@ -212,6 +213,7 @@ const PaymentList = () => {
         </>
       )}
     </Box>
+   </div>
   );
 };
 
