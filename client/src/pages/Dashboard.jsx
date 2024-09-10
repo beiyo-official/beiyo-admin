@@ -1,5 +1,6 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import {  Layout, Menu } from 'antd';
+import {Grid} from '@mui/material';
 import {
   UserOutlined,
   HomeOutlined,
@@ -10,16 +11,20 @@ import {
 import './styles/dashboard.css';
 import HostelOverview from '../components/HostelOverview';
 import SideBar from '../components/Sider';
+import RoomOverview from '../components/RoomOverview';
 
 const { Header, Sider, Content } = Layout;
 
 const Dashboard = () => {
   return (
       
-    <div style={{minHeight:'100vh'}}>
-          <div style={{minHeight:'200px'}}>
-    <HostelOverview/>
-    </div>
+    <div style={{minHeight:'100vh',minWidth:'100%'}}>
+     <Grid item xs={12} sm={6} md={4} >
+     <HostelOverview/>
+     <RoomOverview/>
+      </Grid>     
+    
+    
     </div>
   
   );

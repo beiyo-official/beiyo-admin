@@ -21,7 +21,7 @@ const HostelOverview = () => {
   }, []);
 
   return (
-    <Card sx={{ p: 3, backgroundColor: '#f5f5f5', minHeight:'20px', mt: '20px', minWidth:'500px' }}>
+    <Card sx={{ p: 3, backgroundColor: '#f5f5f5', minHeight:'210px', mt: '20px', minWidth:'500px', minWidth:'10%' }}>
       <Typography variant="h5" gutterBottom>
         Hostel Overview
       </Typography>

@@ -14,7 +14,7 @@ const SideBar = () => {
     collapsible
     breakpoint="lg"
     collapsedWidth="80"
-    style={{ backgroundColor: '#001529',minHeight:'100%' }}
+    style={{ backgroundColor: '#001529',minHeight:'100%',minWidth:'30%' }}
   >
     <div className="logo" />
     <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>

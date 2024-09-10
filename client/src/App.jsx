@@ -11,7 +11,7 @@ import SideBar from './components/Sider';
 
 const App = () => {
   return (
-    <div style={{display:'flex'}}>
+    <div style={{display:'flex',minWidth:'90vw'}}>
         <CssBaseline />
         <SideBar/>
     <Router>
