@@ -195,7 +195,7 @@ const PaymentList = () => {
             </Table>
           </TableContainer>
 
-          {/* <Box sx={{ mt: 4 }}>
+          <Box sx={{ mt: 4 }}>
             <Typography variant="h6" gutterBottom>Total Amount Received per Hostel:</Typography>
             <Grid container spacing={2}>
               {Object.entries(totalPerHostel).map(([hostel, total]) => (
@@ -209,7 +209,7 @@ const PaymentList = () => {
                 </Grid>
               ))}
             </Grid>
-          </Box> */}
+          </Box>
         </>
       )}
     </Box>
