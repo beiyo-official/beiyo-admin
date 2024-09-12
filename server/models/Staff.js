@@ -15,8 +15,6 @@ const staffSchema = new Schema({
   dateJoined:{type:Date},      
   contractEndDate: { type: Date },
   contractTerms:{type:Number},
-  aadhaarCardUrl:aadhaarCardUrl,
-  imageUrl:imageUrl,
   area: { type: String }, 
   imageUrl:{type:String},
   aadhaarCardUrl: {type:String},
