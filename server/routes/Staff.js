@@ -5,8 +5,23 @@
 
   router.post('/', async (req, res) => {
       try {
-        const { name, role, area } = req.body;
-        const staff = new Staff({ name, role, area });
+        const { name,mobileNumber, address, nearOneName,
+          nearOneMobileNo, area,role,
+          dateJoined,
+          contractTerm,
+          aadhaarCardUrl,
+          imageUrl } = req.body;
+        const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
+        const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
+        const staff = new Staff({
+          name,mobileNumber, address, nearOneName,
+          nearOneMobileNo, area,  
+          dateJoined: formattedDate,
+          contractEndDate,
+          contractTerm,
+          aadhaarCardUrl:aadhaarCardUrl,
+          imageUrl:imageUrl,role
+        });
         await staff.save();
         res.status(201).json(staff);
       } catch (error) {
@@ -22,7 +37,34 @@
         res.status(500).json({ error: error.message });
       }
     });
-
+    router.get('/area',async(req,res)=>{
+      try {
+        const area = req.body.area
+        const staffMembers = await Staff.find({area:area});
+        res.json(staffMembers);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    })
+    router.get('/role',async(req,res)=>{
+      try {
+        const role = req.body.role
+        const staffMembers = await Staff.find({role:role});
+        res.json(staffMembers);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    })
+ router.get('/role/area',async(req,res)=>{
+  try {
+    const role = req.body.role;
+    const area = req.body.area
+    const staffMembers = await Staff.find({role:role,area:area});
+    res.json(staffMembers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+ })
     router.put('/:id', async (req, res) => {
       try {
         const staffId = req.params.id;
@@ -41,7 +83,7 @@
       try {
         const staffId = req.params.id;
         await Staff.findByIdAndDelete(staffId);
-        res.status(204).send();
+        res.status(204).json("Staff successfully delted");
       } catch (error) {
         res.status(500).json({ error: error.message });
       }

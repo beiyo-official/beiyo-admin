@@ -3,8 +3,23 @@ const Schema = mongoose.Schema;
 
 const staffSchema = new Schema({
   name: { type: String, required: true },
-  role: { type: String, enum: ['Area Manager', 'Technician'], required: true },
-  area: { type: String }, // For area managers
+  role: { type: String, required: true },
+  mobileNumber: { type: Number,  
+  },
+  address: { type: String,
+    },
+  nearOneName: { type: String, 
+  },
+  nearOneMobileNo: { type: Number, 
+  },
+  dateJoined:{type:Date},      
+  contractEndDate: { type: Date },
+  contractTerms:{type:Number},
+  aadhaarCardUrl:aadhaarCardUrl,
+  imageUrl:imageUrl,
+  area: { type: String }, 
+  imageUrl:{type:String},
+  aadhaarCardUrl: {type:String},
 });
 
 const Staff = mongoose.model('Staff', staffSchema);
