@@ -124,9 +124,10 @@ router.get('/triple', async (req, res) => {
 
 // Create a new room
 router.post('/', async (req, res) => {
+  const hostel= await Hostel.findById(req.body.hostelId);
   const room = new Room({
     hostelId: req.body.hostelId,
-    hostel: req.body.hostel, 
+    hostel: hostel.name, 
     roomNumber: req.body.roomNumber,
     capacity: req.body.capacity,
     remainingCapacity:req.body.remainingCapacity,
