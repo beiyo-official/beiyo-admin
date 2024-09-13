@@ -422,6 +422,7 @@ const RoomForm = ({ room, onSubmit, onClose }) => {
           <MenuItem value="single">Single</MenuItem>
           <MenuItem value="double">Double</MenuItem>
           <MenuItem value="triple">Triple</MenuItem>
+           <MenuItem value="four-sharing">four-sharing</MenuItem>
         </TextField>
         <TextField
           name="price"
