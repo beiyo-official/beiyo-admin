@@ -335,7 +335,8 @@ const RoomForm = ({ room, onSubmit, onClose }) => {
     remainingCapacity: '',
     type: '',
     price: '',
-    hostelId: ''
+    hostelId: '',
+    hostel:''
   });
 
   const [hostels, setHostels] = useState([]);
@@ -442,6 +443,21 @@ const RoomForm = ({ room, onSubmit, onClose }) => {
         >
           {hostels.map(hostel => (
             <MenuItem key={hostel._id} value={hostel._id}>
+              {hostel.name}
+            </MenuItem>
+          ))}
+        </TextField>
+ <TextField
+          name="hostel"
+          label="HostelName"
+          select
+          value={formData.hostel}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        >
+          {hostels.map(hostel => (
+            <MenuItem key={hostel._id} value={hostel.name}>
               {hostel.name}
             </MenuItem>
           ))}
