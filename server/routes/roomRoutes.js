@@ -231,6 +231,7 @@ router.patch('/:id/updateRemainingBeds', getRoom, async (req, res) => {
 router.get("/:id",async(req,res)=>{
   try{
    const room = await Room.findById(req.params.id);  
+   
    if(!room){
      alert("no room are available");
    }
@@ -331,6 +332,7 @@ router.put("/roomSwap/:residentId", async (req, res) => {
 router.get("/hostel/:hostelId",async(req,res)=>{
   try{
    const room = await Room.find({hostelId:req.params.hostelId});  
+   totalRemainingBeds(req.params.hostelId);
    res.json(room);
   }catch(error){
    console.error('Error fetching ', error);

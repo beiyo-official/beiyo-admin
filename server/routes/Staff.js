@@ -5,16 +5,18 @@
 
   router.post('/', async (req, res) => {
       try {
-        const { name,mobileNumber, address, nearOneName,
+        const { name,mobileNumber,
+           address, nearOneName,
           nearOneMobileNo, area,role,
           dateJoined,
           contractTerm,
-          aadhaarCardUrl,
-          imageUrl } = req.body;
+          aadhaarCardUrl,imageUrl
+         } = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
         const staff = new Staff({
-          name,mobileNumber, address, nearOneName,
+          name,mobileNumber, 
+          address, nearOneName,
           nearOneMobileNo, area,  
           dateJoined: formattedDate,
           contractEndDate,
