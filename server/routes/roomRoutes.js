@@ -137,7 +137,7 @@ router.post('/', async (req, res) => {
 
   try {
     const newRoom = await room.save();
-    res.status(201).json(newRoom);
+ 
   
 
    
@@ -147,7 +147,7 @@ router.post('/', async (req, res) => {
     await totalRooms();
     await totalBeds();
     totalRemainingBeds(room.hostelId);
-    res.status(201).json(room);
+    res.status(201).json(newRoom);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -332,7 +332,7 @@ router.put("/roomSwap/:residentId", async (req, res) => {
 router.get("/hostel/:hostelId",async(req,res)=>{
   try{
    const room = await Room.find({hostelId:req.params.hostelId});  
-   totalRemainingBeds(req.params.hostelId);
+  //  totalRemainingBeds(req.params.hostelId);
    res.json(room);
   }catch(error){
    console.error('Error fetching ', error);
