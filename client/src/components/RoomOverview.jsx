@@ -12,7 +12,7 @@ const RoomOverview = () => {
         .then(response => {
           const totalrooms = response.data.length;
           const totalBeds = response.data.reduce((acc, room) => acc + room.capacity, 0);
-          const remainingBeds = response.data.reduce((acc, room) => acc + room.totalRemainingBeds, 0);
+          const remainingBeds = response.data.reduce((acc, room) => acc + room.remainingCapacity, 0);
           setRoomStats({ totalrooms, totalBeds, remainingBeds });
         })
         .catch(error => {
