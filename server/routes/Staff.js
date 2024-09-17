@@ -7,22 +7,25 @@
       try {
         const { name,mobileNumber,
            address, nearOneName,
-          nearOneMobileNo, area,role,
+          nearOneMobileNo,area,role,
           dateJoined,
           contractTerm,
-          aadhaarCardUrl,imageUrl,hostelId
+          aadhaarCardUrl,imageUrl,hostelIds
          } = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
+
         const staff = new Staff({
           name,mobileNumber, 
           address, nearOneName,
-          nearOneMobileNo, area,  
+          nearOneMobileNo,area,  
           dateJoined: formattedDate,
           contractEndDate,
           contractTerm,
           aadhaarCardUrl:aadhaarCardUrl,
-          imageUrl:imageUrl,role,hostelId
+          imageUrl:imageUrl,
+          role,
+          hostelIds
         });
         await staff.save();
         res.status(201).json(staff);
