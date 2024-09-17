@@ -10,7 +10,7 @@
           nearOneMobileNo, area,role,
           dateJoined,
           contractTerm,
-          aadhaarCardUrl,imageUrl
+          aadhaarCardUrl,imageUrl,hostelId
          } = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
@@ -22,7 +22,7 @@
           contractEndDate,
           contractTerm,
           aadhaarCardUrl:aadhaarCardUrl,
-          imageUrl:imageUrl,role
+          imageUrl:imageUrl,role,hostelId
         });
         await staff.save();
         res.status(201).json(staff);
