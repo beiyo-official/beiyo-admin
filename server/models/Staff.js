@@ -18,6 +18,7 @@ const staffSchema = new Schema({
   area: { type: String }, 
   imageUrl:{type:String},
   aadhaarCardUrl: {type:String},
+  hostelId: { type: mongoose.Schema.Types.ObjectId, ref: 'Hostel', required: true },
 });
 
 const Staff = mongoose.model('Staff', staffSchema);
