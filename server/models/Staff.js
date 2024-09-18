@@ -8,6 +8,7 @@ const staffSchema = new Schema({
   },
   address: { type: String,
     },
+uniqueId: {type: String, required: true},
   nearOneName: { type: String, 
   },
   nearOneMobileNo: { type: Number, 
