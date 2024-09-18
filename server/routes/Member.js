@@ -27,4 +27,15 @@
       }
     });
 
+router.get('/', async (req, res) => {
+      try {
+        const Members = await Member.find();
+        res.json(Members);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+
+
 
