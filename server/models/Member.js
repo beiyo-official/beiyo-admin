@@ -14,7 +14,7 @@ const memberSchema = new Schema({
   aadhaarCardUrl: {type:String},
 });
 
-const Staff = mongoose.model('Staff', staffSchema);
+const Member = mongoose.model('Member', memberSchema);
 
 module.exports = Member;
 
