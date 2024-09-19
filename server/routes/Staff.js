@@ -70,6 +70,17 @@
     res.status(500).json({ error: error.message });
   }
  })
+
+ router.get('/:id',async(req,res)=>{
+  try {
+    const staffId = req.params.id;
+    const staffMember = await Staff.findById(staffId);
+    res.json(staffMember);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+ })
+
     router.put('/:id', async (req, res) => {
       try {
         const staffId = req.params.id;
