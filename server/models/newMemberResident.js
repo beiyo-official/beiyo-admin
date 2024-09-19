@@ -31,7 +31,7 @@ const residentSchema = new mongoose.Schema({
   // intitutionDetails:String,
   payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
   contractEndDate: { type: Date },
-  contractTerms:{type:Number},
+  contractTerm:{type:Number},
   rent:{type:Number},
   deposit:{type:Number},
   roomNumberId:{type : mongoose.Schema.Types.ObjectId, ref:'Room', required:true},

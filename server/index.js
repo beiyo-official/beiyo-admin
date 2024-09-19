@@ -24,7 +24,7 @@ const Manager = require('./routes/Manager');
 const requestForm = require('./routes/requestForm');
 const { connectDB } = require('./db');
 const AppVersion  = require('./routes/appVersion')
-
+const Member = require('./routes/Member')
 
 
 const app = express();
@@ -67,6 +67,7 @@ app.use('/api/newResident',newResident)
 app.use('/api/login',login)
 app.use('/api/dashboard',Dashboard)
 app.use('/api/staff', Staff );
+app.use('/api/member', Member );
 app.use('/api/ticket',Ticket);
 app.use('/api/appVersion',AppVersion);
 app.use('/api/manager',Manager);

@@ -1,8 +1,8 @@
   const express = require('express');
   const router = express.Router();
   const Staff = require('../models/Staff');
-
-
+const dayjs = require('dayjs');
+const moment = require('moment')
   router.post('/', async (req, res) => {
       try {
         const { name,mobileNumber,
@@ -10,7 +10,8 @@
           nearOneMobileNo,area,role,
           dateJoined,
           contractTerm,
-          aadhaarCardUrl,imageUrl,hostelIds
+          aadhaarCardUrl,imageUrl,hostelIds,
+      uniqueId
          } = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
@@ -25,7 +26,7 @@
           aadhaarCardUrl:aadhaarCardUrl,
           imageUrl:imageUrl,
           role,
-          hostelIds
+          hostelIds,uniqueId
         });
         await staff.save();
         res.status(201).json(staff);
