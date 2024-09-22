@@ -177,7 +177,8 @@ router.put('/:id', async (req, res) => {
       // Update the resident's payments array
       await Payment.updateMany(
         { userId: residentId },
-        { $set: { amount: newAmount ,rent:newAmount} }
+        { $set: { amount: newAmount ,rent:newAmount} },
+        { new: true }
       );
     }
 
