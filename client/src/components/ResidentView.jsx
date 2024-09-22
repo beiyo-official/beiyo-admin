@@ -60,6 +60,99 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
     }
   }, [residentId, open]);
 
+  const handleOnlinePayment=async(userId) =>{
+   const paymentResponse = await axios.post('https://beiyo-admin.in/api/dashboard/paymentSave',{userId,month,amount});
+   if(paymentResponse === 'successfully saved'){
+    setLoading(true);
+    axios.get(`https://beiyo-admin.in/api/newResident/${residentId}`)
+    .then(response => {
+      setResident(response.data);
+      // Fetch resident payments
+      if (response.data.payments && response.data.payments.length > 0) {
+        axios.get(`https://beiyo-admin.in/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
+          .then(paymentResponse => {
+            setPayments(paymentResponse.data);
+            setLoading(false);
+          })
+          .catch(error => {
+            console.error('Error fetching payments:', error);
+            setLoading(false);
+          });
+      } else {
+        setPayments([]);
+        setLoading(false);
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching resident details:', error);
+      setLoading(false);
+    });
+   }
+  }
+
+  const handleCashPayment=async(paymentId) =>{
+    const paymentResponse = await axios.put(`https://beiyo-admin.in/api/dashboard/cashPayment/${paymentId}`);
+    if(paymentResponse.message === 'successful through cash'){
+     setLoading(true);
+     axios.get(`https://beiyo-admin.in/api/newResident/${residentId}`)
+     .then(response => {
+       setResident(response.data);
+       // Fetch resident payments
+       if (response.data.payments && response.data.payments.length > 0) {
+         axios.get(`https://beiyo-admin.in/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
+           .then(paymentResponse => {
+             setPayments(paymentResponse.data);
+             setLoading(false);
+           })
+           .catch(error => {
+             console.error('Error fetching payments:', error);
+             setLoading(false);
+           });
+       } else {
+         setPayments([]);
+         setLoading(false);
+       }
+     })
+     .catch(error => {
+       console.error('Error fetching resident details:', error);
+       setLoading(false);
+     });
+    }
+   }
+
+   const handleDeletePayment = async(paymentId) =>{
+    const paymentResponse = await axios.put(`https://beiyo-admin.in/api/dashboard/deletePayment/${paymentId}`);
+    if(paymentResponse.message === 'payment deleted successfully'){
+     setLoading(true);
+     axios.get(`https://beiyo-admin.in/api/newResident/${residentId}`)
+     .then(response => {
+       setResident(response.data);
+       // Fetch resident payments
+       if (response.data.payments && response.data.payments.length > 0) {
+         axios.get(`https://beiyo-admin.in/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
+           .then(paymentResponse => {
+             setPayments(paymentResponse.data);
+             setLoading(false);
+           })
+           .catch(error => {
+             console.error('Error fetching payments:', error);
+             setLoading(false);
+           });
+       } else {
+         setPayments([]);
+         setLoading(false);
+       }
+     })
+     .catch(error => {
+       console.error('Error fetching resident details:', error);
+       setLoading(false);
+     });
+    }
+   }
+
+
+
+
   const handleRoomSwapOpen = () => {
     // Fetch available rooms when the dialog is opened
     axios.get('https://beiyo-admin.in/api/rooms')
@@ -179,6 +272,9 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Status</th>
                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Type</th>
                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Cash</th>
+                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Payment Online</th>
+                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Payment Cash</th>
+                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Delete</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -191,6 +287,20 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
                           <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment.status}</td>
                           <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment.type}</td>
                           <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment.cash ? 'Yes' : 'No'}</td>
+                          <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment&&payment.status==="due"&&(
+                             <Button variant="contained" color="primary" onClick={handleOnlinePayment(payment.userId,payment.month,payment.amount)} sx={{ mt: 3 }}>
+                     Online Payment
+              </Button>)}</td>
+              <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment&&payment.status==="due"&&(
+                             <Button variant="contained" color="primary" onClick={handleCashPayment(payment._id)} sx={{ mt: 3 }}>
+                    Cash Payment
+              </Button>)}</td>
+              <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment&&payment.status==="due"&&(
+                             <Button variant="contained" color="primary" onClick={handleDeletePayment(payment._id)} sx={{ mt: 3 }}>
+                     Delete
+              </Button>)}</td>
+                         
+
                         </tr>
                       ))}
                     </tbody>

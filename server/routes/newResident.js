@@ -237,8 +237,6 @@ router.post('/amount',async(req,res)=>{
       {  amount,contract: new Date() },
       { new: true }
     );
-   
-
     if (!resident) {
       return res.status(404).json({ message: 'Resident not found' });
     }

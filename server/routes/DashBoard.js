@@ -73,6 +73,27 @@ router.get('/paymentsArray', async (req, res) => {
   }
 });
 
+router.delete('/deletePayment/:paymentId',async(req,res)=>{
+  try {
+    const paymentId = req.params.paymentId
+    const payment = await Payment.findById(paymentId);
+    if(!payment){
+      return res.status(404).send('Payment not found');
+    } 
+    const resident = await Resident.findById(payment.userId);
+    if(!resident){
+      return res.status(404).send('Resident not found');
+    }
+    resident.pull(paymentId);
+    await resident.save();
+    await payment.remove();
+    res.json("payment deleted successfully")
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+
 
 
 // due payments
