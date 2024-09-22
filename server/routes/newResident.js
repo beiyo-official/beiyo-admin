@@ -166,6 +166,21 @@ router.put('/:id', async (req, res) => {
     // Extract the data to update from the request body
     const updateData = req.body;
 
+    const resident = await Resident.findById(residentId);
+    if (!resident) {
+      return res.status(404).json({ message: 'Resident not found' });
+    }
+
+    if (updateData.rent && updateData.rent !== resident.rent) {
+      const newAmount = updateData.amount;
+
+      // Update the resident's payments array
+      await Payment.updateMany(
+        { userId: residentId },
+        { $set: { amount: newAmount ,rent:newAmount} }
+      );
+    }
+
     // Find the resident by ID and update it with the provided data
     const updatedResident = await Resident.findByIdAndUpdate(
       residentId,

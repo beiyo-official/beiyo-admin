@@ -78,7 +78,8 @@ adminTickets:[{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'}],
 residents:[{type: mongoose.Schema.Types.ObjectId, ref:'Resident'}],
 hostelType:{
   type:String,enum:['Boys','Girls'],default:'Boys'
-}
+},
+
   // Add more fields as needed
 });
 

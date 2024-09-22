@@ -59,7 +59,7 @@ app.get("/", (req,res)=>{
 
 app.use('/api/hostels', hostelRoutes);
 app.use('/api/rooms', roomRoutes);
-app.use('/api/beds',Bed)
+app.use('/api/beds',Bed);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/cleaningSchedule', CleaningSchedule);
 app.use('/api/pay',payment)
@@ -72,6 +72,7 @@ app.use('/api/ticket',Ticket);
 app.use('/api/appVersion',AppVersion);
 app.use('/api/manager',Manager);
 app.use('/api/requestForm',requestForm);
+app.use('/api/inventory',inventoryRoutes);
 
 // Start the server
 app.listen(PORT, () => {

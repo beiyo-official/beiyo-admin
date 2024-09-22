@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 
 const inventorySchema = new mongoose.Schema({
   hostelId: { type: mongoose.Schema.Types.ObjectId, ref: 'Hostel', required: true },
-  itemName: { type: String, required: true },
-  quantity: { type: Number, required: true },
+  items:[{type:mongoose.Schema.Types.ObjectId,ref:'Item',required:true}],
+  owener:{type:Boolean,default:false}
   // Add more fields as needed
 });
 
