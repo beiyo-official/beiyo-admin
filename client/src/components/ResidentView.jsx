@@ -272,9 +272,6 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Status</th>
                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Type</th>
                         <th style={{ border: '1px solid #ddd', padding: '8px' }}>Cash</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Payment Online</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Payment Cash</th>
-                        <th style={{ border: '1px solid #ddd', padding: '8px' }}>Delete</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -287,18 +284,7 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
                           <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment.status}</td>
                           <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment.type}</td>
                           <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment.cash ? 'Yes' : 'No'}</td>
-                          <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment&&payment.status==="due"&&(
-                             <Button variant="contained" color="primary" onClick={handleOnlinePayment(payment.userId,payment.month,payment.amount)} sx={{ mt: 3 }}>
-                     Online Payment
-              </Button>)}</td>
-              <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment&&payment.status==="due"&&(
-                             <Button variant="contained" color="primary" onClick={handleCashPayment(payment._id)} sx={{ mt: 3 }}>
-                    Cash Payment
-              </Button>)}</td>
-              <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment&&payment.status==="due"&&(
-                             <Button variant="contained" color="primary" onClick={handleDeletePayment(payment._id)} sx={{ mt: 3 }}>
-                     Delete
-              </Button>)}</td>
+                         
                          
 
                         </tr>

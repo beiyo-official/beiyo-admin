@@ -73,6 +73,8 @@ router.get('/paymentsArray', async (req, res) => {
   }
 });
 
+
+
 router.delete('/deletePayment/:paymentId',async(req,res)=>{
   try {
     const paymentId = req.params.paymentId
