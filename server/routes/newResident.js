@@ -172,7 +172,7 @@ router.put('/:id', async (req, res) => {
     }
 
     if (updateData.rent && updateData.rent !== resident.rent) {
-      const newAmount = updateData.amount;
+      const newAmount = updateData.rent;
 
       // Update the resident's payments array
       await Payment.updateMany(
