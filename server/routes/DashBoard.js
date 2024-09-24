@@ -18,9 +18,9 @@ const rentMapAmount = require('../functions/paymentfunction');
 
 
 // Fetch payments for a user
-router.get('/payments/:userId', async (req, res) => {
+router.get('/payment/userPayments/:userId', async (req, res) => {
   try {
-    const payments = await Payment.find({ userId: req.params.userId }).sort({ month: 1 });
+    const payments = await Payment.find({userId: req.params.userId }).sort({ month: 1 });
     res.json(payments);
   } catch (error) {
     console.error('Error fetching payments:', error);
@@ -104,7 +104,7 @@ router.delete('/deletePayment/:paymentId',async(req,res)=>{
     }
     resident.payments.pull(paymentId);
     await resident.save();
-    await payment.remove();
+    await Payment.findByIdAndDelete(paymentId);
     await payment.save();
     res.json("payment deleted successfully")
   } catch (error) {
