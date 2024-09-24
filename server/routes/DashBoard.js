@@ -216,32 +216,30 @@ router.get('/payment/currentmonth',async(req,res)=>{
 
 
 
-router.post('/paymentSave', async (req, res) => {
+router.post('/onlinePaymentSave/:paymentId', async (req, res) => {
   try {
-    const { userId, month, amount } = req.body;
+    // const { userId, month, amount } = req.body;
     // const payment = await Payment.findOneAndUpdate(
     //   { userId, month },
     //   { status: 'successful', amount, date: new Date() },
     //   { new: true }
     //   );
     // res.status(201).json(payment);
-    
-  const cash = false;
-   await paymentSave(userId,month,amount,cash);
-    res.json('successfully saved');
+    const payment = await Payment.findByIdAndUpdate(
+      req.params.paymentId,
+      { status: 'successful', amount,cash:false },
+      { new: true, },
+      );
+      
+
+  
+    res.json(`successfully saved ${payment}`);
   } catch (error) {
     console.error('Error making payment:', error);
     res.status(500).send('Internal Server Error');
   }
 });
-const paymentSave = async (userId,month,amount,cash)=>{
-  const payment = await Payment.findOneAndUpdate(
-    { userId, month },
-    { status: 'successful', amount,cash:cash },
-    { new: true, },
-    );
-    return payment
-}
+
 
 router.put('/cashPayment/:id',async(req,res)=>{
   try {
