@@ -216,7 +216,7 @@ router.get('/payment/currentmonth',async(req,res)=>{
 
 
 
-router.post('/onlinePaymentSave/:paymentId', async (req, res) => {
+router.put('/onlinePaymentSave/:paymentId', async (req, res) => {
   try {
     // const { userId, month, amount } = req.body;
     // const payment = await Payment.findOneAndUpdate(
@@ -227,7 +227,7 @@ router.post('/onlinePaymentSave/:paymentId', async (req, res) => {
     // res.status(201).json(payment);
     const payment = await Payment.findByIdAndUpdate(
       req.params.paymentId,
-      { status: 'successful', amount,cash:false },
+      { status: 'successful', cash:false },
       { new: true, },
       );
       
