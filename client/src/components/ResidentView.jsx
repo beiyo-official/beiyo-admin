@@ -66,9 +66,7 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
 const handleDeletePayment = (paymentId) => {
   setLoading(true);
   axios.delete(`https://beiyo-admin.in/api/dashboard/deletePayment/${paymentId}`)
-    .then(() => {
-      // Remove the deleted payment from the state
-      setPayments(payments.filter(payment => payment._id !== paymentId));
+    .then(response => { 
       setLoading(false);
     })
     .catch(error => {
@@ -85,6 +83,23 @@ const handleCashPayment = (paymentId) => {
       // Update the payment in the state
       setPayments(payments.map(payment => 
         payment._id === paymentId ? { ...payment, cash: true, status: 'successful' } : payment
+      ));
+      setLoading(false);
+    })
+    .catch(error => {
+      console.error('Error updating payment to cash:', error);
+      setLoading(false);
+    });
+};
+
+// Function to mark payment as cash
+const handleOnlinePayment = (paymentId) => {
+  setLoading(true);
+  axios.put(`https://beiyo-admin.in/api/dashboard/onlinePaymentSave/${paymentId}`)
+    .then(response => {
+      // Update the payment in the state
+      setPayments(payments.map(payment => 
+        payment._id === paymentId ? { ...payment, cash: false, status: 'successful' } : payment
       ));
       setLoading(false);
     })
@@ -243,9 +258,20 @@ const handleCashPayment = (paymentId) => {
           color="primary"
           size="small"
           onClick={() => handleCashPayment(payment._id)}
-          disabled={payment.status === 'successful' && payment.cash}
+          disabled={payment.status === 'successful'}
         >
-          Mark as Cash
+           Cash Payed
+        </Button>
+      </td>
+      <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+        <Button
+          variant="contained"
+          color="success"
+          size="small"
+          onClick={() => handleOnlinePayment(payment._id)}
+          disabled={payment.status === 'successful'}
+        >
+          Online Payed
         </Button>
       </td>
                          
