@@ -44,6 +44,22 @@ router.put('/updateAmount/:userId', async (req, res) => {
   }
 })
 
+router.put('/updateSuccesfulPaymentStatus/:userId',async(req,res)=>{
+  try {
+    const payments = await Payment.updateMany(  { userId: req.params.userId },  // Match all payments for this user
+      { 
+       status:"due",
+       cash:false
+      });
+      if (payments.matchedCount === 0) {
+        return res.status(404).send('No payments found for this user');
+      }
+      res.json(payments);
+  } catch (error) {
+    res.json(error);
+  }
+})
+
 
 router.get('/payments',async(req,res)=>{
   try {
@@ -86,9 +102,10 @@ router.delete('/deletePayment/:paymentId',async(req,res)=>{
     if(!resident){
       return res.status(404).send('Resident not found');
     }
-    resident.pull(paymentId);
+    resident.payments.pull(paymentId);
     await resident.save();
     await payment.remove();
+    await payment.save();
     res.json("payment deleted successfully")
   } catch (error) {
     console.log(error);

@@ -42,6 +42,7 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
             axios.get(`https://beiyo-admin.in/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
               .then(paymentResponse => {
                 setPayments(paymentResponse.data);
+                console.log(payments);
                 setLoading(false);
               })
               .catch(error => {
@@ -60,97 +61,38 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
     }
   }, [residentId, open]);
 
-  const handleOnlinePayment=async(userId) =>{
-   const paymentResponse = await axios.post('https://beiyo-admin.in/api/dashboard/paymentSave',{userId,month,amount});
-   if(paymentResponse === 'successfully saved'){
-    setLoading(true);
-    axios.get(`https://beiyo-admin.in/api/newResident/${residentId}`)
-    .then(response => {
-      setResident(response.data);
-      // Fetch resident payments
-      if (response.data.payments && response.data.payments.length > 0) {
-        axios.get(`https://beiyo-admin.in/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
-          .then(paymentResponse => {
-            setPayments(paymentResponse.data);
-            setLoading(false);
-          })
-          .catch(error => {
-            console.error('Error fetching payments:', error);
-            setLoading(false);
-          });
-      } else {
-        setPayments([]);
-        setLoading(false);
-      }
+
+  // Function to delete payment
+const handleDeletePayment = (paymentId) => {
+  setLoading(true);
+  axios.delete(`https://beiyo-admin.in/api/dashboard/deletePayment/${paymentId}`)
+    .then(() => {
+      // Remove the deleted payment from the state
+      setPayments(payments.filter(payment => payment._id !== paymentId));
+      setLoading(false);
     })
     .catch(error => {
-      console.error('Error fetching resident details:', error);
+      console.error('Error deleting payment:', error);
       setLoading(false);
     });
-   }
-  }
+};
 
-  const handleCashPayment=async(paymentId) =>{
-    const paymentResponse = await axios.put(`https://beiyo-admin.in/api/dashboard/cashPayment/${paymentId}`);
-    if(paymentResponse.message === 'successful through cash'){
-     setLoading(true);
-     axios.get(`https://beiyo-admin.in/api/newResident/${residentId}`)
-     .then(response => {
-       setResident(response.data);
-       // Fetch resident payments
-       if (response.data.payments && response.data.payments.length > 0) {
-         axios.get(`https://beiyo-admin.in/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
-           .then(paymentResponse => {
-             setPayments(paymentResponse.data);
-             setLoading(false);
-           })
-           .catch(error => {
-             console.error('Error fetching payments:', error);
-             setLoading(false);
-           });
-       } else {
-         setPayments([]);
-         setLoading(false);
-       }
-     })
-     .catch(error => {
-       console.error('Error fetching resident details:', error);
-       setLoading(false);
-     });
-    }
-   }
-
-   const handleDeletePayment = async(paymentId) =>{
-    const paymentResponse = await axios.put(`https://beiyo-admin.in/api/dashboard/deletePayment/${paymentId}`);
-    if(paymentResponse.message === 'payment deleted successfully'){
-     setLoading(true);
-     axios.get(`https://beiyo-admin.in/api/newResident/${residentId}`)
-     .then(response => {
-       setResident(response.data);
-       // Fetch resident payments
-       if (response.data.payments && response.data.payments.length > 0) {
-         axios.get(`https://beiyo-admin.in/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
-           .then(paymentResponse => {
-             setPayments(paymentResponse.data);
-             setLoading(false);
-           })
-           .catch(error => {
-             console.error('Error fetching payments:', error);
-             setLoading(false);
-           });
-       } else {
-         setPayments([]);
-         setLoading(false);
-       }
-     })
-     .catch(error => {
-       console.error('Error fetching resident details:', error);
-       setLoading(false);
-     });
-    }
-   }
-
-
+// Function to mark payment as cash
+const handleCashPayment = (paymentId) => {
+  setLoading(true);
+  axios.put(`https://beiyo-admin.in/api/dashboard/cashPayment/${paymentId}`)
+    .then(response => {
+      // Update the payment in the state
+      setPayments(payments.map(payment => 
+        payment._id === paymentId ? { ...payment, cash: true, status: 'successful' } : payment
+      ));
+      setLoading(false);
+    })
+    .catch(error => {
+      console.error('Error updating payment to cash:', error);
+      setLoading(false);
+    });
+};
 
 
   const handleRoomSwapOpen = () => {
@@ -284,7 +226,28 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
                           <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment.status}</td>
                           <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment.type}</td>
                           <td style={{ border: '1px solid #ddd', padding: '8px' }}>{payment.cash ? 'Yes' : 'No'}</td>
-                         
+                          <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+        <Button
+          variant="outlined"
+          color="error"
+          size="small"
+          onClick={() => handleDeletePayment(payment._id)}
+          disabled={loading}
+        >
+          Delete
+        </Button>
+      </td>
+      <td style={{ border: '1px solid #ddd', padding: '8px' }}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          onClick={() => handleCashPayment(payment._id)}
+          disabled={payment.status === 'successful' && payment.cash}
+        >
+          Mark as Cash
+        </Button>
+      </td>
                          
 
                         </tr>
