@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sync":"aws s3 sync ./dist \"s3://beiyo-admin-website/\"",
+    "invalidate":"aws cloudfront create-invalidation --distribution-id E1V7HLOU4Q7JXT --paths \"/*\""
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.1.0",
