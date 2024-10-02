@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const hostelSchema = new mongoose.Schema({
   name: { type: String, required: true ,index:true},
   location: { type: String, required: true },
-  roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: false },
+  rooms: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: false }],
   // remainingBeds:{type:Number,required:true}
   totalRemainingBeds:{type:Number,index: true},
   locationLink:{type:String},
@@ -79,6 +79,7 @@ residents:[{type: mongoose.Schema.Types.ObjectId, ref:'Resident'}],
 hostelType:{
   type:String,enum:['Boys','Girls'],default:'Boys'
 },
+
 
   // Add more fields as needed
 });

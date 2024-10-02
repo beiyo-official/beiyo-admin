@@ -75,6 +75,27 @@ router.get('/managerTickets/:hostelId',async(req,res)=>{
   }
 })
 
+router.get('/:hostelId/remainingCapacityRooms/', async (req, res) => {
+  try {
+    // Find the hostel by ID
+    const hostel = await Hostel.findById(req.params.hostelId);
+
+    if (!hostel) {
+      return res.status(404).json({ message: "Hostel not found" });
+    }
+
+    // Find rooms belonging to the hostel with remaining capacity greater than 0
+    const roomsWithCapacity = await Room.find({
+      hostelId: hostel._id,
+      remainingCapacity: { $gt: 0 }
+    });
+
+    res.status(200).json(roomsWithCapacity);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 // Get all hostels
