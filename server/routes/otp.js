@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const nodemailer = require('nodemailer');
 
-router.get('/send',async(req,res)=>{
+router.post('/send',async(req,res)=>{
     const {email} = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000);
     await sendUniqueIdEmail(email,otp);
