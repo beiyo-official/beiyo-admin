@@ -6,7 +6,7 @@ router.post('/send',async(req,res)=>{
     const {email} = req.body;
     const otp = Math.floor(100000 + Math.random() * 900000);
     await sendUniqueIdEmail(email,otp);
-    res.json({otp:otp});
+    res.json(otp);
 })
 
 const sendUniqueIdEmail = async (email, otp) => {
