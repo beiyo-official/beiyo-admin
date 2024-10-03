@@ -22,6 +22,7 @@ const Staff = require('./routes/Staff')
 const Ticket = require('./routes/Tickets');
 const Manager = require('./routes/Manager');
 const requestForm = require('./routes/requestForm');
+const otp = require('./routes/otp');
 const { connectDB } = require('./db');
 const AppVersion  = require('./routes/appVersion')
 const Member = require('./routes/Member')
@@ -73,6 +74,7 @@ app.use('/api/appVersion',AppVersion);
 app.use('/api/manager',Manager);
 app.use('/api/requestForm',requestForm);
 app.use('/api/inventory',inventoryRoutes);
+app.use('/api/Otp',otp)
 
 // Start the server
 app.listen(PORT, () => {

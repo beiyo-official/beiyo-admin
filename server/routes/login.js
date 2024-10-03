@@ -72,7 +72,6 @@ router.post('/forgetPassword', async (req, res) => {
   const { email } = req.body;
   const otp = genrateOTP();
   // Generate a 6-digit OTP
-  console.log(otp);
   try {
     const user = await Resident.findOne({ email });
     if (!user) {
