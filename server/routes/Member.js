@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: error.message });
       }
     });
-  router.get('/login',async(req,res)=>{
+  router.post('/login',async(req,res)=>{
     const { uniqueId, password } = req.body;
 
     try {
