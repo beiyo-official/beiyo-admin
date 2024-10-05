@@ -213,13 +213,14 @@ router.put('/:id', async (req, res) => {
   })
   router.get('/:id', async (req, res) => {
     try {
-      const resident = await Resident.findById(req.params.id);
+      const residentId = req.params.id
+      const resident = await Resident.findById(residentId);
       if (!resident) {
         return res.status(404).json({ message: 'Resident not found' });
       }
       
       // console.log(`Generating payments for resident: ${resident._id}, contract end date: ${resident.contract}`);
-      await generateMonthlyPayments(resident._id, resident.contractEndDate);
+      
       res.json(resident);
     } catch (error) {
       console.error('Error fetching resident or generating payments:', error);
@@ -249,7 +250,55 @@ router.post('/amount',async(req,res)=>{
   }
 })
 
+router.get('/resident/contractEnd', async (req, res) => {
+  try {
+    // Get the current month in the format 'YYYY-MM'
+    const currentMonth = moment().format('YYYY-MM');
+  
+    // Find residents who are currently living and populate their payments
+    const residents = await Resident.find({ "living": "current" }).populate('payments');
+  
+    // Filter residents whose last payment's month is before the current month
+    const contractEndedResidents = residents.filter(resident => {
+      const lastPayment = resident.payments[resident.payments.length - 1];
+      
+      // Ensure there is a last payment and the payment month is stored in 'YYYY-MM' format
+      if (lastPayment && lastPayment.month) {
+        // Compare the saved payment month with the current month
+        return moment(lastPayment.month, 'YYYY-MM').isBefore(currentMonth, 'month');
+      }
+  
+      return false; // Exclude residents with no payments or payments within the current or future months
+    });
+  
+    // Respond with the filtered list of residents
+    res.status(200).json(contractEndedResidents);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Server error' });
+  } 
+});
 
+router.put('/extendContract/:residentId',async(req,res)=>{
+  try {
+    const extendedMonth = req.body.extendedMonth;
+    const formattedDate = moment().format('YYYY-MM-DD');
+    const contractEndDate = moment(formattedDate).add(extendedMonth, 'months').format('YYYY-MM-DD');
+    const oldResident = await Resident.findById(req.params.residentId);
+
+
+    const resident = await Resident.findByIdAndUpdate(req.params.residentId, { 
+      contractEndDate,
+    }, { new: true})
+    if (!resident) {
+      return res.status(404).json({ message: 'Resident not found' });
+    }
+    await generateMonthlyPayments(resident._id, contractEndDate);
+    res.status(200).json(resident);
+  } catch (error) {
+    console.log(error);
+  }
+})
 
   
 
@@ -287,7 +336,14 @@ router.post('/amount',async(req,res)=>{
     
         currentDate = currentDate.add(1, 'month');
         await resident.save();
+        const newResident = await Resident.findByIdAndUpdate(userId,{
+          contractTerm:resident.payments.length
+        },{
+          new:true
+        })
+        
       }
+
      } catch (error) {
       console.log(error);
      }
