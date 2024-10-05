@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
     const { uniqueId, password } = req.body;
 
     try {
-      const user = await Member.findOne({ uniqueId });
+      const user = await Member.findOne({ uniqueId: uniqueId });
       if (!user) {
         return res.status(400).json({ message: 'Invalid credentials' });
       }
