@@ -76,6 +76,7 @@ app.use('/api/requestForm',requestForm);
 app.use('/api/inventory',inventoryRoutes);
 app.use('/api/Otp',otp)
 
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
