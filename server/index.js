@@ -30,17 +30,17 @@ const Member = require('./routes/Member')
 
 const app = express();
 app.use(cors());
-
-// // Middleware to check API key
-app.use((req, res, next) => {
-  const apiKey = req.headers.apiKey;
-  if (!apiKey || apiKey !== process.env.SERVER_API_KEY) {
-      return res.status(403).json({ message: 'Forbidden: Invalid API key' });
-  }
-  next();
-});
-
 config();
+// // Middleware to check API key
+// app.use((req, res, next) => {
+//   const apiKey = req.headers.apiKey; // Get API key from request headers
+//   if (!apiKey || apiKey !== process.env.SERVER_API_KEY) {
+//     return res.status(403).json({ message: 'Forbidden: Invalid API key' });
+//   }
+//   next(); // If API key is valid, proceed to the next middleware/route handler
+// });
+
+
 // Middleware
 // app.use(bodyParser.json());
 app.use(bodyParser.json({ limit: '50mb' }));
