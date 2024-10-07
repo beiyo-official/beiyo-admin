@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import {
   Box,
   Typography,
@@ -15,6 +15,7 @@ import {
   MenuItem,
   Alert
 } from '@mui/material';
+import api from '../../api/apiKey';
 
 const ResidentDetails = ({ residentId, open, onClose }) => {
   const [resident, setResident] = useState(null);
@@ -34,12 +35,12 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
       setPayments([]);
       
       // Fetch resident details
-      axios.get(`https://beiyo-admin.in/api/newResident/${residentId}`)
+      api.get(`https://beiyo-admin.in/api/newResident/${residentId}`)
         .then(response => {
           setResident(response.data);
           // Fetch resident payments
           if (response.data.payments && response.data.payments.length > 0) {
-            axios.get(`https://beiyo-admin.in/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
+            api.get(`https://beiyo-admin.in/api/dashboard/paymentsArray?ids=${response.data.payments.join(',')}`)
               .then(paymentResponse => {
                 setPayments(paymentResponse.data);
                 console.log(payments);
@@ -65,7 +66,7 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
   // Function to delete payment
 const handleDeletePayment = (paymentId) => {
   setLoading(true);
-  axios.delete(`https://beiyo-admin.in/api/dashboard/deletePayment/${paymentId}`)
+  api.delete(`https://beiyo-admin.in/api/dashboard/deletePayment/${paymentId}`)
     .then(response => { 
       setLoading(false);
     })
@@ -78,7 +79,7 @@ const handleDeletePayment = (paymentId) => {
 // Function to mark payment as cash
 const handleCashPayment = (paymentId) => {
   setLoading(true);
-  axios.put(`https://beiyo-admin.in/api/dashboard/cashPayment/${paymentId}`)
+  api.put(`https://beiyo-admin.in/api/dashboard/cashPayment/${paymentId}`)
     .then(response => {
       // Update the payment in the state
       setPayments(payments.map(payment => 
@@ -95,7 +96,7 @@ const handleCashPayment = (paymentId) => {
 // Function to mark payment as cash
 const handleOnlinePayment = (paymentId) => {
   setLoading(true);
-  axios.put(`https://beiyo-admin.in/api/dashboard/onlinePaymentSave/${paymentId}`)
+  api.put(`https://beiyo-admin.in/api/dashboard/onlinePaymentSave/${paymentId}`)
     .then(response => {
       // Update the payment in the state
       setPayments(payments.map(payment => 
@@ -112,7 +113,7 @@ const handleOnlinePayment = (paymentId) => {
 
   const handleRoomSwapOpen = () => {
     // Fetch available rooms when the dialog is opened
-    axios.get('https://beiyo-admin.in/api/rooms')
+    api.get('https://beiyo-admin.in/api/rooms')
       .then(response => setRooms(response.data))
       .catch(error => console.error('Error fetching rooms:', error));
     setOpenRoomSwapDialog(true);
@@ -120,7 +121,7 @@ const handleOnlinePayment = (paymentId) => {
 
   const handleRoomSwap = () => {
     if (oldRoomId && newRoomId) {
-      axios.put(`https://beiyo-admin.in/api/rooms/roomSwap/${residentId}`, {
+      api.put(`https://beiyo-admin.in/api/rooms/roomSwap/${residentId}`, {
         oldRoomId,
         newRoomId
       })
@@ -137,7 +138,7 @@ const handleOnlinePayment = (paymentId) => {
 
   const handleDeleteResident = () => {
     if (residentId) {
-      axios.delete(`https://beiyo-admin.in/api/newResident/deleteResident/${residentId}`)
+      api.delete(`https://beiyo-admin.in/api/newResident/deleteResident/${residentId}`)
         .then(() => {
           setDeleteSuccess(true);
           onClose();  // Close the dialog after successful deletion

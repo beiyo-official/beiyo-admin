@@ -1,6 +1,6 @@
 // HostelList.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import api from 'api';
 import HostelForm from './HostelForm';
 
 import {
@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import ResidentDetails from './ResidentView';
 import SideBar from './Sider';
+import api from '../../api/apiKey';
 
 const HostelList = () => {
   const [hostels, setHostels] = useState([]);
@@ -30,7 +31,7 @@ const HostelList = () => {
   const [openResidentDetail, setOpenResidentDetail] = useState(false);
   
   useEffect(() => {
-    axios.get('https://beiyo-admin.in/api/hostels')
+    api.get('https://beiyo-admin.in/api/hostels')
       .then(response => {
         setHostels(response.data);
       })
@@ -52,7 +53,7 @@ const HostelList = () => {
     if (hostel.residents && hostel.residents.length > 0) {
       try {
         const residentIds = hostel.residents.join(','); // Assuming the resident IDs are in an array
-        const response = await axios.get(`https://beiyo-admin.in/api/newResident/allResidentIds?ids=${residentIds}`);
+        const response = await api.get(`https://beiyo-admin.in/api/newResident/allResidentIds?ids=${residentIds}`);
         setResidents(response.data); // Assuming the API returns the resident details
       } catch (error) {
         console.error('Error fetching residents:', error);
@@ -65,7 +66,7 @@ const HostelList = () => {
   const handleFormSubmit = () => {
     setEditingHostel(null);
     setOpenForm(false);
-    axios.get('https://beiyo-admin.in/api/hostels')
+    api.get('https://beiyo-admin.in/api/hostels')
       .then(response => {
         setHostels(response.data);
       })

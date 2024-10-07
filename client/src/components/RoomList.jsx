@@ -1,5 +1,5 @@
 // import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
+// import api from 'api';
 // import RoomForm from './RoomForm';
 // import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid, Dialog, DialogTitle, DialogContent, DialogActions, CssBaseline } from '@mui/material';
 // import { useUser } from '@clerk/clerk-react';
@@ -27,7 +27,7 @@
 //   const handleUpdateBedsSubmit = () => {
 //     // Handle beds update submission (e.g., refetch data)
 //     setIsUpdateBedsFormOpen(false);
-//     axios.get('https://beiyo-admin.vercel.app/api/rooms')
+//     api.get('https://beiyo-admin.vercel.app/api/rooms')
 //     .then(response => {
 //       setRooms(response.data);
 //       setFilteredRooms(response.data);
@@ -84,7 +84,7 @@
 //   }, [rooms, filterOptions, priceFilter, sortByPrice]);
 
 //   useEffect(() => {
-//     axios.get('https://beiyo-admin.vercel.app/api/rooms')
+//     api.get('https://beiyo-admin.vercel.app/api/rooms')
 //       .then(response => {
 //         setRooms(response.data);
 //         setFilteredRooms(response.data);
@@ -93,7 +93,7 @@
 //         console.error('Error fetching rooms:', error);
 //       });
 
-//     axios.get('https://beiyo-admin.vercel.app/api/hostels')
+//     api.get('https://beiyo-admin.vercel.app/api/hostels')
 //       .then(response => {
 //         setHostels(response.data);
 //       })
@@ -128,7 +128,7 @@
 
 //   const handleFormSubmit = () => {
 //     setOpenForm(false);
-//     axios.get('https://beiyo-admin.vercel.app/api/rooms')
+//     api.get('https://beiyo-admin.vercel.app/api/rooms')
 //       .then(response => {
 //         setRooms(response.data);
 //       })
@@ -357,7 +357,6 @@
 
 // RoomList.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import RoomForm from './RoomForm';
 
 import {
@@ -377,6 +376,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import ResidentDetails from './ResidentView';
+import api from '../../api/apiKey';
 
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);
@@ -392,7 +392,7 @@ const RoomList = () => {
   const [openResidentDetail, setOpenResidentDetail] = useState(false);
   const [loading,setLoading]=useState(false);
   useEffect(() => {
-    axios.get('https://beiyo-admin.in/api/rooms')
+    api.get('https://beiyo-admin.in/api/rooms')
       .then(response => {
         setRooms(response.data);
         setFilteredRooms(response.data);
@@ -401,7 +401,7 @@ const RoomList = () => {
         console.error('Error fetching rooms:', error);
       });
 
-    axios.get('https://beiyo-admin.in/api/hostels')
+    api.get('https://beiyo-admin.in/api/hostels')
       .then(response => {
         setHostels(response.data);
       })
@@ -426,7 +426,7 @@ const RoomList = () => {
     if (room.residents && room.residents.length > 0) {
       try {
         const residentIds = room.residents.join(','); // Assuming the resident IDs are in an array
-        const response = await axios.get(`https://beiyo-admin.in/api/newResident/allResidentIds?ids=${residentIds}`);
+        const response = await api.get(`https://beiyo-admin.in/api/newResident/allResidentIds?ids=${residentIds}`);
         setResidents(response.data); // Assuming the API returns the resident details
       } catch (error) {
         console.error('Error fetching residents:', error);
@@ -451,7 +451,7 @@ const RoomList = () => {
   const handleFormSubmit = () => {
     setEditingRoom(null);
     setOpenForm(false);
-    axios.get('https://beiyo-admin.in/api/rooms')
+    api.get('https://beiyo-admin.in/api/rooms')
       .then(response => {
         setRooms(response.data);
         setFilteredRooms(response.data);

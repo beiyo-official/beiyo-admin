@@ -8,22 +8,36 @@ import RoomList from './components/RoomList';
 import ResidentList from './components/ResidentList';
 import PaymentList from './components/PaymentList';
 import SideBar from './components/Sider';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoutes';
+import Login from './components/login';
+import Layout from './context/LayoutContext';
 
 const App = () => {
   return (
     <div style={{display:'flex',minWidth:'90vw'}}>
         <CssBaseline />
-        <SideBar/>
+      
+      <AuthProvider>
     <Router>
+    <Layout>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/hostels" element={<HostelList />} />
+        <Route path="/" element={<Login/>} />
+        <Route path="/dashboard" element={<ProtectedRoute>
+          <Dashboard />
+          </ProtectedRoute>
+          } />
+        <Route path="/hostels" element={<ProtectedRoute>
+          <HostelList /></ProtectedRoute>
+          } />
         {/* <Route path="/hostels/:id" element={<HostelForm />} /> */}
-      <Route path='/rooms' element={<RoomList/>}/>
-      <Route path='/resident' element={<ResidentList/>}/>
-      <Route path='/payment' element={<PaymentList/>}/>
+      <Route path='/rooms' element={<ProtectedRoute><RoomList/></ProtectedRoute>}/>
+      <Route path='/resident' element={<ProtectedRoute> <ResidentList/> </ProtectedRoute>}/>
+      <Route path='/payment' element={<ProtectedRoute><PaymentList/></ProtectedRoute>}/>
       </Routes>
+      </Layout>
     </Router>
+    </AuthProvider>
     </div>
   );
 };

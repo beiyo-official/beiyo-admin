@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import api from 'api';
 import { Card, Typography, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/apiKey';
 
 const HostelOverview = () => {
   const [hostelStats, setHostelStats] = useState({ totalHostels: 0, totalBeds: 0, remainingBeds: 0 });
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('https://beiyo-admin.in/api/hostels')
+    api.get('https://beiyo-admin.in/api/hostels')
       .then(response => {
         const totalHostels = response.data.length;
         const totalBeds = response.data.reduce((acc, hostel) => acc + hostel.totalBeds, 0);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import {
   Box,
   Typography,
@@ -22,6 +22,7 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
+import api from '../../api/apiKey';
 
 const PaymentList = () => {
   const [payments, setPayments] = useState([]);
@@ -37,7 +38,7 @@ const PaymentList = () => {
 
   useEffect(() => {
     // Fetch hostels
-    axios.get('https://beiyo-admin.in/api/hostels')
+    api.get('https://beiyo-admin.in/api/hostels')
       .then(response => setHostels(response.data))
       .catch(error => console.error('Error fetching hostels:', error));
 
@@ -49,7 +50,7 @@ const PaymentList = () => {
 
   const handleFetchPayments = () => {
     setLoading(true);
-    axios.get(`https://beiyo-admin.in/api/dashboard/monthPayments/${selectedHostel}/${selectedMonth}`)
+    api.get(`https://beiyo-admin.in/api/dashboard/monthPayments/${selectedHostel}/${selectedMonth}`)
       .then(response => {
         setPayments(response.data);
         setFilteredPayments(response.data);

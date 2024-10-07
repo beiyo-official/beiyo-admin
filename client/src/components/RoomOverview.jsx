@@ -1,14 +1,15 @@
 import { Card, Typography, Button, Box } from '@mui/material';
-import axios from 'axios';
+
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import api from '../../api/apiKey';
 
 const RoomOverview = () => {
     const [roomStats, setRoomStats] = useState({ totalrooms: 0, totalBeds: 0, remainingBeds: 0 });
     const navigate = useNavigate();
   
     useEffect(() => {
-      axios.get('https://beiyo-admin.in/api/rooms')
+      api.get('https://beiyo-admin.in/api/rooms')
         .then(response => {
           const totalrooms = response.data.length;
           const totalBeds = response.data.reduce((acc, room) => acc + room.capacity, 0);

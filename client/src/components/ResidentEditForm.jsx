@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +13,7 @@ import {
   Select,
   MenuItem
 } from '@mui/material';
+import api from '../../api/apiKey';
 
 const ResidentEditForm = ({ resident, open, onClose, onUpdate }) => {
   const [formData, setFormData] = useState(null);
@@ -26,11 +27,11 @@ const ResidentEditForm = ({ resident, open, onClose, onUpdate }) => {
       setFormData({ ...resident });
       
       // Fetch hostels and rooms for selection
-      axios.get('https://beiyo-admin.in/api/hostels')
+      api.get('https://beiyo-admin.in/api/hostels')
         .then(response => setHostels(response.data))
         .catch(error => console.error('Error fetching hostels:', error));
 
-      axios.get('https://beiyo-admin.in/api/rooms')
+      api.get('https://beiyo-admin.in/api/rooms')
         .then(response => setRooms(response.data))
         .catch(error => console.error('Error fetching rooms:', error));
 
@@ -45,7 +46,7 @@ const ResidentEditForm = ({ resident, open, onClose, onUpdate }) => {
 
   const handleSubmit = () => {
     if (formData) {
-      axios.put(`https://beiyo-admin.in/api/newResident/${formData._id}`, formData)
+      api.put(`https://beiyo-admin.in/api/newResident/${formData._id}`, formData)
         .then(response => {
           onUpdate(response.data);
         })

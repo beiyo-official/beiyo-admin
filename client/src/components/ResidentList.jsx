@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import {
   Box,
   Typography,
@@ -18,6 +18,7 @@ import {
 import ResidentDetails from './ResidentView';
 import ResidentEditForm from './ResidentEditForm';
 import SideBar from './Sider';
+import api from '../../api/apiKey';
 
 const ResidentList = () => {
   const [residents, setResidents] = useState([]);
@@ -33,7 +34,7 @@ const ResidentList = () => {
 
   useEffect(() => {
     // Fetch residents
-    axios.get('https://beiyo-admin.in/api/newResident')
+    api.get('https://beiyo-admin.in/api/newResident')
       .then(response => {
         setResidents(response.data);
         setFilteredResidents(response.data);
@@ -41,12 +42,12 @@ const ResidentList = () => {
       .catch(error => console.error('Error fetching residents:', error));
     
     // Fetch hostels
-    axios.get('https://beiyo-admin.in/api/hostels')
+    api.get('https://beiyo-admin.in/api/hostels')
       .then(response => setHostels(response.data))
       .catch(error => console.error('Error fetching hostels:', error));
 
     // Fetch rooms
-    axios.get('https://beiyo-admin.in/api/rooms')
+    api.get('https://beiyo-admin.in/api/rooms')
       .then(response => setRooms(response.data))
       .catch(error => console.error('Error fetching rooms:', error));
   }, []);
