@@ -23,7 +23,7 @@ const residentSchema = new mongoose.Schema({
   hostel: { type: String, required: true },
   roomNumber: { type: String, required: true },
   dateJoined:{type:Date},
-  password: { type: String, required: true },
+  password: { type: String, },
   documentId:{type:String},
   imageUrl:{type:String},
   aadhaarCardUrl: {type:String},
@@ -42,7 +42,15 @@ const residentSchema = new mongoose.Schema({
   maintainaceCharge:{type:Number},
   formFee:{type:Number},
   dueAmount:{type:Number,default:0},
-  dueChargePayment:{type:mongoose.Schema.Types.ObjectId,ref:'Payment'}
+  dueChargePayment:{type:mongoose.Schema.Types.ObjectId,ref:'Payment'},
+  depositStatus:{type:Boolean},
+  maintainaceChargeStatus:{type:Boolean},
+  formFeeStatus:{type:Boolean},
+  extraDays:{type:Boolean},
+  extraDayPaymentAmount:{type:Number},
+  extraDayPaymentStatus:{type:Boolean},
+  gender:{type:"String"}
+
 
   // other fields
 });

@@ -18,7 +18,85 @@ const totalRemainingBeds = require('../functions/totalRemainingBeds');
 const mappingResident = require('../functions/MappingResident');
 
 
+router.post('/websiteBooking',async(req,res)=>{
+  try {
+    const {name, email, mobileNumber,hostelId,roomNumberId,dateJoined,rent,deposit,depositStatus,firstMonthRentStatus,maintainaceCharge,maintainaceChargeStatus,formFee,formFeeStatus,contractTerm,extraDayPaymentAmount,extraDayPaymentAmountStatus,extraDays,gender} = req.body;
+    const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
+    const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
+    const Hostel = await Hostels.findById(hostelId);
+    const Room = await Rooms.findById(roomNumberId);
+    const hostelName = Hostel.name;
+    const roomNumber  = Room.roomNumber;
+    let dueAmount = 0;
+    if(!depositStatus){
+      dueAmount += deposit;
+    }
+    if(!maintainaceChargeStatus){
+      dueAmount += maintainaceCharge;
+    }
+    if(!formFeeStatus){
+      dueAmount += formFee;
+    }
+    if(!extraDayPaymentAmountStatus){
+      dueAmount += extraDayPaymentAmount;
+    }
 
+    const newResident = new Resident({
+      name, email, mobileNumber, 
+       hostelId,   
+      roomNumberId:roomNumberId,
+      hostel: hostelName,
+      roomNumber: roomNumber,
+      dateJoined: formattedDate,
+      contractEndDate,
+      contractTerm,
+      rent:rent,
+      deposit:deposit,
+      maintainaceCharge:maintainaceCharge,
+      formFee:formFee,
+      dueAmount:dueAmount,
+      extraDayPaymentAmount:extraDayPaymentAmount,
+      extraDayPaymentAmountStatus:extraDayPaymentAmountStatus,
+      depositStatus:depositStatus,
+      maintainaceChargeStatus:maintainaceChargeStatus,
+      formFeeStatus:formFeeStatus,
+      extraDays,
+      gender
+    });
+    await newResident.save();
+        const resident = await Resident.findOne({ email });
+
+        if(Room.remainingCapacity>0){
+          Room.remainingCapacity--;
+
+          Room.residents.push(resident._id);
+          await Room.save();
+        }else{
+          return res.status(400).json({message:"Room is full"});
+        }
+        if(Hostel.totalRemainingBeds>0){
+          Hostel.totalRemainingBeds--;
+          Hostel.residents.push(resident._id);
+          await Hostel.save();
+        }else{
+          return res.status(400).json({message:"Hostel Room is full"});
+        }
+
+        await totalTenants(hostelId);
+        await totalRemainingBeds(hostelId);
+        await generateMonthlyPayments(resident._id, resident.contractEndDate);
+        await generateDueCharge(resident._id);
+    if(firstMonthRentStatus){
+      const user = await Resident.findById(resident._id);
+      const firstMonthRent = await Payment.findByIdAndUpdate(user.payments[0],{
+        "status":"successful"
+      },{new:true});
+    }
+        res.status(201).json(newResident);
+  } catch (error) {
+    res.json({"message":error.message})
+  }
+})
 
 
  router.post('/',async(req,res)=>{
@@ -27,7 +105,7 @@ const mappingResident = require('../functions/MappingResident');
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
       
-        console.log(hostelId);
+        
         const Hostel = await Hostels.findById(hostelId);
         const Room = await Rooms.findById(roomNumberId);
         const hostelName = Hostel.name;
