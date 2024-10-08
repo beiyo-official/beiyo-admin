@@ -28,6 +28,7 @@ router.post('/websiteBooking',async(req,res)=>{
     const hostelName = Hostel.name;
     const roomNumber  = Room.roomNumber;
     let dueAmount = 0;
+    let livingStatus = "current";
     if(!depositStatus){
       dueAmount += deposit;
     }
@@ -40,7 +41,11 @@ router.post('/websiteBooking',async(req,res)=>{
     if(!extraDayPaymentAmountStatus){
       dueAmount += extraDayPaymentAmount;
     }
+    if(!depositStatus&&!firstMonthRentStatus&&!extraDayPaymentAmountStatus&&!maintainaceChargeStatus){
+       livingStatus = "new"
+    }
 
+    
     const newResident = new Resident({
       name, email, mobileNumber, 
        hostelId,   
@@ -61,36 +66,40 @@ router.post('/websiteBooking',async(req,res)=>{
       maintainaceChargeStatus:maintainaceChargeStatus,
       formFeeStatus:formFeeStatus,
       extraDays,
-      gender
+      gender,
+      living:livingStatus
     });
     await newResident.save();
         const resident = await Resident.findOne({ email });
+    
+              
+      if(Room.remainingCapacity>0){
+        Room.remainingCapacity--;
 
-        if(Room.remainingCapacity>0){
-          Room.remainingCapacity--;
+        Room.residents.push(resident._id);
+        await Room.save();
+      }else{
+        return res.status(400).json({message:"Room is full"});
+      }
+      if(Hostel.totalRemainingBeds>0){
+        Hostel.totalRemainingBeds--;
+        Hostel.residents.push(resident._id);
+        await Hostel.save();
+      }else{
+        return res.status(400).json({message:"Hostel Room is full"});
+      }
 
-          Room.residents.push(resident._id);
-          await Room.save();
-        }else{
-          return res.status(400).json({message:"Room is full"});
-        }
-        if(Hostel.totalRemainingBeds>0){
-          Hostel.totalRemainingBeds--;
-          Hostel.residents.push(resident._id);
-          await Hostel.save();
-        }else{
-          return res.status(400).json({message:"Hostel Room is full"});
-        }
-
-        await totalTenants(hostelId);
-        await totalRemainingBeds(hostelId);
-        await generateMonthlyPayments(resident._id, resident.contractEndDate);
-        await generateDueCharge(resident._id);
-    if(firstMonthRentStatus){
-      const user = await Resident.findById(resident._id);
-      const firstMonthRent = await Payment.findByIdAndUpdate(user.payments[0],{
-        "status":"successful"
-      },{new:true});
+      await totalTenants(hostelId);
+      await totalRemainingBeds(hostelId);
+      if(depositStatus||firstMonthRentStatus){
+      await generateMonthlyPayments(resident._id, resident.contractEndDate);
+      await generateDueCharge(resident._id);
+      if(firstMonthRentStatus){
+        const user = await Resident.findById(resident._id);
+        const firstMonthRent = await Payment.findByIdAndUpdate(user.payments[0],{
+          "status":"successful"
+        },{new:true});
+      }
     }
         res.status(201).json(newResident);
   } catch (error) {

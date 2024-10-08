@@ -8,6 +8,7 @@ const Resident = require('../models/newMemberResident'); // Assuming Student is 
 // Endpoint to initiate payment
 router.post('/initiate', async (req, res) => {
   try {
+    const apiKey = process.env.SERVER_API_KEY
     const MERCHANT_ID = process.env.MERCHANTID;
     const API_KEY = process.env.SECRET_KEY;
     const KEY_INDEX = process.env.KEY_INDEX;
@@ -20,9 +21,8 @@ router.post('/initiate', async (req, res) => {
       "merchantUserId":'MUID123',
       "amount": amount*100, // Amount in smallest currency unit
       "redirectUrl": 'https://www.beiyo.in/paymentstatus',
-      "callbackUrl":'https://beiyo-admin.vercel.app/api/pay/callback',
+      "callbackUrl":`https://beiyo-admin.in/api/pay/callback?api=${apiKey}`,
       "redirectMode": "REDIRECT",
-      "mobileNumber": "9617223930",
       "paymentInstrument": {
         type: "PAY_PAGE"
       }
