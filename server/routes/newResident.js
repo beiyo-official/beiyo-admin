@@ -30,23 +30,25 @@ router.post('/websiteBooking',async(req,res)=>{
     let dueAmount = 0;
     let livingStatus = "current";
     if(!depositStatus){
-      dueAmount += deposit;
+      dueAmount += Number(deposit);
     }
     if(!maintainaceChargeStatus){
-      dueAmount += maintainaceCharge;
+      dueAmount += Number(maintainaceCharge);
     }
     if(!formFeeStatus){
-      dueAmount += formFee;
+      dueAmount += Number(formFee);
     }
     if(!extraDayPaymentAmountStatus){
-      dueAmount += extraDayPaymentAmount;
+      dueAmount += Number(extraDayPaymentAmount);
+    }
+    if(!firstMonthRentStatus){
+      dueAmount += Number(rent);
     }
     if(!depositStatus&&!firstMonthRentStatus&&!extraDayPaymentAmountStatus&&!maintainaceChargeStatus){
        livingStatus = "new"
     }
 
-    
-    const newResident = new Resident({
+     const newResident = new Resident({
       name, email, mobileNumber, 
        hostelId,   
       roomNumberId:roomNumberId,
@@ -67,23 +69,22 @@ router.post('/websiteBooking',async(req,res)=>{
       formFeeStatus:formFeeStatus,
       extraDays,
       gender,
-      living:livingStatus
+      living:livingStatus,
+      payments:[]
     });
     await newResident.save();
-        const resident = await Resident.findOne({ email });
-    
-              
+      const resident = await Resident.findOne({ email });      
       if(Room.remainingCapacity>0){
         Room.remainingCapacity--;
 
-        Room.residents.push(resident._id);
+         Room.residents.push(newResident._id);
         await Room.save();
       }else{
         return res.status(400).json({message:"Room is full"});
       }
       if(Hostel.totalRemainingBeds>0){
         Hostel.totalRemainingBeds--;
-        Hostel.residents.push(resident._id);
+        Hostel.residents.push(newResident._id);
         await Hostel.save();
       }else{
         return res.status(400).json({message:"Hostel Room is full"});
@@ -92,20 +93,24 @@ router.post('/websiteBooking',async(req,res)=>{
       await totalTenants(hostelId);
       await totalRemainingBeds(hostelId);
       if(depositStatus||firstMonthRentStatus){
-      await generateMonthlyPayments(resident._id, resident.contractEndDate);
-      await generateDueCharge(resident._id);
+      await generateMonthlyPayments(newResident._id, newResident.contractEndDate);
+      await generateDueCharge(newResident._id);
       if(firstMonthRentStatus){
-        const user = await Resident.findById(resident._id);
-        const firstMonthRent = await Payment.findByIdAndUpdate(user.payments[0],{
-          "status":"successful"
-        },{new:true});
+        // const user = await Resident.findById(newResident._id);
+        const firstMonthPayment = await Payment.findOneAndUpdate(
+          { userId: newResident._id,type:'rent' },
+          { status: "successful" },
+          { new: true }
+        );
       }
     }
         res.status(201).json(newResident);
   } catch (error) {
     res.json({"message":error.message})
+    console.log(error);
   }
 })
+
 
 
  router.post('/',async(req,res)=>{
@@ -213,7 +218,30 @@ router.get('/allResidentIds', async (req, res) => {
 });
 
 
+router.delete('/permanentDeleteResident/:id',async(req,res)=>{
+  try {
+    const residentId = req.params.id;
+    const resident = await Resident.findById(residentId);
+    if (!resident) {
+      return res.status(404).json({ message: "Resident not found" });
+      }
+      if(resident.living==='old'){
+        return res.status(200).json({ message: "Resident already left the beiyo" });
+      }
+      await Rooms.updateOne({ _id: resident.roomNumberId }, { $pull: { residents:
+        resident._id },$inc: { remainingCapacity: 1 } });
+      await Hostel.updateOne({_id:resident.hostelId},{
+        $pull:{residents:resident._id}
+      })  
 
+      await totalTenants(resident.hostelId);
+      await totalRemainingBeds(resident.hostelId);
+       await resident.deleteOne();
+      res.status(200).json('Permanently Resident Left the Beiyo')
+  } catch (error) {
+    res.status(400).json(error);
+  }
+})
 
 
   // delting resident
@@ -372,10 +400,10 @@ router.put('/extendContract/:residentId',async(req,res)=>{
     const formattedDate = moment().format('YYYY-MM-DD');
     const contractEndDate = moment(formattedDate).add(extendedMonth, 'months').format('YYYY-MM-DD');
     const oldResident = await Resident.findById(req.params.residentId);
-
+    const newContractTerm = oldResident.contractTerm+extendedMonth
 
     const resident = await Resident.findByIdAndUpdate(req.params.residentId, { 
-      contractEndDate,
+      contractEndDate,contractTerm:newContractTerm
     }, { new: true})
     if (!resident) {
       return res.status(404).json({ message: 'Resident not found' });
@@ -393,48 +421,55 @@ router.put('/extendContract/:residentId',async(req,res)=>{
     module.exports = router;
 
     const generateMonthlyPayments = async (userId, contractEndDate) => {
-     try {
-      const resident = await Resident.findById(userId);
-      const startDate = dayjs(resident.dateJoined).startOf('month');
-      const endDate = dayjs(contractEndDate).endOf('month');
-      let currentDate = startDate;
-      
-      while (currentDate.isBefore(endDate)) {
-        const month = currentDate.format('YYYY-MM');
-        const existingPayment = await Payment.findOne({ userId, month });
+      try {
+        const resident = await Resident.findById(userId);
+        const startDate = dayjs(resident.dateJoined).startOf('day');
+        let currentDate;
     
-        if (!existingPayment) {
-          // rishabh jain mayank hasardani ritk lodhi amount is wrong
-          const payment = new Payment({
-            userId,
-            userName:resident.name,
-            rent: resident.rent,
-            amount: resident.rent, // Replace with the appropriate amount
-            month,
-            date: currentDate.toDate(),
-            status: 'due',
-            type:'rent'
-          });
-    
-          await payment.save();
-          resident.payments.push(payment._id);
-         
+        // Check if the resident joined on the 1st of the month
+        if (startDate.date() === 1) {
+          currentDate = startDate.startOf('month'); // Start from this month
+        } else {
+          currentDate = startDate.add(1, 'month').startOf('month'); // Start from the next month
         }
     
-        currentDate = currentDate.add(1, 'month');
+        // Generate payments based on the contract term
+        for (let i = 0; i < resident.contractTerm; i++) {
+          const month = currentDate.format('YYYY-MM');
+          const existingPayment = await Payment.findOne({ userId, month });
+    
+          if (!existingPayment) {
+            const payment = new Payment({
+              userId,
+              userName: resident.name,
+              rent: resident.rent,
+              amount: resident.rent,
+              month,
+              date: currentDate.toDate(),
+              status: 'due',
+              type: 'rent',
+            });
+    
+            await payment.save();
+            resident.payments.push(payment._id);
+          }
+    
+          currentDate = currentDate.add(1, 'month');
+        }
+    
+        // Save the resident with updated payments
         await resident.save();
-        const newResident = await Resident.findByIdAndUpdate(userId,{
-          contractTerm:resident.payments.length
-        },{
-          new:true
-        })
-        
+    
+        // Update the resident's contract term based on the number of payments generated
+        await Resident.findByIdAndUpdate(userId, {
+          contractTerm: resident.payments.length,
+        }, { new: true });
+    
+      } catch (error) {
+        console.log(error);
       }
-
-     } catch (error) {
-      console.log(error);
-     }
     };
+    
     
    const generateDueCharge = async(userId)=>{
     try {
