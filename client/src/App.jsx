@@ -8,20 +8,25 @@ import RoomList from './components/RoomList';
 import ResidentList from './components/ResidentList';
 import PaymentList from './components/PaymentList';
 import SideBar from './components/Sider';
-import { AuthProvider } from './context/AuthContext';
+import  { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoutes';
 import Login from './components/login';
 import Layout from './context/LayoutContext';
 
+
 const App = () => {
+    
   return (
+    
     <div style={{display:'flex',minWidth:'90vw'}}>
         <CssBaseline />
       
-      <AuthProvider>
+      
     <Router>
+    <AuthProvider>
     <Layout>
       <Routes>
+        
         <Route path="/" element={<Login/>} />
         <Route path="/dashboard" element={<ProtectedRoute>
           <Dashboard />
@@ -36,9 +41,11 @@ const App = () => {
       <Route path='/payment' element={<ProtectedRoute><PaymentList/></ProtectedRoute>}/>
       </Routes>
       </Layout>
+      </AuthProvider>
     </Router>
-    </AuthProvider>
+    
     </div>
+   
   );
 };
 

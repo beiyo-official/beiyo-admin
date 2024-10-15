@@ -90,7 +90,7 @@ const PaymentList = () => {
   const totalPerHostel = calculateTotalPerHostel();
 
   return (
-   <div style={{minHeight:'100vh'}}>
+   <div style={{minHeight:'100vh', paddingLeft:'6rem'}}>
      <Box sx={{ p: { xs: 2, sm: 3 } }}>
       <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>Payment List</Typography>
 

@@ -70,13 +70,13 @@ router.post('/websiteBooking',async(req,res)=>{
       extraDays,
       gender,
       living:livingStatus,
-      payments:[]
+      payments:[],
+      password:"",
     });
     await newResident.save();
       const resident = await Resident.findOne({ email });      
       if(Room.remainingCapacity>0){
         Room.remainingCapacity--;
-
          Room.residents.push(newResident._id);
         await Room.save();
       }else{
@@ -104,9 +104,12 @@ router.post('/websiteBooking',async(req,res)=>{
         );
       }
     }
-        res.status(201).json(newResident);
+    const token = jwt.sign({ userId: newResident._id }, process.env.JWT_SECRET , { expiresIn: '7d' });
+    res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
+        res.status(201).json({newResident,token});
+
   } catch (error) {
-    res.json({"message":error.message})
+    res.json(error)
     console.log(error);
   }
 })
@@ -118,8 +121,6 @@ router.post('/websiteBooking',async(req,res)=>{
         const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostelId, roomNumberId , dateJoined, password, rent,deposit,contractTerm,aadhaarCardUrl,imageUrl,maintainaceCharge,formFee,dueAmount} = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
-      
-        
         const Hostel = await Hostels.findById(hostelId);
         const Room = await Rooms.findById(roomNumberId);
         const hostelName = Hostel.name;
@@ -225,9 +226,9 @@ router.delete('/permanentDeleteResident/:id',async(req,res)=>{
     if (!resident) {
       return res.status(404).json({ message: "Resident not found" });
       }
-      if(resident.living==='old'){
-        return res.status(200).json({ message: "Resident already left the beiyo" });
-      }
+      // if(resident.living==='old'){
+      //   return res.status(200).json({ message: "Resident already left the beiyo" });
+      // }
       await Rooms.updateOne({ _id: resident.roomNumberId }, { $pull: { residents:
         resident._id },$inc: { remainingCapacity: 1 } });
       await Hostel.updateOne({_id:resident.hostelId},{

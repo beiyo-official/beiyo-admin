@@ -1,7 +1,7 @@
 // src/components/HostelForm.js
 
 import React, { useState } from 'react';
-import axios from 'axios';
+
 import {
   TextField,
   Button,
@@ -20,6 +20,7 @@ import {
   CssBaseline,
   Grid
 } from '@mui/material';
+import api from '../../api/apiKey';
 
 const HostelForm = ({ hostel, onSubmit, onClose }) => {
   const [name, setName] = useState(hostel ? hostel.name : '');
@@ -65,9 +66,9 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
     };
     try {
       if (hostel) {
-        await axios.put(`https://beiyo-admin.in/api/hostels/${hostel._id}`, data);
+        await api.put(`https://beiyo-admin.in/api/hostels/${hostel._id}`, data);
       } else {
-        await axios.post('https://beiyo-admin.in/api/hostels', data);
+        await api.post('https://beiyo-admin.in/api/hostels', data);
       }
       onSubmit();
       onClose();

@@ -11,7 +11,7 @@ const Header = () => {
     <Typography variant="h6" noWrap component="div">
           Dashboard
         </Typography>
-        <Sidebar />
+    
 
         
       </Toolbar>

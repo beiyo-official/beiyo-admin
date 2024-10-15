@@ -555,7 +555,7 @@ const RoomList = () => {
               {/* Displaying resident names with view details button */}
               <Typography variant="h6" gutterBottom>Residents:</Typography>
          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+            <Box sx={{ minHeight: '200px',position:'absolute' ,top:'50%',left:'50%' }}>
               <CircularProgress />
             </Box>
           ) : residents.length > 0 ? (

@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }) => {
     <CircularProgress/>
   </div>;
 
-  return user ? children : navigate('/login');
+  return user ? children : navigate('/');
 };
 
 export default ProtectedRoute;

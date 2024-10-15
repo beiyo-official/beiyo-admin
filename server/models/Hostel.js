@@ -20,7 +20,7 @@ image2:{
     type: String,
 },
 image3:{
-    type:   String,
+    type:String,
 },
 single:{
   type: Boolean,

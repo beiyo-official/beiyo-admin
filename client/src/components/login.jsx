@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Box, TextField, Button, Typography, CircularProgress, Icon, InputAdornment, IconButton } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
@@ -10,21 +10,24 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useContext(AuthContext);
+  const { login,user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [showPassword,setShowPassword] = useState(false);
 
   const handleShowPassword =()=>{
     setShowPassword(!showPassword);
   }
-
+  useEffect(()=>{
+    {user&&navigate('/dashboard')}
+  },[user])
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       await login(uniqueId, password);
-      navigate('/dashboard');
+      // navigate('/dashboard');
     } catch (err) {
+      console.log(err);
       setError('Login failed. Please check your credentials.');
     } finally {
       setLoading(false);

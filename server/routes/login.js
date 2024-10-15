@@ -95,15 +95,17 @@ module.exports = router;
 
 const sendUniqueIdEmail = async (email, otp) => {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.secureserver.net', // For GoDaddy cPanel email
+    port: 465, // or 587 for TLS
+    secure: true, // Use true for port 465, false for other ports
     auth: {
-      user: 'beiyofinancetech@gmail.com', // Your email
-      pass: 'hetsusifwjvdldto', // Your email password or app password
+      user: 'support@beiyo.in', // Your email
+      pass: process.env.EMAIL_PASSWORD, // Your email password
     },
   });
 
   const mailOptions = {
-    from: 'beiyofinancetech@gmail.com',
+    from: 'support@beiyo.in',
     to: email,
     subject: 'Your OTP for Password Reset',
     text: `Your OTP for resetting your password is ${otp}`,

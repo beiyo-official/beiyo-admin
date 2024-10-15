@@ -76,7 +76,7 @@ const ResidentList = () => {
   const handleCloseEdit = () => setOpenEdit(false);
 
   return (
-    <div style={{display:'flex',minHeight:'100vh'}}>
+    <div style={{display:'flex',minHeight:'100vh', }}>
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>Resident List</Typography>
       

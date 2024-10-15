@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import {
   Box,
@@ -16,6 +16,7 @@ import {
   Alert
 } from '@mui/material';
 import api from '../../api/apiKey';
+import AuthContext from '../context/AuthContext';
 
 const ResidentDetails = ({ residentId, open, onClose }) => {
   const [resident, setResident] = useState(null);
@@ -27,6 +28,7 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
   const [newRoomId, setNewRoomId] = useState('');
   const [deleteError, setDeleteError] = useState('');
   const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const {user}= useContext(AuthContext);
 
   useEffect(() => {
     if (open && residentId) {
@@ -66,7 +68,8 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
   // Function to delete payment
 const handleDeletePayment = (paymentId) => {
   setLoading(true);
-  api.delete(`https://beiyo-admin.in/api/dashboard/deletePayment/${paymentId}`)
+  if(user.uniqueId==='B2'||user.uniqueId==='B4'){
+    api.delete(`https://beiyo-admin.in/api/dashboard/deletePayment/${paymentId}`)
     .then(response => { 
       setLoading(false);
     })
@@ -74,29 +77,36 @@ const handleDeletePayment = (paymentId) => {
       console.error('Error deleting payment:', error);
       setLoading(false);
     });
+  }
+
 };
 
 // Function to mark payment as cash
 const handleCashPayment = (paymentId) => {
   setLoading(true);
+ if(user.uniqueId==='B2'||user.uniqueId==='B4'){
   api.put(`https://beiyo-admin.in/api/dashboard/cashPayment/${paymentId}`)
-    .then(response => {
-      // Update the payment in the state
-      setPayments(payments.map(payment => 
-        payment._id === paymentId ? { ...payment, cash: true, status: 'successful' } : payment
-      ));
-      setLoading(false);
-    })
-    .catch(error => {
-      console.error('Error updating payment to cash:', error);
-      setLoading(false);
-    });
+  .then(response => {
+    // Update the payment in the state
+    setPayments(payments.map(payment => 
+      payment._id === paymentId ? { ...payment, cash: true, status: 'successful' } : payment
+    ));
+    setLoading(false);
+  })
+  .catch(error => {
+    console.error('Error updating payment to cash:', error);
+    setLoading(false);
+  });
+ }else{
+  alert('You are not authorized to perform this action.');
+ }
 };
 
 // Function to mark payment as cash
 const handleOnlinePayment = (paymentId) => {
   setLoading(true);
-  api.put(`https://beiyo-admin.in/api/dashboard/onlinePaymentSave/${paymentId}`)
+  if(user.uniqueId==='B2'||user.uniqueId==='B4'){
+    api.put(`https://beiyo-admin.in/api/dashboard/onlinePaymentSave/${paymentId}`)
     .then(response => {
       // Update the payment in the state
       setPayments(payments.map(payment => 
@@ -108,6 +118,9 @@ const handleOnlinePayment = (paymentId) => {
       console.error('Error updating payment to cash:', error);
       setLoading(false);
     });
+  }else{
+    alert('You are not authorized to perform this action.');
+  }
 };
 
 
@@ -120,34 +133,44 @@ const handleOnlinePayment = (paymentId) => {
   };
 
   const handleRoomSwap = () => {
-    if (oldRoomId && newRoomId) {
-      api.put(`https://beiyo-admin.in/api/rooms/roomSwap/${residentId}`, {
-        oldRoomId,
-        newRoomId
-      })
-      .then(response => {
-        console.log('Room swapped successfully:', response.data);
-        setOpenRoomSwapDialog(false);
-        onClose();  // Close the main dialog and refresh resident details
-      })
-      .catch(error => console.error('Error swapping rooms:', error));
-    } else {
-      console.error('Please select both old and new rooms.');
+    if(user.uniqueId==='B3'||user.uniqueId==='B4'){
+      if (newRoomId) {
+        api.put(`https://beiyo-admin.in/api/rooms/roomSwap/${residentId}`, {
+          oldRoomId:resident.roomNumberId,
+          newRoomId
+        })
+        .then(response => {
+          console.log('Room swapped successfully:', response.data);
+          setOpenRoomSwapDialog(false);
+          onClose();  // Close the main dialog and refresh resident details
+        })
+        .catch(error => console.error('Error swapping rooms:', error));
+      } else {
+        console.error('Please select  new room.');
+      }
+    }
+    else{
+      alert('You are not authorized to perform this action.');
     }
   };
 
   const handleDeleteResident = () => {
-    if (residentId) {
-      api.delete(`https://beiyo-admin.in/api/newResident/deleteResident/${residentId}`)
-        .then(() => {
-          setDeleteSuccess(true);
-          onClose();  // Close the dialog after successful deletion
-        })
-        .catch(error => {
-          setDeleteError('Failed to delete resident. Please try again.');
-          console.error('Error deleting resident:', error);
-        });
+    if(user.uniqueId==='B3'||user.uniqueId==='B4'){
+      if (residentId) {
+        api.delete(`https://beiyo-admin.in/api/newResident/deleteResident/${residentId}`)
+          .then(() => {
+            setDeleteSuccess(true);
+            onClose();  // Close the dialog after successful deletion
+          })
+          .catch(error => {
+            setDeleteError('Failed to delete resident. Please try again.');
+            console.error('Error deleting resident:', error);
+          });
+      }
+    }else{
+      alert('You are not authorized to perform this action.');
     }
+
   };
 
   return (
@@ -324,7 +347,7 @@ const handleOnlinePayment = (paymentId) => {
         <DialogTitle>Swap Room</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <FormControl fullWidth>
+            {/* <FormControl fullWidth>
               <InputLabel>Old Room</InputLabel>
               <Select
                 value={oldRoomId}
@@ -337,7 +360,8 @@ const handleOnlinePayment = (paymentId) => {
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
+            </FormControl> */}
+            <p>Your old Room: {resident&&resident.roomNumber}</p>
             <FormControl fullWidth>
               <InputLabel>New Room</InputLabel>
               <Select

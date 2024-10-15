@@ -18,8 +18,9 @@ const { Header, Sider, Content } = Layout;
 const Dashboard = () => {
   return (
       
-    <div style={{minHeight:'100vh',minWidth:'100%'}}>
-     <Grid item xs={12} sm={6} md={4} >
+    <div style={{minHeight:'100vh',minWidth:'100%', paddingLeft:'9rem'}}>
+      {/* <SideBar/> */}
+     <Grid item xs={12} sm={6} md={4}  >
      <HostelOverview/>
      <RoomOverview/>
       </Grid>     

@@ -15,9 +15,9 @@ const Layout = ({ children }) => {
   const showNavbar = !noSidebarPaths.includes(location.pathname);
  
   return (
-    <div>
+    <div style={{display:'flex'}}>
       {showNavbar && <SideBar />}
-      <main>{children}</main>
+      <main style={{paddingLeft:'13%'}} >{children}</main>
     </div>
   );
 };
