@@ -92,9 +92,9 @@ router.post('/websiteBooking',async(req,res)=>{
 
       await totalTenants(hostelId);
       await totalRemainingBeds(hostelId);
+      await generateDueCharge(newResident._id);
       if(depositStatus||firstMonthRentStatus){
       await generateMonthlyPayments(newResident._id, newResident.contractEndDate);
-      await generateDueCharge(newResident._id);
       if(firstMonthRentStatus){
         // const user = await Resident.findById(newResident._id);
         const firstMonthPayment = await Payment.findOneAndUpdate(
