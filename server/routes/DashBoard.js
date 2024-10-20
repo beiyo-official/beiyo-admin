@@ -12,6 +12,7 @@ const dayjs = require('dayjs');
 const Hostels = require('../models/Hostel');
 const filterPaymentsByCurrentMonth = require('../functions/filterCurrentmonthPayments');
 const rentMapAmount = require('../functions/paymentfunction');
+const generateMonthlyPayments = require('../functions/generateMonthlyPayments');
 // const { totalPendingTickets, totalTickets } = require('../functions/TotalTickets');
 
 
@@ -156,6 +157,58 @@ router.put('/resident/updateDueAmount/:residentId',async(req,res)=>{
   }
 })
 
+router.put('/payment/dueAmount/onlinePayed/:paymentId',async(req,res)=>{
+  try {
+    const paymentId= req.params.paymentId
+    const maintainaceChargeStatus = req.body.maintainaceChargeStatus
+    const depositStatus = req.body.depositStatus
+    const extraDayPaymentAmountStatus = req.body.extraDayPaymentAmountStatus
+   
+    const duePayment = await Payment.findById(paymentId);
+    const resident = await Resident.findById(duePayment.userId);
+    let amountRecieved = 0;
+    if(!duePayment){
+      return res.status(404).json({message:'Payment not found'})
+    }
+    if(!resident.maintainaceChargeStatus){
+      if(maintainaceChargeStatus){
+        resident.maintainaceChargeStatus=true
+        resident.living='current'
+        amountRecieved=amountRecieved+resident.maintainaceCharge
+      }
+    }
+if(!resident.depositStatus){
+  if(depositStatus){
+    resident.depositStatus=true
+    resident.living='current'
+    amountRecieved=amountRecieved+resident.deposit
+  }
+}
+if(!resident.extraDayPaymentAmountStatus){
+  if(extraDayPaymentAmountStatus){
+    resident.extraDayPaymentAmountStatus=true
+    resident.living='current'
+    amountRecieved=amountRecieved+resident.extraDayPaymentAmount
+  }
+}
+
+  if(depositStatus||extraDayPaymentAmountStatus){
+    await generateMonthlyPayments(resident._id,resident.contractEndDate);
+  }
+
+    const newDueAmount = resident.dueAmount-amountRecieved
+    resident.dueAmount=newDueAmount
+    duePayment.amount=newDueAmount
+    if(newDueAmount===0){
+      duePayment.status='successful'
+    }
+    await resident.save();
+    await duePayment.save();
+    res.json(resident);
+  } catch (error) {
+    res.json(error)
+  }
+})
 
 router.get('/payment/:id', async (req, res) => {
   try {

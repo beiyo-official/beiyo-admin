@@ -16,11 +16,13 @@ const uploadFile = require('../firebase/firebase');
 const Hostel = require('../models/Hostel');
 const totalRemainingBeds = require('../functions/totalRemainingBeds');
 const mappingResident = require('../functions/MappingResident');
+const generateMonthlyPayments = require('../functions/generateMonthlyPayments');
+const generateDueCharge = require('../functions/generateDueCharge');
 
 
 router.post('/websiteBooking',async(req,res)=>{
   try {
-    const {name, email, mobileNumber,hostelId,roomNumberId,dateJoined,rent,deposit,depositStatus,firstMonthRentStatus,maintainaceCharge,maintainaceChargeStatus,formFee,formFeeStatus,contractTerm,extraDayPaymentAmount,extraDayPaymentAmountStatus,extraDays,gender} = req.body;
+    const {name, email, mobileNumber,hostelId,roomNumberId,dateJoined,rent,deposit,depositStatus,maintainaceCharge,maintainaceChargeStatus,formFee,formFeeStatus,contractTerm,extraDayPaymentAmount,extraDayPaymentAmountStatus,extraDays,gender} = req.body;
     const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
     const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
     const Hostel = await Hostels.findById(hostelId);
@@ -41,10 +43,8 @@ router.post('/websiteBooking',async(req,res)=>{
     if(!extraDayPaymentAmountStatus){
       dueAmount += Number(extraDayPaymentAmount);
     }
-    if(!firstMonthRentStatus){
-      dueAmount += Number(rent);
-    }
-    if(!depositStatus&&!firstMonthRentStatus&&!extraDayPaymentAmountStatus&&!maintainaceChargeStatus){
+
+    if(!depositStatus&&!extraDayPaymentAmountStatus&&!maintainaceChargeStatus){
        livingStatus = "new"
     }
 
@@ -93,16 +93,8 @@ router.post('/websiteBooking',async(req,res)=>{
       await totalTenants(hostelId);
       await totalRemainingBeds(hostelId);
       await generateDueCharge(newResident._id);
-      if(depositStatus||firstMonthRentStatus){
+      if(depositStatus||extraDayPaymentAmountStatus){
       await generateMonthlyPayments(newResident._id, newResident.contractEndDate);
-      if(firstMonthRentStatus){
-        // const user = await Resident.findById(newResident._id);
-        const firstMonthPayment = await Payment.findOneAndUpdate(
-          { userId: newResident._id,type:'rent' },
-          { status: "successful" },
-          { new: true }
-        );
-      }
     }
     const token = jwt.sign({ userId: newResident._id }, process.env.JWT_SECRET , { expiresIn: '7d' });
     res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
@@ -421,106 +413,6 @@ router.put('/extendContract/:residentId',async(req,res)=>{
     // Payment successful, save user data
     module.exports = router;
 
-    const generateMonthlyPayments = async (userId, contractEndDate) => {
-      try {
-        const resident = await Resident.findById(userId);
-        const startDate = dayjs(resident.dateJoined).startOf('day');
-        let currentDate;
+ 
     
-        // Check if the resident joined on the 1st of the month
-        if (startDate.date() === 1) {
-          currentDate = startDate.startOf('month'); // Start from this month
-        } else {
-          currentDate = startDate.add(1, 'month').startOf('month'); // Start from the next month
-        }
-    
-        // Generate payments based on the contract term
-        for (let i = 0; i < resident.contractTerm; i++) {
-          const month = currentDate.format('YYYY-MM');
-          const existingPayment = await Payment.findOne({ userId, month });
-    
-          if (!existingPayment) {
-            const payment = new Payment({
-              userId,
-              userName: resident.name,
-              rent: resident.rent,
-              amount: resident.rent,
-              month,
-              date: currentDate.toDate(),
-              status: 'due',
-              type: 'rent',
-            });
-    
-            await payment.save();
-            resident.payments.push(payment._id);
-          }
-    
-          currentDate = currentDate.add(1, 'month');
-        }
-    
-        // Save the resident with updated payments
-        await resident.save();
-    
-        // Update the resident's contract term based on the number of payments generated
-        await Resident.findByIdAndUpdate(userId, {
-          contractTerm: resident.payments.length,
-        }, { new: true });
-    
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    
-    
-   const generateDueCharge = async(userId)=>{
-    try {
-      const resident = await Resident.findById(userId);
-      const startDate = dayjs(resident.dateJoined).startOf('month');
-        const month = startDate.format('YYYY-MM');
-        const existingPayment = await Payment.findOne({ userId, month ,type:'dueCharge'});
-        if(!existingPayment){
-          const payment = new Payment({
-            userId,
-            userName:resident.name,
-            amount: resident.dueAmount, // Replace with the appropriate amount
-            month,
-            date: startDate.toDate(),
-            status: 'due',
-            type:'dueCharge'
-          });
-    
-          await payment.save();
-          resident.dueChargePayment=payment._id;
-          await resident.save();
-        }
-    } catch (error) {
-      console.log(error);
-    }
-   }
-
-    async function updateResidentHostelIds() {
-      try {
-        // Fetch all residents
-        const residents = await Resident.find();
-    
-        // Iterate over each resident
-        for (const resident of residents) {
-          // Find hostel ID by hostel name
-          const hostel = await Hostel.findOne({ name: resident.hostel });
-          
-          if (hostel) {
-            // Update resident with the found hostel ID
-            await Resident.updateOne(
-              { _id: resident._id },
-              { $set: { hostelId: hostel._id } }
-            );
-            console.log(`Updated resident ${resident.name} with hostel ID ${hostel._id}`);
-          } else {
-            console.log(`Hostel not found for resident ${resident.name}`);
-          }
-        }
-      } catch (error) {
-        console.error('Error updating resident hostel IDs:', error);
-      }
-    }
     

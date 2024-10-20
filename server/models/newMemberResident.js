@@ -48,7 +48,7 @@ const residentSchema = new mongoose.Schema({
   formFeeStatus:{type:Boolean},
   extraDays:{type:Number},
   extraDayPaymentAmount:{type:Number},
-  extraDayPaymentStatus:{type:Boolean},
+  extraDayPaymentAmountStatus:{type:Boolean,default:false},
   gender:{type:String,enum:['male','female','others']}
 
 
