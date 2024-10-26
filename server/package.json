@@ -26,6 +26,7 @@
     "express": "^4.19.2",
     "file-upload": "^0.0.0",
     "firebase-admin": "^12.3.1",
+    "fs": "^0.0.1-security",
     "https": "^1.0.0",
     "jquery": "^3.7.1",
     "jsdom": "^24.1.0",
@@ -39,9 +40,11 @@
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.13",
     "nodemon": "^3.1.4",
+    "path": "^0.12.7",
     "request": "^2.88.2",
     "sha256": "^0.2.0",
     "twilio": "^5.1.1",
-    "uniqid": "^5.4.0"
+    "uniqid": "^5.4.0",
+    "xlsx": "^0.18.5"
   }
 }

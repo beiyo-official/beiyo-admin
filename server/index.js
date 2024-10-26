@@ -33,8 +33,8 @@ app.use(cors());
 config();
 // // Middleware to check API key
 app.use((req, res, next) => {
-   // Log all headers
-  const apiKey = req.query.api; // Extract API key from headers
+  // Log all headers for debugging
+  const apiKey = req.headers['api-key']; // Extract API key from headers
   if (!apiKey || apiKey !== process.env.SERVER_API_KEY) {
     console.log('API Key is missing or invalid');
     return res.status(403).json({ message: 'Forbidden: Invalid API key' });
