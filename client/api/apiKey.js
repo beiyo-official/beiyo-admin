@@ -15,7 +15,7 @@ api.interceptors.request.use(
     if (apiKey) {
       config.headers = {
         ...config.headers, // Preserve existing headers, if any
-        'X-Internal-Auth': apiKey, // Use 'api-key' or any preferred header key
+        'apikey': apiKey, // Use 'api-key' or any preferred header key
       };
     }
 
