@@ -34,7 +34,7 @@ config();
 // // Middleware to check API key
 app.use((req, res, next) => {
   // Log all headers for debugging
-  const apiKey = req.headers['X-Internal-Auth']; // Extract API key from headers
+  const apiKey = req.headers['apiKey']; // Extract API key from headers
   if (!apiKey || apiKey !== process.env.SERVER_API_KEY) {
     console.log('API Key is missing or invalid');
     return res.status(403).json({ message: 'Forbidden: Invalid API key' });
