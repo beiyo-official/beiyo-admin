@@ -21,7 +21,7 @@ const rentMapAmount = require('../functions/paymentfunction');
 // Fetch payments for a user
 router.get('/payment/userPayments/:userId', async (req, res) => {
   try {
-    const payments = await Payment.find({userId: req.params.userId ,type:"rent"}).sort({ month: 1 });
+    const payments = await Payment.find({userId: req.params.userId}).sort({ month: 1 });
     res.json(payments);
   } catch (error) {
     console.error('Error fetching payments:', error);
