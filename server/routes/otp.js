@@ -18,13 +18,11 @@ router.post('/send', async (req, res) => {
 
 const sendUniqueIdEmail = async (email, otp) => {
     const transporter = nodemailer.createTransport({
-      host: 'smtpout.secureserver.net', // For GoDaddy cPanel email
-  port: 465, // or 587 for TLS
-  secure: true, // Use true for port 465, false for other ports
-  auth: {
-    user: 'support@beiyo.in', // Your email
-    pass: process.env.EMAIL_PASSWORD, // Your email password
-  },
+      service: 'gmail',
+      auth: {
+        user: 'support@beiyo.in', // Replace with your Gmail address
+        pass: process.env.EMAIL_PASSWORD, // Replace with your app-specific password or use environment variable
+      },
     });
   
     const mailOptions = {

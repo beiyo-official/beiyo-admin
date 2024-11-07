@@ -21,7 +21,7 @@ router.post('/initiate', async (req, res) => {
       "merchantUserId":'MUID123',
       "amount": amount*100, // Amount in smallest currency unit
       "redirectUrl": 'https://www.beiyo.in/paymentstatus',
-      "callbackUrl":`https://beiyo-admin.in/api/pay/callback?api=${apiKey}`,
+      // "callbackUrl":`https://beiyo-admin.in/api/pay/callback`,
       "redirectMode": "REDIRECT",
       "paymentInstrument": {
         type: "PAY_PAGE"

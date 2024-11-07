@@ -28,7 +28,7 @@ memberSchema.pre('save', async function (next) {
   next();
 });
 const Member = mongoose.model('Member', memberSchema);
-
+ 
 module.exports = Member;
 
 
