@@ -84,7 +84,7 @@ const handleDeletePayment = (paymentId) => {
 // Function to mark payment as cash
 const handleCashPayment = (paymentId) => {
   setLoading(true);
- if(user.uniqueId==='B2'||user.uniqueId==='B4'){
+ if(user.uniqueId==='B2'||user.uniqueId==='B4'||user.uniqueId==='B7'){
   api.put(`https://beiyo-admin.in/api/dashboard/cashPayment/${paymentId}`)
   .then(response => {
     // Update the payment in the state
@@ -105,7 +105,7 @@ const handleCashPayment = (paymentId) => {
 // Function to mark payment as cash
 const handleOnlinePayment = (paymentId) => {
   setLoading(true);
-  if(user.uniqueId==='B2'||user.uniqueId==='B4'){
+  if(user.uniqueId==='B2'||user.uniqueId==='B4'||user.uniqueId==='B7'){
     api.put(`https://beiyo-admin.in/api/dashboard/onlinePaymentSave/${paymentId}`)
     .then(response => {
       // Update the payment in the state
