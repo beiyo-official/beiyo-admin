@@ -68,7 +68,7 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
   // Function to delete payment
 const handleDeletePayment = (paymentId) => {
   setLoading(true);
-  if(user.uniqueId==='B2'||user.uniqueId==='B4'){
+  if(user.uniqueId==='B2'||user.uniqueId==='B4'||user.uniqueId==='B7'){
     api.delete(`https://beiyo-admin.in/api/dashboard/deletePayment/${paymentId}`)
     .then(response => { 
       setLoading(false);
