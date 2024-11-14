@@ -7,7 +7,7 @@ const Room = require('../models/Room');
 const Resident = require('../models/newMemberResident');
 const Payment = require('../models/Payment');
 // const Ticket = require('../models/ticket');
-
+const moment = require('moment');
 const totalRooms = require('../functions/TotalRooms');
 const totalBeds = require('../functions/TotalBeds');
 const mappingResidentToHostel = require('../functions/mappingResidentsToHostel');
@@ -282,6 +282,147 @@ router.put('/siteTotalRemainingBeds/:id',async(req,res)=>{
     console.log(error);
   }
 })
+
+
+router.get('/rent/current-month', async (req, res) => {
+  try {
+    const startOfMonth = moment().startOf('month').toDate();
+    const endOfMonth = moment().endOf('month').toDate();
+
+    const totalRentCurrentMonth = await Payment.aggregate([
+      {
+        $match: {
+          status: 'successful',
+          type:'rent',
+          date: { $gte: startOfMonth, $lte: endOfMonth },
+        },
+      },
+      {
+        $lookup: {
+          from: 'residents',
+          let: { residentId: '$userId' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$residentId'] } } },
+            // Add additional conditions here
+            { $match: { living:"current" } } // Example condition: only include active residents
+          ],
+          as: 'userInfo',
+        },
+      },
+      {
+        $unwind: '$userInfo',
+      },
+      {
+        $group: {
+          _id: '$userInfo.hostelId',
+          // hostelName:"$userInfo.hostel",
+          // hostel:"$userInfo.hostel",
+          hostel: { $first: '$userInfo.hostel' },
+          totalRent: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    res.json(totalRentCurrentMonth);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get expected rent for each hostel for the next month
+router.get('/rent/next-month-expected', async (req, res) => {
+  try {
+    const startOfNextMonth = moment().add(1, 'month').startOf('month').toDate();
+    const endOfNextMonth = moment().add(1, 'month').endOf('month').toDate();
+
+    const expectedRentNextMonth = await Payment.aggregate([
+      {
+        $match: {
+          date: { $gte: startOfNextMonth, $lte: endOfNextMonth },
+          type: 'rent',
+        },
+      },
+      {
+        $lookup: {
+          from: 'residents',
+          let: { residentId: '$userId' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$residentId'] } } },
+            // Add additional conditions here
+            { $match: { living:"current" } } // Example condition: only include active residents
+          ],
+          as: 'userInfo',
+        },
+      },
+      {
+        $unwind: '$userInfo',
+      },
+      {
+        $group: {
+          _id: '$userInfo.hostelId',
+          hostel: { $first: '$userInfo.hostel' },
+          expectedRent: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    res.json(expectedRentNextMonth);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+// Get total rent for each hostel for a specified past month
+router.get('/rent/past-months', async (req, res) => {
+  try {
+    const { month, year } = req.query;
+
+    if (!month || !year) {
+      return res.status(400).json({ message: 'Please provide both month and year as query parameters.' });
+    }
+
+    // Start and end dates for the specified month and year
+    const startOfMonth = moment().set({ year, month: month - 1 }).startOf('month').toDate();
+    const endOfMonth = moment().set({ year, month: month - 1 }).endOf('month').toDate();
+
+    const totalRentPastMonth = await Payment.aggregate([
+      {
+        $match: {
+          status: 'successful',
+          date: { $gte: startOfMonth, $lte: endOfMonth },
+          type:'rent'
+        },
+      },
+      {
+        $lookup: {
+          from: 'residents',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'userInfo',
+        },
+      },
+      {
+        $unwind: '$userInfo',
+      },
+      {
+        $group: {
+          _id: '$userInfo.hostelId',
+          hostel: { $first: '$userInfo.hostel' },
+          successfullRent: { $sum: '$amount' },
+        },
+      },
+    ]);
+
+    res.json(totalRentPastMonth);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+
+
 
 
 // Delete a hostel

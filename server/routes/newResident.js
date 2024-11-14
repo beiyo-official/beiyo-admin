@@ -421,7 +421,7 @@ router.put('/extendContract/:residentId',async(req,res)=>{
 
 router.get('/due/dueAmountResident', async (req, res) => {
   try {
-    const residents = await Resident.find({ dueAmount: { $gt: 0 },hostel:"Arcadia" })
+    const residents = await Resident.find({ dueAmount: { $gt: 0 },hostel:"Arcadia"})
       .select('name roomNumber dueAmount hostel'); // Select only the required fields
 
     // Convert the resident data to an array of objects (for Excel format)
@@ -464,6 +464,8 @@ router.get('/due/dueAmountResident', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
 
   
 

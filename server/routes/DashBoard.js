@@ -12,6 +12,9 @@ const dayjs = require('dayjs');
 const Hostels = require('../models/Hostel');
 const filterPaymentsByCurrentMonth = require('../functions/filterCurrentmonthPayments');
 const rentMapAmount = require('../functions/paymentfunction');
+const XLSX = require('xlsx');
+const fs = require('fs');
+const path = require('path');
 
 // const { totalPendingTickets, totalTickets } = require('../functions/TotalTickets');
 
@@ -241,6 +244,8 @@ router.get('/payment/user/:id', async (req, res) => {
   }
 });
 
+
+
 // current month payment
 router.get('/payment/currentmonth',async(req,res)=>{
   try {
@@ -305,7 +310,6 @@ router.put('/cashPayment/:id',async(req,res)=>{
     console.error('Error making payment:', error);
     res.status(500).send('Internal Server Error');
   }
-
 })
 router.get('/currentMonthPayments/:hostelId',async(req,res)=>{
   try {
@@ -437,6 +441,55 @@ router.get('/oldTickets/:userid',async(req,res)=>{
     console.log(error)
   }
 })
+
+router.get('/monthlyPaymentDue/resident', async (req, res) => {
+  try {
+    // Step 1: Filter payments based on month, status, and type
+    const payments = await Payment.find({ month: "2024-11", status: 'due', type: 'rent' });
+    const userIds = payments.map(payment => payment.userId);
+
+    // Step 2: Retrieve residents based on the filtered user IDs
+    const residents = await Resident.find({ _id: { $in: userIds } })
+      .select('name roomNumber hostel');
+
+    // Step 3: Prepare resident data for Excel
+    const residentData = residents.map(resident => ({
+      Name: resident.name,
+      Hostel: resident.hostel,
+      RoomNumber: resident.roomNumber,
+      DueAmount: payments.find(payment => payment.userId.toString() === resident._id.toString())?.amount || 0
+    }));
+
+    // Step 4: Create workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(residentData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Residents Due');
+
+    // Step 5: Generate and send the Excel file
+    const filePath = path.join(__dirname, 'dueAmountResident.xlsx');
+    XLSX.writeFile(workbook, filePath);
+
+    res.setHeader('Content-Disposition', 'attachment; filename=dueAmountResident.xlsx');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+    res.download(filePath, (err) => {
+      if (err) {
+        console.error('Error sending file:', err);
+        return res.status(500).json({ error: 'Error downloading the file' });
+      }
+
+      // Delete the file after sending
+      fs.unlink(filePath, (unlinkErr) => {
+        if (unlinkErr) console.error('Error deleting file:', unlinkErr);
+      });
+    });
+  } catch (error) {
+    console.error("Error fetching residents:", error); // Log detailed error
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 
 module.exports = router;
 
