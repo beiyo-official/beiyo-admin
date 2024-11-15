@@ -12,7 +12,7 @@ const paymentSchema = new Schema({
   date: { type: Date, default: Date.now },
   cash: { type: Boolean,default:false},
   additionalCharge:{type: Number, default:0},
-  type:{type:String,enum:['rent','dueCharge'],default:'rent' }
+  type:{type:String,enum:['rent','dueCharge'], default:'rent' }
   // totalAmount:{type:Number}
 }, {
   timestamps: true

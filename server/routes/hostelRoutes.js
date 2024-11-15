@@ -286,15 +286,17 @@ router.put('/siteTotalRemainingBeds/:id',async(req,res)=>{
 
 router.get('/rent/current-month', async (req, res) => {
   try {
-    const startOfMonth = moment().startOf('month').toDate();
-    const endOfMonth = moment().endOf('month').toDate();
+    const currentMonth = moment().format('YYYY-MM');
+
+    console.log("Current Month:", currentMonth);
 
     const totalRentCurrentMonth = await Payment.aggregate([
       {
+        // Match successful rent payments for the current month using the `month` field
         $match: {
           status: 'successful',
-          type:'rent',
-          date: { $gte: startOfMonth, $lte: endOfMonth },
+          type: 'rent',
+          month: "2024-11",
         },
       },
       {
@@ -302,32 +304,42 @@ router.get('/rent/current-month', async (req, res) => {
           from: 'residents',
           let: { residentId: '$userId' },
           pipeline: [
-            { $match: { $expr: { $eq: ['$_id', '$$residentId'] } } },
-            // Add additional conditions here
-            { $match: { living:"current" } } // Example condition: only include active residents
+            {
+              $match: {
+                $expr: { $eq: ['$_id', '$$residentId'] },
+              },
+            },
+            {
+              $match: { living: 'current' }, // Include only current residents
+            },
           ],
           as: 'userInfo',
         },
       },
       {
-        $unwind: '$userInfo',
+        $unwind: {
+          path: '$userInfo',
+          preserveNullAndEmptyArrays: false, // Exclude records without matching residents
+        },
       },
       {
         $group: {
           _id: '$userInfo.hostelId',
-          // hostelName:"$userInfo.hostel",
-          // hostel:"$userInfo.hostel",
-          hostel: { $first: '$userInfo.hostel' },
-          totalRent: { $sum: '$amount' },
+          hostel: { $first: '$userInfo.hostel' }, // Get the hostel name
+          totalRent: { $sum: '$amount' }, // Sum up the rent amounts
         },
       },
     ]);
 
+    // console.log("Aggregate result:", totalRentCurrentMonth);
+
     res.json(totalRentCurrentMonth);
   } catch (error) {
+    console.error("Error fetching current month rent:", error);
     res.status(500).json({ message: error.message });
   }
 });
+
 
 // Get expected rent for each hostel for the next month
 router.get('/rent/next-month-expected', async (req, res) => {
