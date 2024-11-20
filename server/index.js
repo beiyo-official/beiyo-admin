@@ -26,7 +26,7 @@ const otp = require('./routes/otp');
 const { connectDB } = require('./db');
 const AppVersion  = require('./routes/appVersion')
 const Member = require('./routes/Member')
-
+const razorPay = require('./routes/RazorPayPayment')
 
 const app = express();
 app.use(cors());
@@ -89,6 +89,7 @@ app.use('/api/manager',Manager);
 app.use('/api/requestForm',requestForm);
 app.use('/api/inventory',inventoryRoutes);
 app.use('/api/Otp',otp)
+app.use('/api/pay/razor',razorPay)
 
 
 // Start the server

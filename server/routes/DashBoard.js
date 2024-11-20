@@ -24,7 +24,7 @@ const path = require('path');
 // Fetch payments for a user
 router.get('/payment/userPayments/:userId', async (req, res) => {
   try {
-    const payments = await Payment.find({userId: req.params.userId}).sort({ month: 1 });
+    const payments = await Payment.find({userId: req.params.userId,type:'rent'}).sort({ month: 1 });
     res.json(payments);
   } catch (error) {
     console.error('Error fetching payments:', error);
@@ -166,9 +166,9 @@ router.put('/payment/dueAmount/onlinePayed/:paymentId',async(req,res)=>{
     const maintainaceChargeStatus = req.body.maintainaceChargeStatus
     const depositStatus = req.body.depositStatus
     const extraDayPaymentAmountStatus = req.body.extraDayPaymentAmountStatus
-   
     const duePayment = await Payment.findById(paymentId);
     const resident = await Resident.findById(duePayment.userId);
+   
     let amountRecieved = 0;
     if(!duePayment){
       return res.status(404).json({message:'Payment not found'})
@@ -207,7 +207,7 @@ if(!resident.extraDayPaymentAmountStatus){
     }
     await resident.save();
     await duePayment.save();
-    res.json(resident);
+    res.json(duePayment);
   } catch (error) {
     res.json(error)
   }
