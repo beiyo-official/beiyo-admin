@@ -216,7 +216,7 @@ if(!resident.extraDayPaymentAmountStatus){
 router.get('/payment/:id', async (req, res) => {
   try {
     const paymentId = req.params.id;
-    console.log(paymentId);
+   
     const payment = await Payment.findById(paymentId);
     if (!payment) {
       return res.status(404).json({ message: 'Payment not found' });
@@ -254,7 +254,7 @@ router.get('/payment/currentmonth',async(req,res)=>{
        const currentDate = new Date();
        const date = dayjs(currentDate).startOf('month');
        const month = date.format('YYYY-MM');
-       console.log(month);
+       
    
      
    

@@ -1,6 +1,7 @@
 // server.js
 
 const express = require('express');
+const morgan = require('morgan')
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -27,7 +28,7 @@ const { connectDB } = require('./db');
 const AppVersion  = require('./routes/appVersion')
 const Member = require('./routes/Member')
 const razorPay = require('./routes/RazorPayPayment')
-
+const notification = require('./routes/notification')
 const app = express();
 app.use(cors());
 config();
@@ -90,6 +91,7 @@ app.use('/api/requestForm',requestForm);
 app.use('/api/inventory',inventoryRoutes);
 app.use('/api/Otp',otp)
 app.use('/api/pay/razor',razorPay)
+app.use('/api/notification',notification)
 
 
 // Start the server

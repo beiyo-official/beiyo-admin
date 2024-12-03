@@ -74,7 +74,7 @@ router.post('/websiteBooking',async(req,res)=>{
       gender,
       living:livingStatus,
       payments:[],
-      password:"",
+      password:mobileNumber,
     });
     await newResident.save();
       const resident = await Resident.findOne({ email });      
@@ -478,7 +478,6 @@ router.get('/due/dueAmountResident', async (req, res) => {
   // generate monthly payment
     async function generateMonthlyPayments(userId, contractEndDate) {
       try {
-        console.log("generating monthly payments");
         const resident = await Resident.findById(userId);
         const startDate = dayjs(resident.dateJoined).startOf('day');
         let currentDate;
@@ -530,7 +529,7 @@ router.get('/due/dueAmountResident', async (req, res) => {
     // generate due payment 
     async function generateDueCharge (userId){
       try {
-        console.log("generating due amount");
+        
         const resident = await Resident.findById(userId);
         const startDate = dayjs(resident.dateJoined).startOf('month');
           const month = startDate.format('YYYY-MM');

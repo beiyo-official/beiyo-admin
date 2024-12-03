@@ -79,6 +79,7 @@ residents:[{type: mongoose.Schema.Types.ObjectId, ref:'Resident'}],
 hostelType:{
   type:String,enum:['Boys','Girls'],default:'Boys'
 },
+amenities: { type: [String], default: [] },
 
 
   // Add more fields as needed

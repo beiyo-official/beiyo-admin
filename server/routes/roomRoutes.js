@@ -11,6 +11,7 @@ const Resident = require('../models/newMemberResident');
 const mappingResident = require('../functions/MappingResident');
 const totalRemainingBeds = require('../functions/totalRemainingBeds');
 const Payment = require('../models/Payment');
+const ExcelJS = require("exceljs");
 
 // Get all rooms
 router.get('/', async (req, res) => {
@@ -327,6 +328,58 @@ router.put("/roomSwap/:residentId", async (req, res) => {
   }
 });
 
+// excel room ids for every hostel
+router.get("/hostel/allRoomIdExcelSheet", async (req, res) => {
+  try {
+    // Fetch all hostels and populate the rooms
+    const hostels = await Hostel.find().populate("rooms");
+
+    if (!hostels || hostels.length === 0) {
+      return res.status(404).json({ error: "No hostels found" });
+    }
+
+    // Create a new workbook
+    const workbook = new ExcelJS.Workbook();
+
+    // Add a worksheet for each hostel
+    hostels.forEach((hostel) => {
+      const worksheet = workbook.addWorksheet(hostel.name || `Hostel_${hostel._id}`);
+
+      // Add headers to the worksheet
+      worksheet.columns = [
+        { header: "Room Number", key: "roomNumber", width: 15 },
+        { header: "Room ID", key: "roomId", width: 30 },
+      ];
+
+      // Add room data to the worksheet
+      hostel.rooms.forEach((room) => {
+        worksheet.addRow({
+          roomNumber: room.roomNumber,
+          roomId: room._id,
+        });
+      });
+    });
+
+    // Set the response headers for file download
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=all_hostels_rooms.xlsx`
+    );
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    // Write the workbook to the response
+    await workbook.xlsx.write(res);
+
+    // End the response
+    res.end();
+  } catch (error) {
+    console.error("Error fetching or generating Excel sheet: ", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 
 router.get("/hostel/:hostelId",async(req,res)=>{

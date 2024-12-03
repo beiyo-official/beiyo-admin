@@ -1,73 +1,42 @@
 // routes/hostelRoutes.js
-
 const express = require('express');
 const router = express.Router();
 const Hostel = require('../models/Hostel');
 const Room = require('../models/Room');
 const Resident = require('../models/newMemberResident');
 const Payment = require('../models/Payment');
-// const Ticket = require('../models/ticket');
 const moment = require('moment');
-const totalRooms = require('../functions/TotalRooms');
-const totalBeds = require('../functions/TotalBeds');
-const mappingResidentToHostel = require('../functions/mappingResidentsToHostel');
-const totalRemainingBeds = require('../functions/totalRemainingBeds');
 
 
-router.get('/calculateTotalRemainingBeds', async (req, res) => {
-  try {
-    const hostels = await Hostel.find();
-    
-    for (const hostel of hostels) {
-      const rooms = await Room.find({ hostelId: hostel._id });
-      let totalRemainingBeds = 0;
-      for (const room of rooms) {
-        totalRemainingBeds += room.remainingCapacity;
-      }
-      hostel.totalRemainingBeds = totalRemainingBeds;
-      await hostel.save();
-    }
-
-    res.json({ message: 'Total remaining beds calculated successfully.' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-router.get('/paymentCheck/:hostelId', async (req,res)=>{
-    const allMonthPayments = [];
-    const month = req.body.month;
-    const hostelId = req.params.hostelId
-    const Residents = await Resident.find({hostelId:hostelId});
-   for(const Resident of Residents){
-    const Payments = await Payment.find({userId:Resident._id ,month:month});
-    allMonthPayments.push(Payments);
-   }
-    res.json(allMonthPayments);
-});
-
-
-
+// 1) issue tickets  Routes - 2 routes
+// admin tickets
 router.get('/adminTickets/:hostelId',async(req,res)=>{
   try {
     const hostel = await Hostel.findById(req.params.hostelId).populate('adminTickets');
+    if(hoste===null){
+      return res.status(404).json({message: "No hostel found"})
+    }
     const adminTickets = hostel.adminTickets;
    
     
-    res.json(adminTickets);
+    res.status(200).json(adminTickets);
 
   } catch (error) {
-   console.error('Error fetching ticket details:', error);
     res.status(500).json({ message: 'Server error' });
   }
 })
+
+// manager tickets
 router.get('/managerTickets/:hostelId',async(req,res)=>{
   try {
     const hostel = await Hostel.findById(req.params.hostelId).populate('managerTickets');
+    if(hostel===null){
+      return res.status(404).json({message: "No hostel found"})
+    }
     const managerTickets = hostel.managerTickets;
    
    
-    res.json(managerTickets);
+    res.status(200).json(managerTickets);
 
   } catch (error) {
    console.error('Error fetching ticket details:', error);
@@ -75,34 +44,13 @@ router.get('/managerTickets/:hostelId',async(req,res)=>{
   }
 })
 
-router.get('/:hostelId/remainingCapacityRooms/', async (req, res) => {
-  try {
-    // Find the hostel by ID
-    const hostel = await Hostel.findById(req.params.hostelId);
 
-    if (!hostel) {
-      return res.status(404).json({ message: "Hostel not found" });
-    }
-
-    // Find rooms belonging to the hostel with remaining capacity greater than 0
-    const roomsWithCapacity = await Room.find({
-      hostelId: hostel._id,
-      remainingCapacity: { $gt: 0 }
-    });
-
-    res.status(200).json(roomsWithCapacity);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: error.message });
-  }
-});
-
-
+// 2) get update delete hostels routes - 6 hostels
 // Get all hostels
 router.get('/', async (req, res) => {
   try {
-  await  totalRooms();
-  await  totalBeds();
+  // await  totalRooms();
+  // await  totalBeds();
   // await mappingResidentToHostel();
   const { page = 1, limit = 10  } = req.params;
   const hostels = await Hostel.find()
@@ -115,32 +63,13 @@ router.get('/', async (req, res) => {
   }
 });
 
-// router.get('/', async (req, res) => {
-//   try {
-//     // await totalRooms();
-//     // await totalBeds();
+// Get a single hostel
+router.get('/:id', getHostel, (req, res) => {
+  // totalRemainingBeds(req.params.id);
+  res.json(res.hostel);
+});
 
-//     const { page = 1, limit = 10 } = req.query; // Default to page 1 and limit of 10
-
-//     const hostels = await Hostel.find()
-//       .sort({ totalRemainingBeds: -1, name: 1 })
-//       .skip((page - 1) * limit)
-//       .limit(parseInt(limit));
-
-//     const totalHostels = await Hostel.countDocuments(); // Total number of hostels
-
-//     res.json({
-//       hostels,
-//       currentPage: page,
-//       totalPages: Math.ceil(totalHostels / limit),
-//       totalHostels,
-//     });
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// });
-
-// update hostels
+// update hostel details
 router.put('/:id', async (req, res) => {
   try {
     const hostelId = req.params.id;
@@ -167,15 +96,6 @@ router.put('/:id', async (req, res) => {
     res.status(500).json({ message: 'Error updating hostel', error: error.message });
   }
 });
-
-
-// Get a single hostel
-router.get('/:id', getHostel, (req, res) => {
-  // totalRemainingBeds(req.params.id);
-  res.json(res.hostel);
-});
-
-
 
 // Create a new hostel
 router.post('/', async (req, res) => {
@@ -209,81 +129,41 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.get('/calculateHostelTotalRooms',async (req,res)=>{
+// Delete a hostel
+router.delete('/:id', getHostel, async (req, res) => {
   try {
-   totalRooms();
-  } catch (error) {
-  console.log(error)
-  }
-})
-
-// Update a hostel
-router.patch('/:id', getHostel, async (req, res) => {
-  if (req.body.name != null) {
-    res.hostel.name = req.body.name;
-  }
-  if (req.body.location != null) {
-    res.hostel.location = req.body.location;
-  }
-  if (req.body.locationLink != null) {
-    res.hostel.locationLink = req.body.locationLink;
-  }
-  if (req.body.price != null) {
-    res.hostel.price = req.body.price;
-  }
-  if (req.body.image != null) {
-    res.hostel.image = req.body.image;
-  }
-  if (req.body.image2 != null) {
-    res.hostel.image2 = req.body.image2;
-  }
-  if (req.body.image3 != null) {
-    res.hostel.image3 = req.body.image3;
-  }
-  if (req.body.single != null) {
-    res.hostel.single = req.body.single;
-  }
-  if (req.body.singlePrice != null) {
-    res.hostel.singlePrice = req.body.singlePrice;
-  }
-  if (req.body.doublePrice != null) {
-    res.hostel.doublePrice = req.body.doublePrice;
-  }
-  if (req.body.triplePrice != null) {
-    res.hostel.triplePrice = req.body.triplePrice;
-  }
-  if (req.body.nearby1 != null) {
-    res.hostel.nearby1 = req.body.nearby1;
-  }
-  if (req.body.nearby2 != null) {
-    res.hostel.nearby2 = req.body.nearby2;
-  }
-  if (req.body.nearby3 != null) {
-    res.hostel.nearby3 = req.body.nearby3;
-  }
-  try {
-    const updatedHostel = await res.hostel.save();
-    res.json(updatedHostel);
+    await res.hostel.remove();
+    res.json({ message: 'Hostel deleted' });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 
-router.put('/siteTotalRemainingBeds/:id',async(req,res)=>{
+// get available rooms of specific hostel
+router.get('/:hostelId/remainingCapacityRooms', async (req, res) => {
   try {
+    // Find the hostel by ID
+    const hostel = await Hostel.findById(req.params.hostelId);
 
-      const hostel = await Hostel.findById(req.params.id);
-      const updatedHostel = await Hostel.findByIdAndUpdate(req.params.id,{
-        siteTotalRemainingBeds: hostel.totalRemainingBeds
-      },{new:true})
+    if (!hostel) {
+      return res.status(404).json({ message: "Hostel not found" });
+    }
 
-    res.json(updatedHostel);
+    // Find rooms belonging to the hostel with remaining capacity greater than 0
+    const roomsWithCapacity = await Room.find({
+      hostelId: hostel._id,
+      remainingCapacity: { $gt: 0 }
+    });
+
+    res.status(200).json(roomsWithCapacity);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res.status(500).json({ message: error.message });
   }
-})
+});
 
-
+// 3) Specfic hostel Payment Routes - 4 routes
+// current month rent of specific hostels
 router.get('/rent/current-month', async (req, res) => {
   try {
     const currentMonth = moment().format('YYYY-MM');
@@ -296,7 +176,7 @@ router.get('/rent/current-month', async (req, res) => {
         $match: {
           status: 'successful',
           type: 'rent',
-          month: "2024-11",
+          month: currentMonth,
         },
       },
       {
@@ -340,7 +220,6 @@ router.get('/rent/current-month', async (req, res) => {
   }
 });
 
-
 // Get expected rent for each hostel for the next month
 router.get('/rent/next-month-expected', async (req, res) => {
   try {
@@ -383,7 +262,6 @@ router.get('/rent/next-month-expected', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 
 // Get total rent for each hostel for a specified past month
 router.get('/rent/past-months', async (req, res) => {
@@ -432,22 +310,84 @@ router.get('/rent/past-months', async (req, res) => {
   }
 });
 
-
-
-
-
-
-// Delete a hostel
-router.delete('/:id', getHostel, async (req, res) => {
+// payment check of specific month of specific each hostel
+router.get('/paymentCheck/:hostelId', async (req,res)=>{
   try {
-    await res.hostel.remove();
-    res.json({ message: 'Hostel deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+   const allMonthPayments = [];
+   const month = req.body.month;
+   const hostelId = req.params.hostelId
+   
+   const Residents = await Resident.find({hostelId:hostelId});
+   if(Residents===null){
+     return res.status(404).json({message: "No residents found"})
+   }
+  for(const Resident of Residents){
+   const Payments = await Payment.find({userId:Resident._id ,month:month});
+   allMonthPayments.push(Payments);
+  }
+   res.status(200).json(allMonthPayments);
+  } catch (error) {
+   res.status(500).json(error);
+  }
+ });
+
+// 4) Ammenties routes - 2 routes
+// Route to add common amenities to all hostels
+router.post('/common-amenities', async (req, res) => {
+  const { amenities } = req.body; // New amenities from the request body (expected to be an array)
+
+  if (!amenities || !Array.isArray(amenities)) {
+    return res.status(400).json({ message: "Amenities must be provided as an array." });
+  }
+
+  try {
+    // Update all hostels to include the new amenities without duplicates
+    const result = await Hostel.updateMany(
+      {},
+      {
+        $addToSet: { amenities: { $each: amenities } },
+      }
+    );
+
+    res.status(200).json({
+      message: "Common amenities added to all hostels successfully.",
+      modifiedCount: result.modifiedCount, // Number of hostels updated
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "An error occurred while adding common amenities.", error });
   }
 });
 
+// Route to add amenities to an existing hostel
+router.post('/hostels/:id/amenities', async (req, res) => {
+  const { id } = req.params; // Hostel ID from the URL
+  const { amenities } = req.body; // New amenities from the request body (expected to be an array)
 
+  if (!amenities || !Array.isArray(amenities)) {
+    return res.status(400).json({ message: "Amenities must be provided as an array." });
+  }
+
+  try {
+    // Find the hostel by ID
+    const hostel = await Hostel.findById(id);
+
+    if (!hostel) {
+      return res.status(404).json({ message: "Hostel not found." });
+    }
+
+    // Add new amenities to the existing list, ensuring no duplicates
+    hostel.amenities = [...new Set([...hostel.amenities, ...amenities])];
+
+    // Save the updated hostel document
+    await hostel.save();
+
+    res.status(200).json({ message: "Amenities added successfully.", hostel });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "An error occurred while adding amenities.", error });
+  }
+});
 
 // Middleware function to get hostel by ID
 async function getHostel(req, res, next) {
