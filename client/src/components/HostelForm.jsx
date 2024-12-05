@@ -196,7 +196,7 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
             onChange={(e) => setNearby3distance(e.target.value)}
           />
           <TextField
-            label="Site Total Remaining Beds"
+            label="Owner Rent"
             value={ownerRent}
             onChange={(e) => setOwnerRent(e.target.value)}
           />

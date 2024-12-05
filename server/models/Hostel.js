@@ -1,5 +1,6 @@
 // models/Hostel.js
 
+
 const mongoose = require('mongoose');
 
 
@@ -82,7 +83,7 @@ hostelType:{
 amenities: { type: [String], default: [] },
 monthlyExpenses: [
   {
-    month: { type: String, required: true }, // Format: YYYY-MM
+    month: { type: String, required: true ,unique: true}, // Format: YYYY-MM
     maintenanceCost: { type: Number, default: 0 },
     utilityCost: { type: Number, default: 0 },
     totalCost: { type: Number, default: 0 } // Auto-calculated, optional

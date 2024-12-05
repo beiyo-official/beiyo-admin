@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Input, Button, Form, Modal, Space, Select, message } from 'antd';
-import api from '../../api/apiKey';
+import { Table, Input, Button, Form, Modal, Space, Select, DatePicker, message } from 'antd';
 
+import moment from 'moment';
+import api from '../../api/apiKey';
 
 const { Option } = Select;
 
@@ -30,7 +31,7 @@ const MonthlyExpenses = () => {
 
     setLoading(true);
     try {
-      const response = await api.get(`/api/hostels/${selectedHostel}/expenses`);
+      const response = await api.get(`https://beiyo-admin.in/api/hostels/${selectedHostel}/expenses`);
       setExpenses(response.data.data);
     } catch (error) {
       message.error('Error fetching expenses');
@@ -41,23 +42,32 @@ const MonthlyExpenses = () => {
   };
 
   // Add a new expense
-  const addExpense = async (values) => {
-    try {
-      await api.post(`/api/hostels/${selectedHostel}/expenses`, values);
-      message.success('Expense added successfully!');
-      fetchExpenses();
-      setIsModalVisible(false);
-    } catch (error) {
-      message.error('Error adding expense');
-      console.error(error);
-    }
-  };
+    const addExpense = async (values) => {
+        try {
+          const formattedValues = {
+            ...values,
+            month: values.month.format('YYYY-MM'), // Format the month for storage
+          };
+          await axios.post(`/api/hostels/${selectedHostel}/expenses`, formattedValues);
+          message.success('Expense added successfully!');
+          fetchExpenses();
+          setIsModalVisible(false);
+        } catch (error) {
+          if (error.response?.status === 400 && error.response.data?.message?.includes('duplicate')) {
+            message.error('Expense for this month already exists.');
+          } else {
+            message.error('Error adding expense');
+            console.error(error);
+          }
+        }
+      };
+  
 
   // Update an expense
   const updateExpense = async (updatedExpense) => {
     try {
       await api.put(
-        `/api/hostels/${selectedHostel}/expenses/${updatedExpense.month}`,
+        `https://beiyo-admin.in/api/hostels/${selectedHostel}/expenses/${updatedExpense.month}`,
         updatedExpense
       );
       message.success('Expense updated successfully!');
@@ -169,7 +179,7 @@ const MonthlyExpenses = () => {
   ];
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: '20px',paddingLeft:'5rem' }}>
       <h2>Monthly Expenses</h2>
       <Space style={{ marginBottom: '20px' }}>
         <Select
@@ -215,7 +225,7 @@ const MonthlyExpenses = () => {
             label="Month"
             rules={[{ required: true, message: 'Please select a month!' }]}
           >
-            <Input type="month" />
+            <DatePicker picker="month" style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item
             name="maintenanceCost"
