@@ -174,6 +174,25 @@ const MonthlyExpenses = () => {
       )
     },
     {
+      title: 'Kapex',
+      dataIndex: 'kapex',
+      key: 'kapex',
+      render: (_, record) => (
+        <Input
+          value={record.kapex}
+                    onChange={(e) =>
+            setExpenses((prev) =>
+              prev.map((exp) =>
+                exp.month === record.month
+                  ? { ...exp, kapex: +e.target.value }
+                  : exp
+              )
+            )
+          }
+        />
+      )
+    },
+    {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => (
@@ -244,6 +263,13 @@ const MonthlyExpenses = () => {
             name="utilityCost"
             label="Utility Cost"
             rules={[{ required: true, message: 'Please enter utility cost!' }]}
+          >
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item
+            name="kapex"
+            label="Kapex"
+            rules={[{ required: true, message: 'Please enter kapex cost!' }]}
           >
             <Input type="number" />
           </Form.Item>
