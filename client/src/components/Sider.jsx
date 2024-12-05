@@ -47,6 +47,11 @@ const SideBar = () => {
         Rent Summary
       </Menu.Item>
     </a>
+    <a href="/monthly-expenses">
+    <Menu.Item key="4" icon={<DollarOutlined />}>
+       Monthly expenses
+      </Menu.Item>
+    </a>
     <button onClick={logout}>
       logout
     </button>

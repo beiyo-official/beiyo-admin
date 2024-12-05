@@ -48,7 +48,7 @@ const MonthlyExpenses = () => {
             ...values,
             month: values.month.format('YYYY-MM'), // Format the month for storage
           };
-          await axios.post(`/api/hostels/${selectedHostel}/expenses`, formattedValues);
+          await api.post(`https://beiyo-admin.in/api/hostels/${selectedHostel}/expenses`, formattedValues);
           message.success('Expense added successfully!');
           fetchExpenses();
           setIsModalVisible(false);
@@ -83,6 +83,12 @@ const MonthlyExpenses = () => {
   };
 
   const handleAdd = () => {
+    const selectedMonth = form.getFieldValue('month').format('YYYY-MM');
+    if (expenses.some((exp) => exp.month === selectedMonth)) {
+      message.error('Expense for this month already exists!');
+      return;
+    }
+  
     form.validateFields()
       .then((values) => {
         addExpense(values);
@@ -179,7 +185,7 @@ const MonthlyExpenses = () => {
   ];
 
   return (
-    <div style={{ padding: '20px',paddingLeft:'5rem' }}>
+    <div style={{ padding: '20px',paddingLeft:'10rem' }}>
       <h2>Monthly Expenses</h2>
       <Space style={{ marginBottom: '20px' }}>
         <Select
