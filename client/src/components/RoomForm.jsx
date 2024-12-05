@@ -54,11 +54,19 @@ const RoomForm = ({ room, onSubmit, onClose }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = () => {
-    const apiUrl = room ? `https://beiyo-admin.in/api/rooms/${room._id}` : 'https://beiyo-admin.in/api/rooms';
+  const handleSubmit = async () => {
+    const apiUrl = room
+      ? `https://beiyo-admin.in/api/rooms/${room._id}`
+      : 'https://beiyo-admin.in/api/rooms';
     const method = room ? 'put' : 'post';
+  
+    
 
-    api[method](apiUrl, formData)
+    api({
+      method: method,
+      url: apiUrl,
+      data: formData,
+    })
       .then(() => {
         onSubmit();
       })

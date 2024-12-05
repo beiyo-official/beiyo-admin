@@ -80,6 +80,15 @@ hostelType:{
   type:String,enum:['Boys','Girls'],default:'Boys'
 },
 amenities: { type: [String], default: [] },
+monthlyExpenses: [
+  {
+    month: { type: String, required: true }, // Format: YYYY-MM
+    maintenanceCost: { type: Number, default: 0 },
+    utilityCost: { type: Number, default: 0 },
+    totalCost: { type: Number, default: 0 } // Auto-calculated, optional
+  }
+],
+ownerRent:{type:Number,default:0}
 
 
   // Add more fields as needed

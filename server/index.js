@@ -13,7 +13,6 @@ const cluster = require('cluster');
 const hostelRoutes = require('./routes/hostelRoutes');
 const roomRoutes = require('./routes/roomRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
-const Bed = require('./routes/Bed');
 const CleaningSchedule = require('./routes/CleaningShedule');
 const newResident = require('./routes/newResident');
 const payment = require('./routes/payment')
@@ -75,10 +74,9 @@ app.get("/", (req,res)=>{
 
 app.use('/api/hostels', hostelRoutes);
 app.use('/api/rooms', roomRoutes);
-app.use('/api/beds',Bed);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/cleaningSchedule', CleaningSchedule);
-app.use('/api/pay',payment)
+// app.use('/api/pay',payment)
 app.use('/api/newResident',newResident)
 app.use('/api/login',login)
 app.use('/api/dashboard',Dashboard)

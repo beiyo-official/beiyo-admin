@@ -389,6 +389,58 @@ router.post('/hostels/:id/amenities', async (req, res) => {
   }
 });
 
+// POST: Add monthly expenses
+router.post('/:hostelId/expenses', async (req, res) => {
+  const { hostelId } = req.params;
+  const { month, maintenanceCost, utilityCost } = req.body;
+
+  try {
+    const totalCost = maintenanceCost + utilityCost;
+    const newExpense = { month, maintenanceCost, utilityCost, totalCost };
+
+    const updatedHostel = await Hostel.findByIdAndUpdate(
+      hostelId,
+      { $push: { monthlyExpenses: newExpense } },
+      { new: true }
+    );
+
+    res.status(200).json({ message: 'Expense added successfully!', data: updatedHostel });
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding expense', error });
+  }
+});
+
+// PUT: Update a specific month's expenses
+router.put('/:hostelId/expenses/:month', async (req, res) => {
+  const { hostelId, month } = req.params;
+  const { maintenanceCost, utilityCost } = req.body;
+
+  try {
+    const totalCost = maintenanceCost + utilityCost;
+
+    const updatedHostel = await Hostel.updateOne(
+      { _id: hostelId, "monthlyExpenses.month": month },
+      { $set: { "monthlyExpenses.$": { month, maintenanceCost, utilityCost, totalCost } } }
+    );
+
+    res.status(200).json({ message: 'Expense updated successfully!', data: updatedHostel });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating expense', error });
+  }
+});
+
+// GET: Retrieve all monthly expenses
+router.get('/:hostelId/expenses', async (req, res) => {
+  const { hostelId } = req.params;
+
+  try {
+    const hostel = await Hostel.findById(hostelId).select('monthlyExpenses');
+    res.status(200).json({ message: 'Expenses retrieved successfully!', data: hostel.monthlyExpenses });
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving expenses', error });
+  }
+});
+
 // Middleware function to get hostel by ID
 async function getHostel(req, res, next) {
   let hostel;

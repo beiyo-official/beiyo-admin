@@ -3,8 +3,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const moment = require('moment')
-
+const moment = require('moment');
 const Resident = require('../models/newMemberResident'); // Your Resident model
 const dayjs = require('dayjs');
 const Payment = require('../models/Payment');

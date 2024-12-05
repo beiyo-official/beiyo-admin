@@ -16,10 +16,52 @@ const ExcelJS = require("exceljs");
 // Get all rooms
 router.get('/', async (req, res) => {
   try {
-    mappingResident();
     const rooms = await Room.find().sort({hostel:1}).sort({roomNumber:1});
-
+    if(rooms===null){
+      res.status(404).json({message: "No rooms found"});
+    }
     res.json(rooms);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get a room detail
+router.get('/:id', getRoom, (req, res) => {
+  res.json(res.room);
+});
+
+// Get all single rooms
+router.get('/single', async (req, res) => {
+  try {
+    const singleRooms = await Room.find({ capacity: 1 });
+    if(singleRooms===null){
+      res.status(404).json({message: "No single rooms found"});
+    }
+    res.json(singleRooms);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get all double rooms
+router.get('/double', async (req, res) => {
+  try {
+    const doubleRooms = await Room.find({ capacity: 2 });
+    if(doubleRooms===null){
+      res.status(404).json({message: "No double rooms found"});
+      }
+    res.json(doubleRooms);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get all triple rooms
+router.get('/triple', async (req, res) => {
+  try {
+    const tripleRooms = await Room.find({ capacity: 3 });
+    res.json(tripleRooms);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -46,44 +88,7 @@ router.get('/residentDetail/:id', async (req, res) => {
   }
 });
 
-
-// Get a single room
-router.get('/:id', getRoom, (req, res) => {
-  res.json(res.room);
-});
-
-// Get all single rooms
-router.get('/single', async (req, res) => {
-  try {
-    const singleRooms = await Room.find({ capacity: 1 });
-    res.json(singleRooms);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-router.get('/mapingResident',async(req,res)=>{
-  try {
-    const Hostels = await Hostel.find();
-    const Rooms = await Room.find();
-    for(const hostel of Hostels ){
-     
-      const rooms = await Room.find({hostel:hostel._id});
-      for(const room of rooms ){
-        if(room.capacity<=room.residents.length){
-          const Residents = await Resident.find({hostelId:hostel._id,roomNumber:room.roomNumber});
-       for(const resident of Residents){
-        room.residents.push(resident._id);
-       }
-        }
-      }
-    }
-  res.json(Rooms);
-  } catch (error) {
-    console.log(error)
-  }
-})
-
+// available rooms in specfic hostel
 router.get('/availableRooms/:hostelId',async(req,res)=>{
   try {
     const { hostelId } = req.params;
@@ -103,51 +108,38 @@ router.get('/availableRooms/:hostelId',async(req,res)=>{
   }
 })
 
-// Get all double rooms
-router.get('/double', async (req, res) => {
-  try {
-    const doubleRooms = await Room.find({ capacity: 2 });
-    res.json(doubleRooms);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Get all triple rooms
-router.get('/triple', async (req, res) => {
-  try {
-    const tripleRooms = await Room.find({ capacity: 3 });
-    res.json(tripleRooms);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
 // Create a new room
 router.post('/', async (req, res) => {
-  const hostel= await Hostel.findById(req.body.hostelId);
-  const room = new Room({
-    hostelId: req.body.hostelId,
-    hostel: hostel.name, 
-    roomNumber: req.body.roomNumber,
-    capacity: req.body.capacity,
-    remainingCapacity:req.body.remainingCapacity,
-    type:req.body.type,
-    price:req.body.price,
-  });
-
   try {
+    // Find the hostel by ID
+    const hostel = await Hostel.findById(req.body.hostelId);
+    if (!hostel) {
+      return res.status(404).json({ message: 'Hostel not found' });
+    }
+
+    // Create the new room
+    const room = new Room({
+      hostelId: req.body.hostelId,
+      hostel: hostel.name,
+      roomNumber: req.body.roomNumber,
+      capacity: req.body.capacity,
+      remainingCapacity: req.body.remainingCapacity,
+      type: req.body.type,
+      price: req.body.price,
+    });
+
+    // Save the room
     const newRoom = await room.save();
- 
-  
 
-   
-
-
-    await room.save();
-    await totalRooms();
-    await totalBeds();
+    // Update the hostel's rooms array and recalculate totals
+    hostel.rooms.push(newRoom._id);
+    hostel.totalRooms = hostel.rooms.length;
+    hostel.totalBeds = (hostel.totalBeds || 0) + newRoom.capacity;
+    // Save the updated hostel
+    await hostel.save();
     totalRemainingBeds(room.hostelId);
+
+    // Respond with the new room
     res.status(201).json(newRoom);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -162,7 +154,7 @@ router.put('/:id', async (req, res) => {
     // Extract the data to update from the request body
     const updateData = req.body;
 
-    // Find the resident by ID and update it with the provided data
+    // Find the Room by ID and update it with the provided data
     const updatedRoom = await Room.findByIdAndUpdate(
       roomId,
       { $set: updateData },
@@ -170,7 +162,7 @@ router.put('/:id', async (req, res) => {
     );
 
     if (!updatedRoom) {
-      return res.status(404).json({ message: 'Resident not found' });
+      return res.status(404).json({ message: 'Room not found' });
     }
 
     res.status(200).json({
@@ -179,67 +171,6 @@ router.put('/:id', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Error updating Room', error: error.message });
-  }
-});
-
-// deleting residnet from residents array 
-router.delete('resident/:id/:roomId', async (req, res) => {
-  const roomId = req.params.roomId;
-  const residentId = req.params.id;
-  try {
-    await Room.updateOne({ _id: roomId }, { $pull: { residents:
-      residentId } });
-  } catch (error) {
-    res.status(500).json(error)
-  }
-});
-
-// Update remaining capacity of a room
-router.patch('/:id/updateCapacity', getRoom, async (req, res) => {
-  const { remainingCapacity } = req.body;
-  if (remainingCapacity == null || isNaN(remainingCapacity) || remainingCapacity < 0) {
-    return res.status(400).json({ message: 'Invalid remaining capacity' });
-  }
-  res.room.remainingCapacity = remainingCapacity;
-  try {
-    const updatedRoom = await res.room.save();
-    res.json(updatedRoom);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-router.patch('/:id/updateRemainingBeds', getRoom, async (req, res) => {
-  const { remainingBeds, lastUpdatedBy } = req.body;
-  if (remainingBeds == null || isNaN(remainingBeds) || remainingBeds < 0 || remainingBeds > res.room.capacity) {
-    return res.status(400).json({ message: 'Invalid remaining beds' });
-  }
-  res.room.remainingCapacity = remainingBeds;
-  res.room.lastUpdatedBy = lastUpdatedBy;
-  try {
-    const updatedRoom = await res.room.save();
-    totalTenants();
-    totalRemainingBeds();
-    res.json(updatedRoom);
-
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-
-});
-
-// getting single room
-router.get("/:id",async(req,res)=>{
-  try{
-   const room = await Room.findById(req.params.id);  
-   
-   if(!room){
-     alert("no room are available");
-   }
-   res.json(room);
-  }catch(error){
-   console.error('Error fetching ', error);
-   res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
@@ -381,7 +312,7 @@ router.get("/hostel/allRoomIdExcelSheet", async (req, res) => {
   }
 });
 
-
+// specific hostel rooms
 router.get("/hostel/:hostelId",async(req,res)=>{
   try{
    const room = await Room.find({hostelId:req.params.hostelId});  
@@ -392,6 +323,7 @@ router.get("/hostel/:hostelId",async(req,res)=>{
    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 // Delete a room
 router.delete('/delete/:id', getRoom, async (req, res) => {
   try {

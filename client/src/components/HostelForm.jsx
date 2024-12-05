@@ -42,6 +42,7 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
   const [nearby3distance,setNearby3distance]=useState(hostel?hostel.nearby3distance:'');
   const [hostelType,setHostelType]=useState(hostel?hostel.hostelType:'');
   const [siteTotalRemainingBeds,setSiteTotalRemainingBeds]=useState(hostel?hostel.siteTotalRemainingBeds:'')
+  const [ownerRent,setOwnerRent]=useState(hostel?hostel.ownerRent:'');
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
@@ -62,7 +63,8 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
       nearby1distance,
       nearby2distance,
       nearby3distance,
-      siteTotalRemainingBeds
+      siteTotalRemainingBeds,
+      ownerRent
     };
     try {
       if (hostel) {
@@ -192,6 +194,11 @@ const HostelForm = ({ hostel, onSubmit, onClose }) => {
             label="Nearby Place 3 Distance"
             value={nearby3distance}
             onChange={(e) => setNearby3distance(e.target.value)}
+          />
+          <TextField
+            label="Site Total Remaining Beds"
+            value={ownerRent}
+            onChange={(e) => setOwnerRent(e.target.value)}
           />
             <TextField
             label="Site Total Remaining Beds"
