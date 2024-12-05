@@ -392,11 +392,11 @@ router.post('/hostels/:id/amenities', async (req, res) => {
 // POST: Add monthly expenses
 router.post('/:hostelId/expenses', async (req, res) => {
   const { hostelId } = req.params;
-  const { month, maintenanceCost, utilityCost } = req.body;
+  const { month, maintenanceCost, utilityCost, kapex } = req.body;
 
   try {
     const totalCost = maintenanceCost + utilityCost;
-    const newExpense = { month, maintenanceCost, utilityCost, totalCost };
+    const newExpense = { month, maintenanceCost, utilityCost, totalCost,kapex };
 
     const updatedHostel = await Hostel.findByIdAndUpdate(
       hostelId,
@@ -413,14 +413,14 @@ router.post('/:hostelId/expenses', async (req, res) => {
 // PUT: Update a specific month's expenses
 router.put('/:hostelId/expenses/:month', async (req, res) => {
   const { hostelId, month } = req.params;
-  const { maintenanceCost, utilityCost } = req.body;
+  const { maintenanceCost, utilityCost,kapex } = req.body;
 
   try {
     const totalCost = maintenanceCost + utilityCost;
 
     const updatedHostel = await Hostel.updateOne(
       { _id: hostelId, "monthlyExpenses.month": month },
-      { $set: { "monthlyExpenses.$": { month, maintenanceCost, utilityCost, totalCost } } }
+      { $set: { "monthlyExpenses.$": { month, maintenanceCost, utilityCost, totalCost, kapex } } }
     );
 
     res.status(200).json({ message: 'Expense updated successfully!', data: updatedHostel });

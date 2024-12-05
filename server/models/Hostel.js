@@ -84,6 +84,7 @@ amenities: { type: [String], default: [] },
 monthlyExpenses: [
   {
     month: { type: String, required: true ,unique: true}, // Format: YYYY-MM
+    kapex:{type:Number,default:0},
     maintenanceCost: { type: Number, default: 0 },
     utilityCost: { type: Number, default: 0 },
     totalCost: { type: Number, default: 0 } // Auto-calculated, optional
