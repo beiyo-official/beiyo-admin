@@ -30,10 +30,6 @@ const razorPay = require('./routes/RazorPayPayment')
 const notification = require('./routes/notification')
 const app = express();
 app.use(cors(
-  {
-    origin: true,
-    credentials: true,
-    }
 ));
 config();
 // // Middleware to check API key
