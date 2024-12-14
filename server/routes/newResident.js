@@ -178,7 +178,8 @@ router.post('/websiteBooking',async(req,res)=>{
           formFeeStatus:formFeeStatus,
           living:livingStatus,
           extraDayPaymentAmount:extraDayPaymentAmount,
-          maintainaceChargeStatus:maintainaceChargeStatus
+          maintainaceChargeStatus:maintainaceChargeStatus,
+          extraDays
         });
         await newResident.save();
         const resident = await Resident.findOne({ email });
