@@ -44,7 +44,6 @@ router.get('/managerTickets/:hostelId',async(req,res)=>{
   }
 })
 
-
 // 2) get update delete hostels routes - 6 hostels
 // Get all hostels
 router.get('/', async (req, res) => {

@@ -22,6 +22,7 @@ const path = require('path');
 
 
 
+
 router.post('/websiteBooking',async(req,res)=>{
   try {
     const {name, email, mobileNumber,hostelId,roomNumberId,dateJoined,rent,deposit,depositStatus,maintainaceCharge,maintainaceChargeStatus,formFee,formFeeStatus,contractTerm,extraDayPaymentAmount,extraDayPaymentAmountStatus,extraDays,gender} = req.body;
@@ -119,24 +120,42 @@ router.post('/websiteBooking',async(req,res)=>{
 
  router.post('/',async(req,res)=>{
     try {
-        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostelId, roomNumberId , dateJoined, password, rent,deposit,contractTerm,aadhaarCardUrl,imageUrl,maintainaceCharge,formFee,dueAmount} = req.body;
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostelId, roomNumberId , dateJoined, password, rent,deposit,contractTerm,maintainaceCharge,formFee,extraDayPaymentAmount,extraDayPaymentAmountStatus,maintainaceChargeStatus,depositStatus,formFeeStatus,extraDays} = req.body;
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
         const Hostel = await Hostels.findById(hostelId);
         const Room = await Rooms.findById(roomNumberId);
         const hostelName = Hostel.name;
         const roomNumber  = Room.roomNumber;
-        
+        let dueAmount = 0;
+        let livingStatus = "current";
+        if(!depositStatus){
+          dueAmount += Number(deposit);
+        }
+        if(!maintainaceChargeStatus){
+          dueAmount += Number(maintainaceCharge);
+        }
+        if(!formFeeStatus){
+          dueAmount += Number(formFee);
+        }
+        if(!extraDayPaymentAmountStatus){
+          dueAmount += Number(extraDayPaymentAmount);
+        }
+    
+        if(!depositStatus&&!extraDayPaymentAmountStatus&&!maintainaceChargeStatus){
+           livingStatus = "new"
+        }
 
-        // Upload Aadhaar Card
-        // if (!req.files || !req.files.aadhaarCard || !req.files.image) {
-        //   return res.status(400).json({ message: "Missing Aadhaar card or photo file" });
-        // }
-        // const firebaseUserId = uuid.v4();
-        // const [aadhaarCardUrl, imageUrl] = await Promise.all([
-        //   uploadFile(req.files.aadhaarCard, `residentAadhaarCards/${firebaseUserId}_aadhaar.jpg`),
-        //   uploadFile(req.files.image, `residentImages/${firebaseUserId}_image.jpg`),
-        // ]);
+         // Validate file uploads
+         if (!req.files || !req.files.aadhaarCard || !req.files.image) {
+          return res.status(400).json({ message: "Aadhaar card or image file is missing" });
+      }
+
+      // Upload files to S3
+      const [aadhaarCardUrl, imageUrl] = await Promise.all([
+          uploadToS3(req.files.aadhaarCard[0], 'residentAadhaarCards'),
+          uploadToS3(req.files.image[0], 'residentImages')
+      ]);
         
         const newResident = new Resident({
           name, email, mobileNumber, address, parentsName,
@@ -153,7 +172,13 @@ router.post('/websiteBooking',async(req,res)=>{
           imageUrl:imageUrl,
           maintainaceCharge:maintainaceCharge,
           formFee:formFee,
-          dueAmount:dueAmount
+          dueAmount:dueAmount,
+          extraDayPaymentAmountStatus:extraDayPaymentAmountStatus,
+          depositStatus:depositStatus,
+          formFeeStatus:formFeeStatus,
+          living:livingStatus,
+          extraDayPaymentAmount:extraDayPaymentAmount,
+          maintainaceChargeStatus:maintainaceChargeStatus
         });
         await newResident.save();
         const resident = await Resident.findOne({ email });
@@ -176,9 +201,12 @@ router.post('/websiteBooking',async(req,res)=>{
 
         await totalTenants(hostelId);
         await totalRemainingBeds(hostelId);
-        await generateMonthlyPayments(resident._id, resident.contractEndDate);
         await generateDueCharge(resident._id);
-    
+        if(depositStatus||extraDayPaymentAmountStatus){
+          const paymentUpdatedResident = await generateMonthlyPayments(newResident._id, newResident.contractEndDate);
+         newResident=paymentUpdatedResident
+         }
+
         res.status(201).json(newResident);
     } catch (error) {
       

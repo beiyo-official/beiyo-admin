@@ -90,7 +90,7 @@ monthlyExpenses: [
     totalCost: { type: Number, default: 0 } // Auto-calculated, optional
   }
 ],
-ownerRent:{type:Number,default:0}
+ownerRent:{type:Number,default:0},
 
 
   // Add more fields as needed

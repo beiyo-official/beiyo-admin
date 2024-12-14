@@ -445,19 +445,20 @@ router.get('/oldTickets/:userid',async(req,res)=>{
 router.get('/monthlyPaymentDue/resident', async (req, res) => {
   try {
     // Step 1: Filter payments based on month, status, and type
-    const payments = await Payment.find({ month: "2024-11", status: 'due', type: 'rent' });
+    const payments = await Payment.find({ month: "2024-12", status: 'due', type: 'rent' });
     const userIds = payments.map(payment => payment.userId);
 
     // Step 2: Retrieve residents based on the filtered user IDs
-    const residents = await Resident.find({ _id: { $in: userIds } })
-      .select('name roomNumber hostel');
+    const residents = await Resident.find({ _id: { $in: userIds },living:'current' })
+      .select('name roomNumber hostel  mobileNumber');
 
     // Step 3: Prepare resident data for Excel
     const residentData = residents.map(resident => ({
       Name: resident.name,
       Hostel: resident.hostel,
       RoomNumber: resident.roomNumber,
-      DueAmount: payments.find(payment => payment.userId.toString() === resident._id.toString())?.amount || 0
+      DueAmount: payments.find(payment => payment.userId.toString() === resident._id.toString())?.amount || 0,
+      mobileNo: resident.mobileNumber
     }));
 
     // Step 4: Create workbook and worksheet

@@ -31,7 +31,7 @@ const residentSchema = new mongoose.Schema({
   // intitutionDetails:String,
   payments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Payment' }],
   contractEndDate: { type: Date },
-  contractTerm:{type:Number},
+  contractTerm:{type:Number,required:true},
   rent:{type:Number},
   deposit:{type:Number},
   roomNumberId:{type : mongoose.Schema.Types.ObjectId, ref:'Room', required:true},
@@ -49,8 +49,11 @@ const residentSchema = new mongoose.Schema({
   extraDays:{type:Number},
   extraDayPaymentAmount:{type:Number},
   extraDayPaymentAmountStatus:{type:Boolean,default:false},
-  gender:{type:String,enum:['male','female','others']}
-
+  gender:{type:String,enum:['male','female','others']},
+  beiyoCredits:{type:Number,default:0},
+  subscriptionPlan:{
+    type: mongoose.Schema.Types.ObjectId,
+  }
 
   // other fields
 });
