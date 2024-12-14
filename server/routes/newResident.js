@@ -18,6 +18,8 @@ const mappingResident = require('../functions/MappingResident');
 const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
+const multer = require('multer');
+const { uploadToS3 } = require('../config/aws');
 
 
 
@@ -118,103 +120,145 @@ router.post('/websiteBooking',async(req,res)=>{
 
 
 
- router.post('/',async(req,res)=>{
+
+
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  // optional file filter
+  fileFilter: (req, file, cb) => {
+    console.log('Received file:', file);
+    cb(null, true);
+  }
+});
+
+
+
+router.post('/', upload.fields([
+  { name: 'aadhaarCard', maxCount: 1 },
+  { name: 'image', maxCount: 1 }
+]), async (req, res) => {
     try {
-        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostelId, roomNumberId , dateJoined, password, rent,deposit,contractTerm,maintainaceCharge,formFee,extraDayPaymentAmount,extraDayPaymentAmountStatus,maintainaceChargeStatus,depositStatus,formFeeStatus,extraDays} = req.body;
+      console.log(req.files);
+        // Extract data from the form
+        const { name, email, mobileNumber, address, parentsName, parentsMobileNo, hostelId, roomNumberId, dateJoined, password, rent, deposit, contractTerm, maintainaceCharge, formFee, extraDayPaymentAmount, extraDayPaymentAmountStatus, maintainaceChargeStatus, depositStatus, formFeeStatus, extraDays } = req.body;
+        
+        // Format the date
         const formattedDate = dateJoined ? dayjs(dateJoined).format('YYYY-MM-DD') : null;
         const contractEndDate = moment(formattedDate).add(contractTerm, 'months').format('YYYY-MM-DD');
-        const Hostel = await Hostels.findById(hostelId);
-        const Room = await Rooms.findById(roomNumberId);
-        const hostelName = Hostel.name;
-        const roomNumber  = Room.roomNumber;
+        
+        // Find Hostel and Room by their IDs
+        const hostel = await Hostel.findById(hostelId);
+        if (!hostel) {
+            return res.status(400).json({ message: "Hostel not found" });
+        }
+        const room = await Rooms.findById(roomNumberId);
+        if (!room) {
+            return res.status(400).json({ message: "Room not found" });
+        }
+        
+        const hostelName = hostel.name;
+        const roomNumber = room.roomNumber;
+        
         let dueAmount = 0;
         let livingStatus = "current";
-        if(!depositStatus){
-          dueAmount += Number(deposit);
-        }
-        if(!maintainaceChargeStatus){
-          dueAmount += Number(maintainaceCharge);
-        }
-        if(!formFeeStatus){
-          dueAmount += Number(formFee);
-        }
-        if(!extraDayPaymentAmountStatus){
-          dueAmount += Number(extraDayPaymentAmount);
-        }
-    
-        if(!depositStatus&&!extraDayPaymentAmountStatus&&!maintainaceChargeStatus){
-           livingStatus = "new"
-        }
-
-         // Validate file uploads
-         if (!req.files || !req.files.aadhaarCard || !req.files.image) {
-          return res.status(400).json({ message: "Aadhaar card or image file is missing" });
-      }
-
-      // Upload files to S3
-      const [aadhaarCardUrl, imageUrl] = await Promise.all([
-          uploadToS3(req.files.aadhaarCard[0], 'residentAadhaarCards'),
-          uploadToS3(req.files.image[0], 'residentImages')
-      ]);
         
+        // Calculate dueAmount based on statuses
+        if (!depositStatus) dueAmount += Number(deposit);
+        if (!maintainaceChargeStatus) dueAmount += Number(maintainaceCharge);
+        if (!formFeeStatus) dueAmount += Number(formFee);
+        if (!extraDayPaymentAmountStatus) dueAmount += Number(extraDayPaymentAmount);
+    
+        // Set living status to "new" if no payments are pending
+        if (!depositStatus && !extraDayPaymentAmountStatus && !maintainaceChargeStatus) {
+            livingStatus = "new";
+        }
+
+        // Check if files are uploaded
+        if (!req.files || !req.files.aadhaarCard || !req.files.image) {
+          return res.status(400).json({ message: "Aadhaar card or image file is missing" });
+        }
+
+        // Upload files to S3
+        const [aadhaarCardUrl, imageUrl] = await Promise.all([
+            uploadToS3(req.files.aadhaarCard[0], 'residentAadhaarCards'),
+            uploadToS3(req.files.image[0], 'residentImages')
+        ]);
+
+        // Create new resident in the database
         const newResident = new Resident({
-          name, email, mobileNumber, address, parentsName,
-          parentsMobileNo, hostelId,  password, 
-          roomNumberId:roomNumberId,
-          hostel: hostelName,
-          roomNumber: roomNumber,
-          dateJoined: formattedDate,
-          contractEndDate,
-          contractTerm,
-          rent:rent,
-          deposit:deposit,
-          aadhaarCardUrl:aadhaarCardUrl,
-          imageUrl:imageUrl,
-          maintainaceCharge:maintainaceCharge,
-          formFee:formFee,
-          dueAmount:dueAmount,
-          extraDayPaymentAmountStatus:extraDayPaymentAmountStatus,
-          depositStatus:depositStatus,
-          formFeeStatus:formFeeStatus,
-          living:livingStatus,
-          extraDayPaymentAmount:extraDayPaymentAmount,
-          maintainaceChargeStatus:maintainaceChargeStatus,
-          extraDays
+            name,
+            email,
+            mobileNumber,
+            address,
+            parentsName,
+            parentsMobileNo,
+            hostelId,
+            password,
+            roomNumberId,
+            hostel: hostelName,
+            roomNumber,
+            dateJoined: formattedDate,
+            contractEndDate,
+            contractTerm,
+            rent,
+            deposit,
+            aadhaarCardUrl,
+            imageUrl,
+            maintainaceCharge,
+            formFee,
+            dueAmount,
+            extraDayPaymentAmountStatus,
+            depositStatus,
+            formFeeStatus,
+            living: livingStatus,
+            extraDayPaymentAmount,
+            maintainaceChargeStatus,
+            extraDays
         });
+
         await newResident.save();
+
         const resident = await Resident.findOne({ email });
 
-        if(Room.remainingCapacity>0){
-          Room.remainingCapacity--;
-
-          Room.residents.push(resident._id);
-          await Room.save();
-        }else{
-          return res.status(400).json({message:"Room is full"});
-        }
-        if(Hostel.totalRemainingBeds>0){
-          Hostel.totalRemainingBeds--;
-          Hostel.residents.push(resident._id);
-          await Hostel.save();
-        }else{
-          return res.status(400).json({message:"Hostel Room is full"});
+        // Check if room capacity is available
+        if (room.remainingCapacity > 0) {
+            room.remainingCapacity--;
+            room.residents.push(resident._id);
+            await room.save();
+        } else {
+            return res.status(400).json({ message: "Room is full" });
         }
 
+        // Check if hostel has remaining beds
+        if (hostel.totalRemainingBeds > 0) {
+            hostel.totalRemainingBeds--;
+            hostel.residents.push(resident._id);
+            await hostel.save();
+        } else {
+            return res.status(400).json({ message: "Hostel Room is full" });
+        }
+
+        // Update total tenants and remaining beds
         await totalTenants(hostelId);
         await totalRemainingBeds(hostelId);
-        await generateDueCharge(resident._id);
-        if(depositStatus||extraDayPaymentAmountStatus){
-          const paymentUpdatedResident = await generateMonthlyPayments(newResident._id, newResident.contractEndDate);
-         newResident=paymentUpdatedResident
-         }
 
+        // Generate due charge for the resident
+        await generateDueCharge(resident._id);
+
+        // Update payments if deposit or extra day payment exists
+        if (depositStatus || extraDayPaymentAmountStatus) {
+            const paymentUpdatedResident = await generateMonthlyPayments(newResident._id, newResident.contractEndDate);
+        }
+
+        // Send response
         res.status(201).json(newResident);
     } catch (error) {
-      
         console.error('Error creating resident', error);
-        res.status(500).send('Error creating resident or processing payment:', error);
-    }  
- });
+        res.status(500).send('Error creating resident or processing payment: ' + error.message);
+    }
+});
+
+
 
  router.get('/', async (req, res) => {
     try {

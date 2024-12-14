@@ -33,27 +33,27 @@ app.use(cors(
 ));
 config();
 // // Middleware to check API key
-app.use((req, res, next) => {
-  // Log all headers for debugging
-  const apiKey = req.headers['apikey']; // Extract API key from headers
-  if (!apiKey || apiKey !== process.env.SERVER_API_KEY) {
-    console.log('API Key is missing or invalid');
-    return res.status(403).json({ message: 'Forbidden: Invalid API key' });
-  }
-  next(); // If API key is valid, proceed to the next middleware/route handler
-});
-
 // app.use((req, res, next) => {
 //   // Log all headers for debugging
-//   const apiKey = req.query['apikey']; // Extract API key from query parameters
-
+//   const apiKey = req.headers['apikey']; // Extract API key from headers
 //   if (!apiKey || apiKey !== process.env.SERVER_API_KEY) {
 //     console.log('API Key is missing or invalid');
 //     return res.status(403).json({ message: 'Forbidden: Invalid API key' });
 //   }
-
 //   next(); // If API key is valid, proceed to the next middleware/route handler
 // });
+
+app.use((req, res, next) => {
+  // Log all headers for debugging
+  const apiKey = req.query['apikey']; // Extract API key from query parameters
+
+  if (!apiKey || apiKey !== process.env.SERVER_API_KEY) {
+    console.log('API Key is missing or invalid');
+    return res.status(403).json({ message: 'Forbidden: Invalid API key' });
+  }
+
+  next(); // If API key is valid, proceed to the next middleware/route handler
+});
 
 
 // Middleware
