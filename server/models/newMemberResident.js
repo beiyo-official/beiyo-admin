@@ -53,7 +53,14 @@ const residentSchema = new mongoose.Schema({
   beiyoCredits:{type:Number,default:0},
   subscriptionPlan:{
     type: mongoose.Schema.Types.ObjectId,
-  }
+  },
+  deductions: [
+    {
+      amount: {type:Number},
+      reason: {type:String},
+      date: {type:Date}
+    }
+  ]
 
   // other fields
 });

@@ -120,8 +120,6 @@ router.post('/websiteBooking',async(req,res)=>{
 
 
 
-
-
 const upload = multer({ 
   storage: multer.memoryStorage(),
   // optional file filter
@@ -130,6 +128,8 @@ const upload = multer({
     cb(null, true);
   }
 });
+
+
 
 
 
@@ -538,7 +538,34 @@ router.get('/due/dueAmountResident', async (req, res) => {
 });
 
 
+router.post('/deduct-deposit/:id', (req, res) => {
+  const { id } = req.params; // Resident ID from URL params
+  const { amount, reason } = req.body; // Deduction details
 
+  const resident = Resident.findById(id);
+
+  if (!resident) {
+      return res.status(404).json({ message: 'Resident not found' });
+  }
+
+  if (amount > resident.deposit) {
+      return res.status(400).json({ message: 'Insufficient deposit' });
+  }
+
+  // Deduct the deposit
+  resident.deposit -= amount;
+
+  // Save deduction in resident's deductions array
+  resident.deductions.push({ amount, reason, date: new Date() });
+
+  resident.save();
+
+  return res.status(200).json({ 
+      message: 'Deduction processed', 
+      remainingDeposit: resident.deposit, 
+      deductions: resident.deductions 
+  });
+});
   
 
     // Payment successful, save user data
