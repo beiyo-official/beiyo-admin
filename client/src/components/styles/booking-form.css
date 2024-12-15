@@ -1,87 +1,10 @@
-/* Basic Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
+.form-div
+  /* Add this in your CSS/SCSS file */
+ {
+  padding: 3rem;
 
-  
-  .booking-form-container {
-    max-width: 600px;
-    margin: 0 auto;
-    margin-left: 20rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  @media (min-width: 768px) { /* Adjust the breakpoint as needed */
+    padding-left: 10rem;
   }
-  
-  .form-title {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333;
-  }
-  
-  /* Form Styles */
-  .booking-form {
-    display: flex;
-    flex-direction: column;
-    width: 20rem;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  label {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 5px;
-    color: #555;
-  }
-  
-  input,
-  select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-   
-  }
-  
-  input[type="checkbox"] {
-    width: auto;
-    margin-right: 8px;
-  }
-  
-  button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  span {
-    margin-left: 8px;
-  }
-  
-  select:disabled {
-    background-color: #f0f0f0;
-    cursor: not-allowed;
-  }
-  
+}
+

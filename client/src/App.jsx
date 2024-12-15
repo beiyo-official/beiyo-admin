@@ -14,6 +14,7 @@ import Login from './components/login';
 import Layout from './context/LayoutContext';
 import RentSummaryPage from './components/RentSummary';
 import MonthlyExpenses from './components/MonthlyExpenss';
+import ResidentForm from './components/RegistrationForm';
 
 
 
@@ -44,6 +45,7 @@ const App = () => {
       <Route path='/payment' element={<ProtectedRoute><PaymentList/></ProtectedRoute>}/>
       <Route path='/rent-summary' element={<ProtectedRoute><RentSummaryPage/></ProtectedRoute>}/> 
       <Route path='/monthly-expenses' element={<ProtectedRoute><MonthlyExpenses/></ProtectedRoute>}/> 
+      <Route path='/resident-registration' element={<ProtectedRoute><ResidentForm/></ProtectedRoute>}/> 
 
       {/* <Route path='/booking-page' element={<ProtectedRoute><BookingForm/></ProtectedRoute>}/> */}
       </Routes>

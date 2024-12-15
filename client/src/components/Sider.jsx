@@ -28,7 +28,7 @@ const SideBar = () => {
         Hostels
       </Menu.Item></a>
       <a href="/rooms">
-      <Menu.Item key="4" icon={<HomeOutlined />}>
+      <Menu.Item key="1" icon={<HomeOutlined />}>
         Rooms
       </Menu.Item>
       </a>
@@ -43,13 +43,18 @@ const SideBar = () => {
       </Menu.Item>
     </a>
     <a href="/rent-summary">
-    <Menu.Item key="3" icon={<DollarOutlined />}>
+    <Menu.Item key="4" icon={<DollarOutlined />}>
         Rent Summary
       </Menu.Item>
     </a>
     <a href="/monthly-expenses">
-    <Menu.Item key="4" icon={<DollarOutlined />}>
+    <Menu.Item key="5" icon={<DollarOutlined />}>
        Monthly expenses
+      </Menu.Item>
+    </a>
+    <a href="/resident-registration">
+    <Menu.Item key="6" icon={<DollarOutlined />}>
+      Registration Form
       </Menu.Item>
     </a>
     <button onClick={logout}>

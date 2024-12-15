@@ -13,7 +13,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Alert
+  Alert,
+  TextField
 } from '@mui/material';
 import api from '../../api/apiKey';
 import AuthContext from '../context/AuthContext';
@@ -28,6 +29,12 @@ const ResidentDetails = ({ residentId, open, onClose }) => {
   const [newRoomId, setNewRoomId] = useState('');
   const [deleteError, setDeleteError] = useState('');
   const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [openDeductionDialog, setOpenDeductionDialog] = useState(false);
+  const [deductionAmount, setDeductionAmount] = useState('');
+  const [deductionReason, setDeductionReason] = useState('');
+  const [deductionError, setDeductionError] = useState('');
+  const [deductionSuccess, setDeductionSuccess] = useState(false);
+
   const {user}= useContext(AuthContext);
 
   useEffect(() => {
@@ -173,6 +180,53 @@ const handleOnlinePayment = (paymentId) => {
 
   };
 
+   // Open the Deduction dialog
+   const handleOpenDeductionDialog = () => {
+    setOpenDeductionDialog(true);
+  };
+
+  // Close the Deduction dialog
+  const handleCloseDeductionDialog = () => {
+    setOpenDeductionDialog(false);
+    setDeductionAmount('');
+    setDeductionReason('');
+    setDeductionError('');
+    setDeductionSuccess(false);
+  };
+  // Handle deposit deduction
+  const handleSubmitDeduction = () => {
+    if (!deductionAmount || !deductionReason) {
+      setDeductionError('Please provide both amount and reason.');
+      return;
+    }
+
+    if (user.uniqueId === 'B3' || user.uniqueId === 'B4'||user.uniqueId==='B7'||user.uniqueId==='B6') {
+      setLoading(true);
+      api.post(`https://beiyo-admin.in/api/newResident/deduct-deposit/${residentId}`, {
+        amount: deductionAmount,
+        reason: deductionReason
+      })
+        .then(response => {
+          setLoading(false);
+          setDeductionSuccess(true);
+          handleDeductionClose();  // Close the dialog after success
+          // Optionally, refresh the resident details to show updated deposit and deductions
+          setResident(prevResident => ({
+            ...prevResident,
+            deposit: response.data.remainingDeposit,
+            deductions: response.data.deductions
+          }));
+        })
+        .catch(error => {
+          console.error('Error deducting deposit:', error);
+          setLoading(false);
+          setDeductionError('Failed to process deduction. Please try again.');
+        });
+    } else {
+      alert('You are not authorized to perform this action.');
+    }
+  };
+
   return (
     <>
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -218,8 +272,11 @@ const handleOnlinePayment = (paymentId) => {
               <Typography color="text.secondary">
                 Rent: {resident.rent}
               </Typography>
-              <Typography color="text.secondary">
+              <Typography style={{display:"flex",justifyContent:"space-between",alignItems:"center"}} color="text.secondary">
                 Deposit: {resident.deposit}
+                <Button variant="contained" color="warning" onClick={handleOpenDeductionDialog} sx={{ mt: 3 }}>
+                Deduct Deposit
+              </Button>
               </Typography>
               <Typography color="text.secondary">
                 Maintenance Charge: {resident.maintainaceCharge}
@@ -381,6 +438,45 @@ const handleOnlinePayment = (paymentId) => {
         <DialogActions>
           <Button onClick={() => setOpenRoomSwapDialog(false)} color="primary">Cancel</Button>
           <Button onClick={handleRoomSwap} color="secondary">Swap Room</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openDeductionDialog} onClose={handleCloseDeductionDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Deduct Deposit</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label="Amount"
+              value={deductionAmount}
+              onChange={(e) => setDeductionAmount(e.target.value)}
+              fullWidth
+              type="number"
+              required
+            />
+            <TextField
+              label="Reason"
+              value={deductionReason}
+              onChange={(e) => setDeductionReason(e.target.value)}
+              fullWidth
+              required
+            />
+          </Box>
+          {deductionError && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {deductionError}
+            </Alert>
+          )}
+
+          {deductionSuccess && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              Deduction processed successfully.
+            </Alert>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeductionDialog} color="primary">Cancel</Button>
+          <Button onClick={handleSubmitDeduction} color="secondary" disabled={loading}>
+            Deduct
+          </Button>
         </DialogActions>
       </Dialog>
     </>
