@@ -538,33 +538,42 @@ router.get('/due/dueAmountResident', async (req, res) => {
 });
 
 
-router.post('/deduct-deposit/:id', (req, res) => {
+// Deduct deposit route
+router.post('/deduct-deposit/:id', async (req, res) => {
   const { id } = req.params; // Resident ID from URL params
   const { amount, reason } = req.body; // Deduction details
 
-  const resident = Resident.findById(id);
+  try {
+    // Find the resident by ID
+    const resident = await Resident.findById(id);
 
-  if (!resident) {
+    if (!resident) {
       return res.status(404).json({ message: 'Resident not found' });
-  }
+    }
 
-  if (amount > resident.deposit) {
+    // Check if the deduction amount is greater than the current deposit
+    if (amount > resident.deposit) {
       return res.status(400).json({ message: 'Insufficient deposit' });
+    }
+
+    // Deduct the deposit
+    resident.deposit -= amount;
+
+    // Add the deduction record to the deductions array
+    resident.deductions.push({ amount, reason, date: new Date() });
+
+    // Save the updated resident data
+    await resident.save();
+
+    return res.status(200).json({
+      message: 'Deduction processed',
+      remainingDeposit: resident.deposit,
+      deductions: resident.deductions
+    });
+  } catch (error) {
+    console.error('Error deducting deposit:', error);
+    return res.status(500).json({ message: 'Server error' });
   }
-
-  // Deduct the deposit
-  resident.deposit -= amount;
-
-  // Save deduction in resident's deductions array
-  resident.deductions.push({ amount, reason, date: new Date() });
-
-  resident.save();
-
-  return res.status(200).json({ 
-      message: 'Deduction processed', 
-      remainingDeposit: resident.deposit, 
-      deductions: resident.deductions 
-  });
 });
   
 
