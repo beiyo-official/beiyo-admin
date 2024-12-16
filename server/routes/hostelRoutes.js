@@ -374,7 +374,7 @@ router.get('/rent/past-months', async (req, res) => {
           expectedRent: [
             {
               $match: {
-                month: { $gte: startOfMonth, $lte: endOfMonth },
+                date: { $gte: startOfMonth, $lte: endOfMonth },
                 type: 'rent',
               },
             },
@@ -403,7 +403,7 @@ router.get('/rent/past-months', async (req, res) => {
           totalSuccessfullRent: [
             {
               $match: {
-                month: currentMonth,
+                date: { $gte: startOfMonth, $lte: endOfMonth },
                 type: 'rent',
                 status: 'successful',
               },
@@ -434,28 +434,49 @@ router.get('/rent/past-months', async (req, res) => {
       // Merge the expectedRent and totalSuccessfullRent results
       {
         $project: {
-          combinedData: {
-            $concatArrays: ['$expectedRent', '$totalSuccessfullRent'],
+          data: {
+            $map: {
+              input: {
+                $setUnion: ['$expectedRent', '$totalSuccessfullRent'],
+              },
+              as: 'item',
+              in: {
+                _id: '$$item._id',
+                hostel: '$$item.hostel',
+                expectedRent: {
+                  $ifNull: [
+                    {
+                      $arrayElemAt: [
+                        '$expectedRent.expectedRent',
+                        { $indexOfArray: ['$expectedRent._id', '$$item._id'] },
+                      ],
+                    },
+                    0,
+                  ],
+                },
+                totalSuccessfullRent: {
+                  $ifNull: [
+                    {
+                      $arrayElemAt: [
+                        '$totalSuccessfullRent.totalSuccessfullRent',
+                        { $indexOfArray: ['$totalSuccessfullRent._id', '$$item._id'] },
+                      ],
+                    },
+                    0,
+                  ],
+                },
+              },
+            },
           },
         },
       },
-      { $unwind: '$combinedData' },
 
-      // Group by hostel to merge duplicates and sum the values
-      {
-        $group: {
-          _id: '$combinedData._id',
-          hostel: { $first: '$combinedData.hostel' },
-          expectedRent: { $sum: '$combinedData.expectedRent' },
-          totalSuccessfullRent: { $sum: '$combinedData.totalSuccessfullRent' },
-        },
-      },
-
-      // Lookup hostel details and calculate derived fields
+      // Flatten and calculate derived fields
+      { $unwind: '$data' },
       {
         $lookup: {
           from: 'hostels',
-          localField: '_id',
+          localField: 'data._id',
           foreignField: '_id',
           as: 'hostelInfo',
         },
@@ -468,34 +489,24 @@ router.get('/rent/past-months', async (req, res) => {
       },
       {
         $addFields: {
-          ownerRent: '$hostelInfo.ownerRent',
-          grossProfit: {
-            $subtract: ['$totalSuccessfullRent', '$hostelInfo.ownerRent'],
+          'data.ownerRent': '$hostelInfo.ownerRent',
+          'data.grossProfit': {
+            $subtract: ['$data.totalSuccessfullRent', '$hostelInfo.ownerRent'],
           },
-          occupancyRate: {
+          'data.occupancyRate': {
             $cond: {
-              if: { $gt: ['$expectedRent', 0] },
-              then: { $multiply: [{ $divide: ['$totalSuccessfullRent', '$expectedRent'] }, 100] },
+              if: { $gt: ['$data.expectedRent', 0] },
+              then: { $multiply: [{ $divide: ['$data.totalSuccessfullRent', '$data.expectedRent'] }, 100] },
               else: 0,
             },
           },
-          rentDue: {
-            $subtract: ['$expectedRent', '$totalSuccessfullRent'],
+          'data.rentDue': {
+            $subtract: ['$data.expectedRent', '$data.totalSuccessfullRent'],
           },
         },
       },
-
-      // Select only the required fields
       {
-        $project: {
-          _id: 1,
-          hostel: 1,
-          ownerRent: 1,
-          grossProfit: 1,
-          totalSuccessfullRent: 1,
-          occupancyRate: 1,
-          rentDue: 1,
-        },
+        $replaceRoot: { newRoot: '$data' },
       },
     ]);
 
