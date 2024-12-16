@@ -169,7 +169,7 @@ router.get('/rent/current-month', async (req, res) => {
 
     console.log("Current Month:", currentMonth);
 
-    const totalRentCurrentMonth = await Payment.aggregate([
+    const rentAndProfitData = await Payment.aggregate([
       {
         // Match successful rent payments for the current month using the `month` field
         $match: {
@@ -208,16 +208,44 @@ router.get('/rent/current-month', async (req, res) => {
           totalRent: { $sum: '$amount' }, // Sum up the rent amounts
         },
       },
+      {
+        $lookup: {
+          from: 'hostels',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'hostelInfo',
+        },
+      },
+      {
+        $unwind: {
+          path: '$hostelInfo',
+          preserveNullAndEmptyArrays: false, // Exclude records without matching hostels
+        },
+      },
+      {
+        $addFields: {
+          ownerRent: '$hostelInfo.ownerRent',
+          grossProfit: { $subtract: ['$totalRent', '$hostelInfo.ownerRent'] },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          hostel: 1,
+          totalRent: 1,
+          ownerRent: 1,
+          grossProfit: 1,
+        },
+      },
     ]);
 
-    // console.log("Aggregate result:", totalRentCurrentMonth);
-
-    res.json(totalRentCurrentMonth);
+    res.json(rentAndProfitData);
   } catch (error) {
-    console.error("Error fetching current month rent:", error);
+    console.error("Error fetching rent and gross profit data:", error);
     res.status(500).json({ message: error.message });
   }
 });
+
 
 // Get expected rent for each hostel for the next month
 router.get('/rent/next-month-expected', async (req, res) => {
