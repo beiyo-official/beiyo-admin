@@ -236,49 +236,28 @@ router.get('/rent/current-month', async (req, res) => {
       // Merge the expectedRent and totalSuccessfullRent results
       {
         $project: {
-          data: {
-            $map: {
-              input: {
-                $setUnion: ['$expectedRent', '$totalSuccessfullRent'],
-              },
-              as: 'item',
-              in: {
-                _id: '$$item._id',
-                hostel: '$$item.hostel',
-                expectedRent: {
-                  $ifNull: [
-                    {
-                      $arrayElemAt: [
-                        '$expectedRent.expectedRent',
-                        { $indexOfArray: ['$expectedRent._id', '$$item._id'] },
-                      ],
-                    },
-                    0,
-                  ],
-                },
-                totalSuccessfullRent: {
-                  $ifNull: [
-                    {
-                      $arrayElemAt: [
-                        '$totalSuccessfullRent.totalSuccessfullRent',
-                        { $indexOfArray: ['$totalSuccessfullRent._id', '$$item._id'] },
-                      ],
-                    },
-                    0,
-                  ],
-                },
-              },
-            },
+          combinedData: {
+            $concatArrays: ['$expectedRent', '$totalSuccessfullRent'],
           },
         },
       },
+      { $unwind: '$combinedData' },
 
-      // Flatten and calculate derived fields
-      { $unwind: '$data' },
+      // Group by hostel to merge duplicates and sum the values
+      {
+        $group: {
+          _id: '$combinedData._id',
+          hostel: { $first: '$combinedData.hostel' },
+          expectedRent: { $sum: '$combinedData.expectedRent' },
+          totalSuccessfullRent: { $sum: '$combinedData.totalSuccessfullRent' },
+        },
+      },
+
+      // Lookup hostel details and calculate derived fields
       {
         $lookup: {
           from: 'hostels',
-          localField: 'data._id',
+          localField: '_id',
           foreignField: '_id',
           as: 'hostelInfo',
         },
@@ -291,24 +270,34 @@ router.get('/rent/current-month', async (req, res) => {
       },
       {
         $addFields: {
-          'data.ownerRent': '$hostelInfo.ownerRent',
-          'data.grossProfit': {
-            $subtract: ['$data.totalSuccessfullRent', '$hostelInfo.ownerRent'],
+          ownerRent: '$hostelInfo.ownerRent',
+          grossProfit: {
+            $subtract: ['$totalSuccessfullRent', '$hostelInfo.ownerRent'],
           },
-          'data.occupancyRate': {
+          occupancyRate: {
             $cond: {
-              if: { $gt: ['$data.expectedRent', 0] },
-              then: { $multiply: [{ $divide: ['$data.totalSuccessfullRent', '$data.expectedRent'] }, 100] },
+              if: { $gt: ['$expectedRent', 0] },
+              then: { $multiply: [{ $divide: ['$totalSuccessfullRent', '$expectedRent'] }, 100] },
               else: 0,
             },
           },
-          'data.rentDue': {
-            $subtract: ['$data.expectedRent', '$data.totalSuccessfullRent'],
+          rentDue: {
+            $subtract: ['$expectedRent', '$totalSuccessfullRent'],
           },
         },
       },
+
+      // Select only the required fields
       {
-        $replaceRoot: { newRoot: '$data' },
+        $project: {
+          _id: 1,
+          hostel: 1,
+          ownerRent: 1,
+          grossProfit: 1,
+          totalSuccessfullRent: 1,
+          occupancyRate: 1,
+          rentDue: 1,
+        },
       },
     ]);
 
@@ -318,6 +307,7 @@ router.get('/rent/current-month', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 
 
@@ -384,7 +374,7 @@ router.get('/rent/past-months', async (req, res) => {
           expectedRent: [
             {
               $match: {
-                date: { $gte: startOfMonth, $lte: endOfMonth },
+                month: { $gte: startOfMonth, $lte: endOfMonth },
                 type: 'rent',
               },
             },
@@ -413,7 +403,7 @@ router.get('/rent/past-months', async (req, res) => {
           totalSuccessfullRent: [
             {
               $match: {
-                date: { $gte: startOfMonth, $lte: endOfMonth },
+                month: currentMonth,
                 type: 'rent',
                 status: 'successful',
               },
@@ -444,49 +434,28 @@ router.get('/rent/past-months', async (req, res) => {
       // Merge the expectedRent and totalSuccessfullRent results
       {
         $project: {
-          data: {
-            $map: {
-              input: {
-                $setUnion: ['$expectedRent', '$totalSuccessfullRent'],
-              },
-              as: 'item',
-              in: {
-                _id: '$$item._id',
-                hostel: '$$item.hostel',
-                expectedRent: {
-                  $ifNull: [
-                    {
-                      $arrayElemAt: [
-                        '$expectedRent.expectedRent',
-                        { $indexOfArray: ['$expectedRent._id', '$$item._id'] },
-                      ],
-                    },
-                    0,
-                  ],
-                },
-                totalSuccessfullRent: {
-                  $ifNull: [
-                    {
-                      $arrayElemAt: [
-                        '$totalSuccessfullRent.totalSuccessfullRent',
-                        { $indexOfArray: ['$totalSuccessfullRent._id', '$$item._id'] },
-                      ],
-                    },
-                    0,
-                  ],
-                },
-              },
-            },
+          combinedData: {
+            $concatArrays: ['$expectedRent', '$totalSuccessfullRent'],
           },
         },
       },
+      { $unwind: '$combinedData' },
 
-      // Flatten and calculate derived fields
-      { $unwind: '$data' },
+      // Group by hostel to merge duplicates and sum the values
+      {
+        $group: {
+          _id: '$combinedData._id',
+          hostel: { $first: '$combinedData.hostel' },
+          expectedRent: { $sum: '$combinedData.expectedRent' },
+          totalSuccessfullRent: { $sum: '$combinedData.totalSuccessfullRent' },
+        },
+      },
+
+      // Lookup hostel details and calculate derived fields
       {
         $lookup: {
           from: 'hostels',
-          localField: 'data._id',
+          localField: '_id',
           foreignField: '_id',
           as: 'hostelInfo',
         },
@@ -499,24 +468,34 @@ router.get('/rent/past-months', async (req, res) => {
       },
       {
         $addFields: {
-          'data.ownerRent': '$hostelInfo.ownerRent',
-          'data.grossProfit': {
-            $subtract: ['$data.totalSuccessfullRent', '$hostelInfo.ownerRent'],
+          ownerRent: '$hostelInfo.ownerRent',
+          grossProfit: {
+            $subtract: ['$totalSuccessfullRent', '$hostelInfo.ownerRent'],
           },
-          'data.occupancyRate': {
+          occupancyRate: {
             $cond: {
-              if: { $gt: ['$data.expectedRent', 0] },
-              then: { $multiply: [{ $divide: ['$data.totalSuccessfullRent', '$data.expectedRent'] }, 100] },
+              if: { $gt: ['$expectedRent', 0] },
+              then: { $multiply: [{ $divide: ['$totalSuccessfullRent', '$expectedRent'] }, 100] },
               else: 0,
             },
           },
-          'data.rentDue': {
-            $subtract: ['$data.expectedRent', '$data.totalSuccessfullRent'],
+          rentDue: {
+            $subtract: ['$expectedRent', '$totalSuccessfullRent'],
           },
         },
       },
+
+      // Select only the required fields
       {
-        $replaceRoot: { newRoot: '$data' },
+        $project: {
+          _id: 1,
+          hostel: 1,
+          ownerRent: 1,
+          grossProfit: 1,
+          totalSuccessfullRent: 1,
+          occupancyRate: 1,
+          rentDue: 1,
+        },
       },
     ]);
 
