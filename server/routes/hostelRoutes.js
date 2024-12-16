@@ -329,6 +329,35 @@ router.get('/rent/past-months', async (req, res) => {
           successfullRent: { $sum: '$amount' },
         },
       },
+      {
+        $lookup: {
+          from: 'hostels',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'hostelInfo',
+        },
+      },
+      {
+        $unwind: {
+          path: '$hostelInfo',
+          preserveNullAndEmptyArrays: false, // Exclude records without matching hostels
+        },
+      },
+      {
+        $addFields: {
+          ownerRent: '$hostelInfo.ownerRent',
+          grossProfit: { $subtract: ['$totalRent', '$hostelInfo.ownerRent'] },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          hostel: 1,
+          totalRent: 1,
+          ownerRent: 1,
+          grossProfit: 1,
+        },
+      },
     ]);
 
     res.json(totalRentPastMonth);
