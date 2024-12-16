@@ -26,6 +26,55 @@ const RentSummaryPage = () => {
       key: "hostel",
     },
     {
+      title: "SuccessFull Rent",
+      dataIndex: "totalSuccessfullRent",
+      key: "totalSuccessfullRent",
+      render: (value) => `₹${value.toLocaleString()}`,
+    },
+    {
+      title:"Expected Rent",
+      dataIndex: "expectedRent",
+      key:"expectedRent",
+      render: (value) => `₹${value.toLocaleString()}`
+    },
+    {
+      title: "Rent Due",
+      dataIndex:"rentDue",
+      key:"rentDue",
+      render: (value) => `₹${value.toLocaleString()}`
+    },
+    {
+      title:"Occupancy Rate",
+      dataIndex: "occupancyRate",
+      key:"occupancyRate",
+      render: (value) => `${Math.ceil(value)}%`
+    },
+    {
+      title:"Owner Rent",
+      dataIndex: "ownerRent",
+      key:"ownerRent",
+      render: (value) => `₹${value.toLocaleString()}`
+    },
+    {
+      title:"Gross Profit",
+      dataIndex: "grossProfit",
+      key:"grossProfit",
+      render: (value) => `₹${value.toLocaleString()}`
+    },
+
+  ];
+  const futureRentColumns = [
+    {
+      title: "Hostel ID",
+      dataIndex: "_id",
+      key: "_id",
+    },
+    {
+      title: "Hostel Name",
+      dataIndex: "hostel",
+      key: "hostel",
+    },
+    {
       title: "Rent Amount",
       dataIndex: "amount",
       key: "amount",
@@ -88,7 +137,7 @@ const RentSummaryPage = () => {
   }, []);
 
   return (
-    <Card title="Rent Summary" style={{ margin: "20px", marginLeft:"20rem",marginTop:"0" }}>
+    <Card title="Monthly Summary" style={{ margin: "20px", marginLeft:"5rem", }}>
       <Tabs defaultActiveKey="1">
         {/* Current Month Rent */}
         <TabPane tab="Current Month Rent" key="1">
@@ -114,7 +163,7 @@ const RentSummaryPage = () => {
             <Spin tip="Loading Next Month Expected Rent..." />
           ) : (
             <Table
-              columns={columns}
+              columns={futureRentColumns}
               dataSource={nextMonthRent.map((item) => ({
                 ...item,
                 amount: item.expectedRent,

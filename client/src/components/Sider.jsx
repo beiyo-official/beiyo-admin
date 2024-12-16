@@ -42,9 +42,9 @@ const SideBar = () => {
         Payments
       </Menu.Item>
     </a>
-    <a href="/rent-summary">
+    <a href="/monthly-summary">
     <Menu.Item key="4" icon={<DollarOutlined />}>
-        Rent Summary
+        Monthly Summary
       </Menu.Item>
     </a>
     <a href="/monthly-expenses">

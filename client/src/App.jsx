@@ -43,7 +43,7 @@ const App = () => {
       <Route path='/rooms' element={<ProtectedRoute><RoomList/></ProtectedRoute>}/>
       <Route path='/resident' element={<ProtectedRoute> <ResidentList/> </ProtectedRoute>}/>
       <Route path='/payment' element={<ProtectedRoute><PaymentList/></ProtectedRoute>}/>
-      <Route path='/rent-summary' element={<ProtectedRoute><RentSummaryPage/></ProtectedRoute>}/> 
+      <Route path='/monthly-summary' element={<ProtectedRoute><RentSummaryPage/></ProtectedRoute>}/> 
       <Route path='/monthly-expenses' element={<ProtectedRoute><MonthlyExpenses/></ProtectedRoute>}/> 
       <Route path='/resident-registration' element={<ProtectedRoute><ResidentForm/></ProtectedRoute>}/> 
 
