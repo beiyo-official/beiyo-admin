@@ -297,6 +297,7 @@ router.get('/rent/current-month', async (req, res) => {
           totalSuccessfullRent: 1,
           occupancyRate: 1,
           rentDue: 1,
+          expectedRent:1
         },
       },
     ]);
