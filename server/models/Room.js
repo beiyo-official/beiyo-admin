@@ -9,7 +9,7 @@ const roomSchema = new mongoose.Schema({
   capacity: { type: Number, required: true },
   remainingCapacity: { type: Number, required: true, default: 0 },
   type:{type: String, required: true, default: 0},
-  price:{type: String, required: true, default: 0},
+  price:{type: Number, required: true, default: 0},
   hostel: {
     type: String,
     required: true

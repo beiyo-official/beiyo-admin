@@ -253,7 +253,6 @@ router.get('/rent/current-month', async (req, res) => {
         },
       },
 
-      // Lookup hostel details and calculate derived fields
       {
         $lookup: {
           from: 'hostels',
@@ -265,24 +264,79 @@ router.get('/rent/current-month', async (req, res) => {
       {
         $unwind: {
           path: '$hostelInfo',
-          preserveNullAndEmptyArrays: false, // Ensure matching hostels only
+          preserveNullAndEmptyArrays: false,
         },
       },
+
+      // Lookup room details to calculate total capacity and room prices
+      {
+        $lookup: {
+          from: 'rooms',
+          localField: 'hostelInfo.rooms', // Array of room ObjectIDs in the hostel model
+          foreignField: '_id',
+          as: 'roomDetails',
+        },
+      },
+
+      // Calculate total capacity and total room price
+      {
+        $addFields: {
+          totalExpectedCostFromHostel: {
+            $sum: {
+              $map: {
+                input: '$roomDetails',
+                as: 'room',
+                in: {
+                  $multiply: [
+                    { $toDouble: '$$room.price' }, 
+                    { $toDouble: '$$room.capacity' }
+                  ],
+                },
+              },
+            },
+          },
+        },
+      }, 
+      // Access monthly expenses within hostelInfo and get the totalCost for current month
+      {
+        $addFields: {
+          currentMonthExpenses: {
+            $first: {
+              $filter: {
+                input: '$hostelInfo.monthlyExpenses',
+                as: 'expense',
+                cond: { 
+                  $eq: ['$$expense.month', currentMonth] 
+                }
+              }
+            }
+          }
+        }
+      },
+      
+
       {
         $addFields: {
           ownerRent: '$hostelInfo.ownerRent',
+          totalExpenses:'$currentMonthExpenses.totalCost',
           grossProfit: {
             $subtract: ['$totalSuccessfullRent', '$hostelInfo.ownerRent'],
           },
           occupancyRate: {
             $cond: {
-              if: { $gt: ['$expectedRent', 0] },
-              then: { $multiply: [{ $divide: ['$totalSuccessfullRent', '$expectedRent'] }, 100] },
+              if: { $gt: ['$totalExpectedCostFromHostel', 0] },
+              then: { $multiply: [{ $divide: ['$totalSuccessfullRent', '$totalExpectedCostFromHostel'] }, 100] },
               else: 0,
             },
           },
           rentDue: {
             $subtract: ['$expectedRent', '$totalSuccessfullRent'],
+          },
+          netProfit: {
+            $subtract: [
+              { $subtract: ['$totalSuccessfullRent', '$hostelInfo.ownerRent'] }, // Gross profit
+              '$currentMonthExpenses.totalCost', // Subtract total cost from monthly expenses
+            ],
           },
         },
       },
@@ -297,7 +351,10 @@ router.get('/rent/current-month', async (req, res) => {
           totalSuccessfullRent: 1,
           occupancyRate: 1,
           rentDue: 1,
-          expectedRent:1
+          expectedRent: 1,
+          totalExpectedCostFromHostel: 1,
+          netProfit:1,
+          totalExpenses:1,
         },
       },
     ]);
@@ -308,6 +365,7 @@ router.get('/rent/current-month', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 
 

@@ -2,7 +2,8 @@ const {  mongoose } = require("mongoose");
 const { config } = require('dotenv');
 const Hostel = require("./models/Hostel");
 const { Inventory } = require("./models/Inventory");
-const { Room } = require("./models/Room");
+
+
 // const { CleaningChart } = require('./models/CleaningChart')
 
 config();
@@ -21,4 +22,4 @@ const connectDB = async ()=>{
     process.exit(1);
     }
 }
-module.exports={  connectDB  ,Hostel, Inventory, Room,  }
+module.exports={  connectDB  ,Hostel, Inventory   }
