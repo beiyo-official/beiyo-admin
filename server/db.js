@@ -10,7 +10,7 @@ config();
 const connectDB = async ()=>{
     try{
         const uri = process.env.MONGODB_URI;
-        // console.log('MongoDB URI:', uri);
+  //         console.log('MongoDB URI:', uri);
         await mongoose.connect(uri,{
             useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -22,4 +22,6 @@ const connectDB = async ()=>{
     process.exit(1);
     }
 }
-module.exports={  connectDB  ,Hostel, Inventory   }
+
+module.exports={  connectDB  ,Hostel, Inventory }
+
