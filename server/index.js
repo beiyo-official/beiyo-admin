@@ -28,6 +28,7 @@ const AppVersion  = require('./routes/appVersion')
 const Member = require('./routes/Member')
 const razorPay = require('./routes/RazorPayPayment')
 const notification = require('./routes/notification')
+const faq = require('./routes/Faq');
 const app = express();
 app.use(cors(
 ));
@@ -91,6 +92,7 @@ app.use('/api/inventory',inventoryRoutes);
 app.use('/api/Otp',otp)
 app.use('/api/pay/razor',razorPay)
 app.use('/api/notification',notification)
+app.use('/api/faq',faq)
 
 
 // Start the server

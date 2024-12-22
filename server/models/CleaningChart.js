@@ -8,3 +8,4 @@ const CleaningChartSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('CleaningChart', CleaningChartSchema);
+ 

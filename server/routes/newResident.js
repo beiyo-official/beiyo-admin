@@ -537,6 +537,50 @@ router.get('/due/dueAmountResident', async (req, res) => {
   }
 });
 
+router.get('/mobile/number',async(req,res)=>{
+  try {
+    const residents = await Resident.find({living:"current"})
+      .select('name roomNumber mobileNumber hostel'); // Select only the required fields
+
+    // Convert the resident data to an array of objects (for Excel format)
+    const residentData = residents.map(resident => ({
+      Name: resident.name,
+      Hostel: resident.hostel,
+     MobileNumber: resident.mobileNumber,
+    }));
+
+    // Create a new workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(residentData);
+
+    // Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, `${residents.hostel} Residents` );
+
+    // Generate the Excel file and save it temporarily
+    const filePath = path.join(__dirname, 'dueAmountResident.xlsx');
+    XLSX.writeFile(workbook, filePath);
+
+    // Set the response headers to download the file
+    res.setHeader('Content-Disposition', 'attachment; filename=dueAmountResident.xlsx');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+    // Send the file as a response
+    res.download(filePath, (err) => {
+      if (err) {
+        console.error('Error sending file:', err);
+        res.status(500).json({ error: 'Error downloading the file' });
+      }
+
+      // Optionally delete the file after sending
+      fs.unlink(filePath, (unlinkErr) => {
+        if (unlinkErr) console.error('Error deleting file:', unlinkErr);
+      });
+    });
+  }catch (error) {
+    res.status(500).json(error.message);
+  }
+})
+
 
 // Deduct deposit route
 router.post('/deduct-deposit/:id', async (req, res) => {
