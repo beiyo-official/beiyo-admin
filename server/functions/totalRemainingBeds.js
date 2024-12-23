@@ -24,9 +24,9 @@ const totalRemainingBeds = async (hostelId) => {
             { new: true } // Returns the updated document
         );
     
-
     return;
 };
+
 
 
 module.exports = totalRemainingBeds;

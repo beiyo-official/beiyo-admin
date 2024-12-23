@@ -1,15 +1,15 @@
 const Hostel = require('../models/Hostel');
 const Room = require('../models/Room');
 const Bed = require('../models/Beds')
-const totalBeds = async () => {
-    const hostels = await Hostel.find();
+const totalBeds = async (hostelId) => {
+ 
     
-    
-    for (const hostel of hostels) {
+    console.log("function started");
+   
      
         
         let total = 0;
-        const rooms = await Room.find({ hostelId: hostel._id });
+        const rooms = await Room.find({ hostelId: hostelId });
 
       
         for (const room of rooms) {
@@ -17,14 +17,15 @@ const totalBeds = async () => {
         }
 
         await Hostel.findByIdAndUpdate(
-            hostel._id,
+            hostelId,
             { totalBeds: total },
             { new: true } // Returns the updated document
         );
-    }
-
     return;
+   
 };
+
+
 
 
 module.exports = totalBeds;

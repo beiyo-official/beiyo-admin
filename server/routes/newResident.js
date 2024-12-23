@@ -11,7 +11,6 @@ const Hostels = require('../models/Hostel');
 const Rooms = require('../models/Room');
 const totalTenants = require('../functions/TotalTenats');
 const uuid = require('uuid');
-const uploadFile = require('../firebase/firebase');
 const Hostel = require('../models/Hostel');
 const totalRemainingBeds = require('../functions/totalRemainingBeds');
 const mappingResident = require('../functions/MappingResident');

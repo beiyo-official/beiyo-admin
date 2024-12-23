@@ -4,7 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 const Manager = require('../models/Manager'); // Your Manager model
-const uploadFile = require('../firebase/firebase');
+
 
 
 
