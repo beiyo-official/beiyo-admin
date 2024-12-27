@@ -63,6 +63,67 @@ const RentSummaryPage = () => {
     },
 
   ];
+  const currentMonthcolumns = [
+    {
+      title: "Hostel ID",
+      dataIndex: "_id",
+      key: "_id",
+    },
+    {
+      title: "Hostel Name",
+      dataIndex: "hostel",
+      key: "hostel",
+    },
+    {
+      title: "SuccessFull Rent",
+      dataIndex: "totalSuccessfullRent",
+      key: "totalSuccessfullRent",
+      render: (value) => `₹${value.toLocaleString()}`,
+    },
+    {
+      title:"Expected Rent",
+      dataIndex: "expectedRent",
+      key:"expectedRent",
+      render: (value) => `₹${value.toLocaleString()}`
+    },
+    {
+      title: "Rent Due",
+      dataIndex:"rentDue",
+      key:"rentDue",
+      render: (value) => `₹${value.toLocaleString()}`
+    },
+    {
+      title:"Occupancy Rate",
+      dataIndex: "occupancyRate",
+      key:"occupancyRate",
+      render: (value) => `${Math.ceil(value)}%`
+    },
+    {
+      title:"Owner Rent",
+      dataIndex: "ownerRent",
+      key:"ownerRent",
+      render: (value) => `₹${value.toLocaleString()}`
+    },
+    {
+      title:"Gross Profit",
+      dataIndex: "grossProfit",
+      key:"grossProfit",
+      render: (value) => `₹${value.toLocaleString()}`
+    },
+    {
+      title:"Total Expenses",
+      dataIndex: "totalExpenses",
+      key:"totalExpenses",
+      render: (value) => `₹${value?.toLocaleString()||0}`
+    },
+    {
+      title: "Net Profit",
+      dataIndex: "netProfit",
+      key: "netProfit",
+      render: (value) => `₹${value?.toLocaleString()|| 0}`
+    }
+
+  ];
   const futureRentColumns = [
     {
       title: "Hostel ID",
@@ -145,7 +206,7 @@ const RentSummaryPage = () => {
             <Spin tip="Loading Current Month Rent..." />
           ) : (
             <Table
-              columns={columns}
+              columns={currentMonthcolumns}
               dataSource={currentRent.map((item) => ({
                 ...item,
                 amount: item.totalRent,

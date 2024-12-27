@@ -168,7 +168,7 @@ const MonthlyExpenses = () => {
       key: 'totalCost',
       render: (_, record) => (
         <Input
-          value={record.maintenanceCost + record.utilityCost}
+          value={Number(record.maintenanceCost + record.utilityCost)}
           disabled
         />
       )
