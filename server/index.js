@@ -44,6 +44,8 @@ app.use((req, res, next) => {
   next(); // If API key is valid, proceed to the next middleware/route handler
 });
 
+// calling from production
+
 // app.use((req, res, next) => {
 //   // Log all headers for debugging
 //   const apiKey = req.query['apikey']; // Extract API key from query parameters
