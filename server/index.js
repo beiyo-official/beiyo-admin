@@ -29,11 +29,16 @@ const Member = require('./routes/Member')
 const razorPay = require('./routes/RazorPayPayment')
 const notification = require('./routes/notification')
 const faq = require('./routes/Faq');
-const corsMiddleware = require('./middleware/corsMiddleware');
+
 const app = express();
 
+config();
 
-const allowedOrigins = ['https://beiyo.in', 
+const URL1 = process.env.ALLOW_URL_1
+const URL2 = process.env.ALLOW_URL_2
+const URL3 = process.env.ALLOW_URL_3
+
+const allowedOrigins = [URL1,URL2,URL3
   // 'http://localhost:5000'
 ];
 app.use(cors({
@@ -41,7 +46,7 @@ app.use(cors({
   credentials: true
 }));
 
-config();
+
 // // Middleware to check API key
 app.use((req, res, next) => {
   // Log all headers for debugging
