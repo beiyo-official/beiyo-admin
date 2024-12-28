@@ -32,18 +32,15 @@ const faq = require('./routes/Faq');
 const corsMiddleware = require('./middleware/corsMiddleware');
 const app = express();
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://beiyo.in');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
 
-app.use(cors(
-  corsMiddleware
-));
-app.options('*', cors(corsMiddleware)); 
+const allowedOrigins = ['https://beiyo.in', 
+  // 'http://localhost:5000'
+];
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
+
 config();
 // // Middleware to check API key
 app.use((req, res, next) => {
