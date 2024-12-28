@@ -336,6 +336,63 @@ router.delete('/delete/:id', getRoom, async (req, res) => {
   }
 });
 
+router.get('/sheet/roomAvailable',async(req,res)=>{
+  try {
+    // Fetch all hostels and populate the rooms
+    const hostels = await Hostel.find().populate("rooms");
+
+    if (!hostels || hostels.length === 0) {
+      return res.status(404).json({ error: "No hostels found" });
+    }
+
+    // Create a new workbook
+    const workbook = new ExcelJS.Workbook();
+
+    // Add a worksheet for each hostel
+    hostels.forEach((hostel) => {
+      const worksheet = workbook.addWorksheet(hostel.name || `Hostel_${hostel._id}`);
+
+      // Add headers to the worksheet
+      worksheet.columns = [
+        { header: "Room Number", key: "roomNumber", width: 15 },
+        { header: "Room ID", key: "roomId", width: 30 },
+        { header: "Remaining Capacity", key: "remainingCapacity", width: 20 },
+      ];
+
+   
+    // Add only available rooms (remainingCapacity > 0) to the worksheet
+    hostel.rooms
+      .filter((room) => room.remainingCapacity > 0) // Filter rooms by remaining capacity
+      .forEach((room) => {
+        worksheet.addRow({
+          roomNumber: room.roomNumber,
+          roomId: room._id,
+          remainingCapacity: room.remainingCapacity,
+        });
+      });
+  });
+
+    // Set the response headers for file download
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=all_hostels_rooms.xlsx`
+    );
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+
+    // Write the workbook to the response
+    await workbook.xlsx.write(res);
+
+    // End the response
+    res.end();
+  } catch (error) {
+    console.error("Error fetching or generating Excel sheet: ", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
+
 // Middleware function to get room by ID
 async function getRoom(req, res, next) {
   let room;

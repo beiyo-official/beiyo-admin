@@ -29,8 +29,10 @@ const Member = require('./routes/Member')
 const razorPay = require('./routes/RazorPayPayment')
 const notification = require('./routes/notification')
 const faq = require('./routes/Faq');
+const corsMiddleware = require('./middleware/corsMiddleware');
 const app = express();
 app.use(cors(
+  corsMiddleware
 ));
 config();
 // // Middleware to check API key
