@@ -34,6 +34,7 @@ const app = express();
 app.use(cors(
   corsMiddleware
 ));
+app.options('*', cors(corsMiddleware)); 
 config();
 // // Middleware to check API key
 app.use((req, res, next) => {
@@ -76,6 +77,14 @@ app.use(cookieParser())
 // Routes
 app.get("/", (req,res)=>{
   res.json("Welcome to the Beiyo admin backend");
+});
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://beiyo.in');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
 });
 
 app.use('/api/hostels', hostelRoutes);
